@@ -1,0 +1,3 @@
+[submodule "Yuki/vendor/spdlog"]
+	path = Yuki/vendor/spdlog
+	url = https://github.com/gabime/spdlog
