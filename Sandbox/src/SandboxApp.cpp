@@ -1,6 +1,6 @@
-#include <Craft.h>
+#include <Yuki.h>
 
-class Sandbox : public Craft::Application {
+class Sandbox : public Yuki::Application {
 public:
 	Sandbox() {
 
@@ -11,6 +11,6 @@ public:
 	}
 };
 
-Craft::Application* Craft::CreateApplication() {
+Yuki::Application* Yuki::CreateApplication() {
 	return new Sandbox();
 }
