@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Yuki">
+      <UniqueIdentifier>{27DD8F7C-1314-910D-BC00-7710A8160D0F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Yuki.h" />
+    <ClInclude Include="src\Yuki\Application.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\EntryPoint.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Log.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Yuki\Application.cpp">
+      <Filter>Yuki</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Log.cpp">
+      <Filter>Yuki</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
