@@ -1,3 +1,6 @@
 [submodule "Yuki/vendor/spdlog"]
 	path = Yuki/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Yuki/vendor/GLFW"]
+	path = Yuki/vendor/GLFW
+	url = https://github.com/phukaoz/glfw
