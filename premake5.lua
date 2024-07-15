@@ -23,7 +23,8 @@ project "Yuki"
 	}
 	
 	includedirs{
-		"Yuki/vendor/spdlog/include", 
+		"%{prj.name}/src",
+		"%{prj.name}/vendor/spdlog/include", 
 	}
 
 	filter "system:windows"

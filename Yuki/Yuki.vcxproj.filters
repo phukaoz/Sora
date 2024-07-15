@@ -4,6 +4,9 @@
     <Filter Include="Yuki">
       <UniqueIdentifier>{27DD8F7C-1314-910D-BC00-7710A8160D0F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Yuki\Events">
+      <UniqueIdentifier>{2B57F283-970C-6B79-2001-65508CB5617D}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Yuki.h" />
@@ -15,6 +18,18 @@
     </ClInclude>
     <ClInclude Include="src\Yuki\EntryPoint.h">
       <Filter>Yuki</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Events\ApplicationEvent.h">
+      <Filter>Yuki\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Events\Event.h">
+      <Filter>Yuki\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Events\KeyEvent.h">
+      <Filter>Yuki\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Events\MouseEvent.h">
+      <Filter>Yuki\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Log.h">
       <Filter>Yuki</Filter>
