@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Yuki {
 
 	class YUKI_API WindowResizeEvent : public Event {

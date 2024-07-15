@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Yuki {
 
 	class YUKI_API MouseMovedEvent : public Event {

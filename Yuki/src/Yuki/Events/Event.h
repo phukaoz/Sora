@@ -1,9 +1,7 @@
 #pragma once
 
+#include "Yukipch.h"
 #include "Yuki/Core.h"
-
-#include <string>
-#include <functional>
 
 namespace Yuki {
 	
