@@ -142,6 +142,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Yuki.h" />
     <ClInclude Include="src\Yuki\Application.h" />
     <ClInclude Include="src\Yuki\Core.h" />
@@ -151,9 +152,11 @@
     <ClInclude Include="src\Yuki\Events\KeyEvent.h" />
     <ClInclude Include="src\Yuki\Events\MouseEvent.h" />
     <ClInclude Include="src\Yuki\Log.h" />
+    <ClInclude Include="src\Yuki\Window.h" />
     <ClInclude Include="src\Yukipch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Yuki\Application.cpp" />
     <ClCompile Include="src\Yuki\Log.cpp" />
     <ClCompile Include="src\Yukipch.cpp">

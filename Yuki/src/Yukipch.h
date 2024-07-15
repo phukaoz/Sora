@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Yuki/Log.h"
+
 #ifdef YUKI_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

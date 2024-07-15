@@ -7,7 +7,7 @@
 namespace Yuki {
 
 	Application::Application() {
-
+		m_Window = std::unique_ptr<Window>(Window::Create());
 	}
 
 	Application::~Application() {
@@ -15,12 +15,11 @@ namespace Yuki {
 	}
 
 	void Application::Run() {
-		WindowResizeEvent e(1280, 720);
-		if (e.IsInCategory(EventCategoryApplication)) {
-			YUKI_INFO("is in category");
-		} 
 
-		while (true);
+		while (m_Running) {
+			m_Window->OnUpdate();
+		}
+
 	}
 
 }

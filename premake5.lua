@@ -38,7 +38,7 @@ project "Yuki"
 
 	links{
 		"GLFW",
-		"opengl32.lib"
+		"opengl32.lib",
 	}
 
 	filter "system:windows"
