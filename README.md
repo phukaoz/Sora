@@ -3,9 +3,9 @@ Yuki engine.<br>
 May be this is my final project.
 
 Game Engine
-- Entry point
-- Application logger
-- Window layer
+- Entry point :heavy_check_mark:
+- Application logger :heavy_check_mark:
+- Window layer :heavy_check_mark:
   - Input
   - Event
 - Renderer
