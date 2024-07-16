@@ -4,7 +4,8 @@
 
 namespace Yuki {
 
-	class YUKI_API WindowResizeEvent : public Event {
+	class YUKI_API WindowResizeEvent : public Event
+	{
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height)
 			: m_Width(width), m_Height(height) {}
@@ -12,7 +13,8 @@ namespace Yuki {
 		inline unsigned int GetWidth() const { return m_Width; }
 		inline unsigned int GetHeight() const { return m_Height; }
 
-		std::string ToString() const override {
+		std::string ToString() const override 
+		{
 			std::stringstream ss;
 			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
 			return ss.str();
@@ -24,7 +26,8 @@ namespace Yuki {
 		unsigned int m_Width, m_Height;
 	};
 
-	class YUKI_API WindowCloseEvent : public Event {
+	class YUKI_API WindowCloseEvent : public Event
+	{
 	public:
 		WindowCloseEvent() {}
 
@@ -32,7 +35,8 @@ namespace Yuki {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class YUKI_API AppTickEvent : public Event {
+	class YUKI_API AppTickEvent : public Event
+	{
 	public:
 		AppTickEvent() {}
 
@@ -40,7 +44,8 @@ namespace Yuki {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class YUKI_API AppUpdateEvent : public Event {
+	class YUKI_API AppUpdateEvent : public Event
+	{
 	public:
 		AppUpdateEvent() {}
 
@@ -48,7 +53,8 @@ namespace Yuki {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class YUKI_API AppRenderEvent : public Event {
+	class YUKI_API AppRenderEvent : public Event
+	{
 	public:
 		AppRenderEvent() {}
 

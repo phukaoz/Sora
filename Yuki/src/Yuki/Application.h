@@ -8,7 +8,8 @@
 
 namespace Yuki {
 
-	class YUKI_API Application{
+	class YUKI_API Application
+	{
 	public:
 		Application();
 		virtual ~Application();

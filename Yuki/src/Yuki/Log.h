@@ -5,7 +5,9 @@
 #include "spdlog/fmt/ostr.h"
 
 namespace Yuki {
-	class Log {
+
+	class Log 
+	{
 	public:
 		YUKI_API static void Init();
 

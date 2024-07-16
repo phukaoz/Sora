@@ -4,7 +4,8 @@
 
 extern Yuki::Application* Yuki::CreateApplication();
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
 	Yuki::Log::Init();
 
 	auto app = Yuki::CreateApplication();

@@ -1,16 +1,14 @@
 #include <Yuki.h>
 
-class Sandbox : public Yuki::Application {
+class Sandbox : public Yuki::Application
+{
 public:
-	Sandbox() {
+	Sandbox() {}
 
-	}
-
-	~Sandbox() {
-
-	}
+	~Sandbox() {}
 };
 
-Yuki::Application* Yuki::CreateApplication() {
+Yuki::Application* Yuki::CreateApplication()
+{
 	return new Sandbox();
 }

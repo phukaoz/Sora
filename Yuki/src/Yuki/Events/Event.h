@@ -5,7 +5,8 @@
 
 namespace Yuki {
 	
-	enum class EventType {
+	enum class EventType
+	{
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
@@ -13,7 +14,8 @@ namespace Yuki {
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
-	enum EventCategory {
+	enum EventCategory 
+	{
 		None = 0,
 		EventCategoryApplication	= BIT(0),
 		EventCategoryInput			= BIT(1),
@@ -28,7 +30,8 @@ namespace Yuki {
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-	class YUKI_API Event {
+	class YUKI_API Event
+	{
 		friend class EventDispatcher;
 	public:
 		virtual EventType GetEventType()	const = 0;
@@ -36,14 +39,16 @@ namespace Yuki {
 		virtual int GetCategoryFlags()		const = 0;
 		virtual std::string ToString()		const { return GetName(); }
 
-		inline bool IsInCategory(EventCategory category) const {
+		inline bool IsInCategory(EventCategory category) const
+		{
 			return GetCategoryFlags() & category;
 		}
 	protected:
 		bool m_Handled = false;
 	};
 
-	class EventDispatcher {
+	class EventDispatcher
+	{
 		template<typename T>
 		using EventFn = std::function<bool(T&)>;
 	public:
@@ -51,8 +56,10 @@ namespace Yuki {
 			: m_Event(event) {}
 
 		template<typename T>
-		bool Dispatch(EventFn<T> func) {
-			if (m_Event.GetEventType() == T::GetStaticType()) {
+		bool Dispatch(EventFn<T> func)
+		{
+			if (m_Event.GetEventType() == T::GetStaticType())
+			{
 				m_Event.m_Handled = func(*(T*)&m_Event);
 				return true;
 			}
@@ -62,11 +69,13 @@ namespace Yuki {
 		Event& m_Event;
 	};
 
-	inline std::ostream& operator<<(std::ostream &os, const Event &e) {
+	inline std::ostream& operator<<(std::ostream &os, const Event &e)
+	{
 		return os << e.ToString();
 	}
 
-	inline std::string format_as(const Event& e) {
+	inline std::string format_as(const Event& e)
+	{
 		return e.ToString();
 	}
 }

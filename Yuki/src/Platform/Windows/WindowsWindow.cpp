@@ -132,7 +132,6 @@ namespace Yuki {
 				data.EventCallback(event);
 			});
 
-
 	}
 
 	void WindowsWindow::Shutdown()

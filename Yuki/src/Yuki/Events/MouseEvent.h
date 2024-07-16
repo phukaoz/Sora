@@ -4,7 +4,8 @@
 
 namespace Yuki {
 
-	class YUKI_API MouseMovedEvent : public Event {
+	class YUKI_API MouseMovedEvent : public Event
+	{
 	public:
 		MouseMovedEvent(float x, float y)
 			: m_MouseX(x), m_MouseY(y) {}
@@ -12,7 +13,8 @@ namespace Yuki {
 		inline float GetX() const { return m_MouseX; }
 		inline float GetY() const { return m_MouseY; }
 
-		std::string ToString() const override {
+		std::string ToString() const override
+		{
 			std::stringstream ss;
 			ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
 			return ss.str();
@@ -24,7 +26,8 @@ namespace Yuki {
 		float m_MouseX, m_MouseY;
 	};
 
-	class YUKI_API MouseScrolledEvent : public Event {
+	class YUKI_API MouseScrolledEvent : public Event
+	{
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset)
 			: m_XOffset(xOffset), m_YOffset(yOffset) {}
@@ -32,7 +35,8 @@ namespace Yuki {
 		inline float GetXOffset() const { return m_XOffset; }
 		inline float GetYOffset() const { return m_YOffset; }
 
-		std::string ToString() const override {
+		std::string ToString() const override
+		{
 			std::stringstream ss;
 			ss << "MouseScrolledEvent: " << GetXOffset() << ", " << GetYOffset();
 			return ss.str();
@@ -44,7 +48,8 @@ namespace Yuki {
 		float m_XOffset, m_YOffset;
 	};
 
-	class YUKI_API MouseButtonEvent : public Event {
+	class YUKI_API MouseButtonEvent : public Event
+	{
 	public:
 		inline int GetMouseButton() const { return m_Button; }
 
@@ -56,12 +61,14 @@ namespace Yuki {
 		int m_Button;
 	};
 
-	class YUKI_API MouseButtonPressedEvent : public MouseButtonEvent {
+	class YUKI_API MouseButtonPressedEvent : public MouseButtonEvent
+	{
 	public:
 		MouseButtonPressedEvent(int button)
 			: MouseButtonEvent(button) {}
 
-		std::string ToString() const override {
+		std::string ToString() const override
+		{
 			std::stringstream ss;
 			ss << "MouseButtonPressedEvent: " << m_Button;
 			return ss.str();
@@ -70,12 +77,14 @@ namespace Yuki {
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class YUKI_API MouseButtonReleasedEvent : public MouseButtonEvent {
+	class YUKI_API MouseButtonReleasedEvent : public MouseButtonEvent
+	{
 	public:
 		MouseButtonReleasedEvent(int button)
 			: MouseButtonEvent(button) {}
 
-		std::string ToString() const override {
+		std::string ToString() const override
+		{
 			std::stringstream ss;
 			ss << "MouseReleasedEvent: " << m_Button;
 			return ss.str();

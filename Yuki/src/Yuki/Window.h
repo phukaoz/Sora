@@ -6,7 +6,8 @@
 
 namespace Yuki {
 	
-	struct WindowProps {
+	struct WindowProps 
+	{
 		std::string Title;
 		unsigned int Width;
 		unsigned int Height;
@@ -17,7 +18,8 @@ namespace Yuki {
 			: Title(title), Width(width), Height(height) {}
 	};
 
-	class YUKI_API Window {
+	class YUKI_API Window 
+	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
