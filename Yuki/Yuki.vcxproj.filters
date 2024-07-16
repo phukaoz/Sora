@@ -47,6 +47,8 @@
       <Filter>Yuki</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h" />
+    <ClInclude Include="src\Yuki\Layer.h" />
+    <ClInclude Include="src\Yuki\LayerStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
@@ -59,5 +61,7 @@
       <Filter>Yuki</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp" />
+    <ClCompile Include="src\Yuki\Layer.cpp" />
+    <ClCompile Include="src\Yuki\LayerStack.cpp" />
   </ItemGroup>
 </Project>

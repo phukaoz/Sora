@@ -76,7 +76,7 @@ namespace Yuki {
 
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
-
+	
 	class YUKI_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:

@@ -3,9 +3,15 @@
 class Sandbox : public Yuki::Application
 {
 public:
-	Sandbox() {}
+	Sandbox()
+	{
 
-	~Sandbox() {}
+	}
+
+	~Sandbox()
+	{
+		
+	}
 };
 
 Yuki::Application* Yuki::CreateApplication()
