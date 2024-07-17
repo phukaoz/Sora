@@ -4,6 +4,7 @@
 #include "Yuki/Application.h"
 #include "Yuki/Layer.h"
 #include "Yuki/Log.h"
+#include "Yuki/ImGui/ImGuiLayer.h"
 ////////////////////////////////////////////////
 
 // Entry Point /////////////////////////////////

@@ -5,7 +5,7 @@ class Sandbox : public Yuki::Application
 public:
 	Sandbox()
 	{
-
+		PushOverlay(new Yuki::ImGuiLayer());
 	}
 
 	~Sandbox()
