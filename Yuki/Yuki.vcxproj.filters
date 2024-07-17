@@ -40,6 +40,12 @@
     <ClInclude Include="src\Yuki\Events\MouseEvent.h">
       <Filter>Yuki\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Layer.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\LayerStack.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Log.h">
       <Filter>Yuki</Filter>
     </ClInclude>
@@ -47,8 +53,6 @@
       <Filter>Yuki</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h" />
-    <ClInclude Include="src\Yuki\Layer.h" />
-    <ClInclude Include="src\Yuki\LayerStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
@@ -57,11 +61,15 @@
     <ClCompile Include="src\Yuki\Application.cpp">
       <Filter>Yuki</Filter>
     </ClCompile>
+    <ClCompile Include="src\Yuki\Layer.cpp">
+      <Filter>Yuki</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\LayerStack.cpp">
+      <Filter>Yuki</Filter>
+    </ClCompile>
     <ClCompile Include="src\Yuki\Log.cpp">
       <Filter>Yuki</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp" />
-    <ClCompile Include="src\Yuki\Layer.cpp" />
-    <ClCompile Include="src\Yuki\LayerStack.cpp" />
   </ItemGroup>
 </Project>

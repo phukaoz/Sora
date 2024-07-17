@@ -5,6 +5,8 @@
 #include "Yuki/Events/KeyEvent.h"
 #include "Yuki/Events/MouseEvent.h"
 
+#include <glad/glad.h>
+
 namespace Yuki {
 
 	static bool s_GLFWInitialized = false;
@@ -49,6 +51,9 @@ namespace Yuki {
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		YUKI_CORE_ASSERT(status, "Failed to initialize Glad!");
 
 		// Set GLFW callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)

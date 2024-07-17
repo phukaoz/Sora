@@ -11,8 +11,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "Yuki/vendor/GLFW/include"
+IncludeDir["Glad"] = "Yuki/vendor/Glad/include"
 
 include "Yuki/vendor/GLFW"
+include "Yuki/vendor/Glad"
 
 project "Yuki"
 	location "Yuki"
@@ -34,10 +36,12 @@ project "Yuki"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}",
 	}
 
 	links{
 		"GLFW",
+		"Glad",
 		"opengl32.lib",
 	}
 
@@ -48,7 +52,8 @@ project "Yuki"
 
 		defines{ 
 			"YUKI_PLATFORM_WINDOWS",
-			"YUKI_BUILD_DLL"
+			"YUKI_BUILD_DLL",
+			"GLFW_INCLUDE_NONE",
 		}
 
 		postbuildcommands{
