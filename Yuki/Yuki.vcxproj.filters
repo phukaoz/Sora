@@ -67,6 +67,8 @@
     <ClInclude Include="src\Yukipch.h" />
     <ClInclude Include="src\Yuki\Input.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
+    <ClInclude Include="src\Yuki\Keycodes.h" />
+    <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp">

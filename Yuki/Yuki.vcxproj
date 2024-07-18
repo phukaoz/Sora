@@ -155,9 +155,11 @@
     <ClInclude Include="src\Yuki\Events\MouseEvent.h" />
     <ClInclude Include="src\Yuki\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Yuki\Input.h" />
+    <ClInclude Include="src\Yuki\Keycodes.h" />
     <ClInclude Include="src\Yuki\Layer.h" />
     <ClInclude Include="src\Yuki\LayerStack.h" />
     <ClInclude Include="src\Yuki\Log.h" />
+    <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
     <ClInclude Include="src\Yuki\Window.h" />
     <ClInclude Include="src\Yukipch.h" />
   </ItemGroup>
