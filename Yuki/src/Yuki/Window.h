@@ -34,6 +34,8 @@ namespace Yuki {
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsSync() const = 0;
 
+		virtual void* GetNativeWindow() const = 0;
+
 		static Window* Create(const WindowProps& props = WindowProps());
 	};
 

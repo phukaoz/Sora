@@ -20,6 +20,8 @@ namespace Yuki {
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 		inline void SetVSync(bool enabled) override;
 		inline bool IsSync() const override;
+
+		inline virtual void* GetNativeWindow() const override { return m_Window; }
 	private:
 		void Init(const WindowProps& props);
 		void Shutdown();

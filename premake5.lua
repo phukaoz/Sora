@@ -22,6 +22,7 @@ project "Yuki"
 	location "Yuki"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -51,7 +52,6 @@ project "Yuki"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "on"
 		systemversion "latest"
 
 		defines{ 
@@ -66,20 +66,24 @@ project "Yuki"
 
 	filter "configurations:Debug"
 		defines "YUKI_DEBUG"
+		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
 		defines "YUKI_RELEASE"
+		runtime "Release"
 		symbols "on"
 
 	filter "configurations:Debug"
 		defines "YUKI_DIST"
+		runtime "Release"
 		symbols "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -100,7 +104,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "on"
 		systemversion "latest"
 
 		defines{ 
@@ -109,12 +112,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "YUKI_DEBUG"
+		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
 		defines "YUKI_RELEASE"
+		runtime "Release"
 		symbols "on"
 
 	filter "configurations:Debug"
 		defines "YUKI_DIST"
+		runtime "Release"
 		symbols "on"

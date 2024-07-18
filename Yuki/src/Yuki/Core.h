@@ -10,6 +10,10 @@
 	#error Yuki only support Windows!
 #endif
 
+#ifdef YUKI_DEBUG
+	#define YUKI_ENABLE_ASSERTS
+#endif
+
 #ifdef YUKI_ENABLE_ASSERTS
 	#define YUKI_ASSERT(x, ...) {if(!(x)) { YUKI_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 	#define YUKI_CORE_ASSERT(x, ...) {if(!(x)) { YUKI_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
