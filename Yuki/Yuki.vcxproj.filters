@@ -24,6 +24,9 @@
     <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
+      <Filter>Platform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
     </ClInclude>
@@ -52,6 +55,12 @@
     <ClInclude Include="src\Yuki\ImGui\ImGuiLayer.h">
       <Filter>Yuki\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Input.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Keycodes.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Layer.h">
       <Filter>Yuki</Filter>
     </ClInclude>
@@ -61,18 +70,20 @@
     <ClInclude Include="src\Yuki\Log.h">
       <Filter>Yuki</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\MouseButtonCodes.h">
+      <Filter>Yuki</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Window.h">
       <Filter>Yuki</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h" />
-    <ClInclude Include="src\Yuki\Input.h" />
-    <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
-    <ClInclude Include="src\Yuki\Keycodes.h" />
-    <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp">
       <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
+      <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
@@ -93,6 +104,5 @@
       <Filter>Yuki</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
   </ItemGroup>
 </Project>

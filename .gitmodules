@@ -7,3 +7,6 @@
 [submodule "Yuki/vendor/imgui"]
 	path = Yuki/vendor/imgui
 	url = https://github.com/phukaoz/imgui
+[submodule "Yuki/vendor/glm"]
+	path = Yuki/vendor/glm
+	url = https://github.com/g-truc/glm

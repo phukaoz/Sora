@@ -13,6 +13,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Yuki/vendor/GLFW/include"
 IncludeDir["Glad"] = "Yuki/vendor/Glad/include"
 IncludeDir["ImGui"] = "Yuki/vendor/imgui"
+IncludeDir["glm"] = "Yuki/vendor/glm"
 
 include "Yuki/vendor/GLFW"
 include "Yuki/vendor/Glad"
@@ -41,6 +42,7 @@ project "Yuki"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}",
 	}
 
 	links{
@@ -91,11 +93,14 @@ project "Sandbox"
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
 	
 	includedirs{
 		"Yuki/vendor/spdlog/include",
 		"Yuki/src",
+		"%{IncludeDir.glm}",
 	}
 
 	links{
