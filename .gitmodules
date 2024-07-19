@@ -4,9 +4,9 @@
 [submodule "Yuki/vendor/GLFW"]
 	path = Yuki/vendor/GLFW
 	url = https://github.com/phukaoz/glfw
-[submodule "Yuki/vendor/imgui"]
-	path = Yuki/vendor/imgui
-	url = https://github.com/phukaoz/imgui
 [submodule "Yuki/vendor/glm"]
 	path = Yuki/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Yuki/vendor/imgui"]
+	path = Yuki/vendor/imgui
+	url = https://github.com/phukaoz/imgui
