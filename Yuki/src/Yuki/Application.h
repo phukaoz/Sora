@@ -7,13 +7,13 @@
 #include "Yuki/Events/Event.h"
 #include "Yuki/Events/ApplicationEvent.h"
 
-#include "Window.h"
+#include "Yuki/ImGui/ImGuiLayer.h"
 
 namespace Yuki {
 
 	class YUKI_API Application
 	{
-	public:
+	public:		
 		Application();
 		virtual ~Application();
 
@@ -30,6 +30,7 @@ namespace Yuki {
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

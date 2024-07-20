@@ -142,7 +142,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Yuki.h" />
@@ -164,10 +163,10 @@
     <ClInclude Include="src\Yukipch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Yuki\Application.cpp" />
+    <ClCompile Include="src\Yuki\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Yuki\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Yuki\Layer.cpp" />
     <ClCompile Include="src\Yuki\LayerStack.cpp" />
