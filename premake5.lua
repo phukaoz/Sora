@@ -21,9 +21,10 @@ include "Yuki/vendor/imgui"
 
 project "Yuki"
 	location "Yuki"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++20"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -53,17 +54,12 @@ project "Yuki"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines{ 
 			"YUKI_PLATFORM_WINDOWS",
 			"YUKI_BUILD_DLL",
 			"GLFW_INCLUDE_NONE",
-		}
-
-		postbuildcommands{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
 		}
 
 	filter "configurations:Debug"
@@ -74,18 +70,19 @@ project "Yuki"
 	filter "configurations:Release"
 		defines "YUKI_RELEASE"
 		runtime "Release"
-		symbols "on"
+		optimize "on"
 
 	filter "configurations:Debug"
 		defines "YUKI_DIST"
 		runtime "Release"
-		symbols "on"
+		optimize "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++20"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -108,7 +105,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines{ 
@@ -123,9 +119,9 @@ project "Sandbox"
 	filter "configurations:Release"
 		defines "YUKI_RELEASE"
 		runtime "Release"
-		symbols "on"
+		optimize "on"
 
 	filter "configurations:Debug"
 		defines "YUKI_DIST"
 		runtime "Release"
-		symbols "on"
+		optimize "on"
