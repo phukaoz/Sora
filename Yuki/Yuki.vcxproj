@@ -143,6 +143,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Yuki.h" />
@@ -160,10 +161,12 @@
     <ClInclude Include="src\Yuki\LayerStack.h" />
     <ClInclude Include="src\Yuki\Log.h" />
     <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
+    <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\Yuki\Window.h" />
     <ClInclude Include="src\Yukipch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Yuki\Application.cpp" />

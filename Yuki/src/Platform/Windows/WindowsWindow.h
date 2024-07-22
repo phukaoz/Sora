@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Yuki/Window.h"
+#include "Yuki/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -27,6 +28,7 @@ namespace Yuki {
 		void Shutdown();
 
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData 
 		{

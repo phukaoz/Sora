@@ -71,6 +71,8 @@
       <Filter>Yuki</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h" />
+    <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
@@ -98,5 +100,6 @@
       <Filter>Yuki</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
   </ItemGroup>
 </Project>

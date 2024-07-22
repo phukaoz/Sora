@@ -5,7 +5,7 @@
 #include "Yuki/Events/KeyEvent.h"
 #include "Yuki/Events/MouseEvent.h"
 
-#include <glad/glad.h>
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Yuki {
 
@@ -48,12 +48,12 @@ namespace Yuki {
 		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
+		
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
-
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		YUKI_CORE_ASSERT(status, "Failed to initialize Glad!");
 
 		// Set GLFW callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -155,7 +155,7 @@ namespace Yuki {
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
