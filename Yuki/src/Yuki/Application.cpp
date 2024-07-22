@@ -57,11 +57,12 @@ namespace Yuki {
 
 	void Application::Run()
 	{
-		glClearColor(0, 0, 0, 100);
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		while (m_Running)
 		{
+			glClearColor(0, 0, 0, 100);
+			glClear(GL_COLOR_BUFFER_BIT);
+
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
 

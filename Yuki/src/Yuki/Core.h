@@ -1,11 +1,15 @@
 #pragma once
 
 #ifdef YUKI_PLATFORM_WINDOWS
+#if YUKI_DYNAMIC_LINK
 	#ifdef YUKI_BUILD_DLL
 		#define YUKI_API __declspec(dllexport)
 	#else
 		#define YUKI_API __declspec(dllimport)
 	#endif
+#else
+	#define YUKI_API
+#endif
 #else
 	#error Yuki only support Windows!
 #endif
