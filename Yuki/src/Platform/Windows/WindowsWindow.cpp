@@ -28,6 +28,7 @@ namespace Yuki {
 
 	WindowsWindow::~WindowsWindow()
 	{
+		YUKI_CORE_INFO("Shutdown window '{0}'", m_Data.Title);
 		Shutdown();
 	}
 
@@ -37,7 +38,7 @@ namespace Yuki {
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 
-		YUKI_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
+		YUKI_CORE_INFO("Creating window '{0}' ({1}, {2})", props.Title, props.Width, props.Height);
 
 		if (!s_GLFWInitialized)
 		{

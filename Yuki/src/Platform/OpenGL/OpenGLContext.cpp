@@ -17,6 +17,15 @@ namespace Yuki {
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		YUKI_CORE_ASSERT(status, "Failed to initialize Glad!");
+
+		YUKI_CORE_INFO("");
+		YUKI_CORE_INFO("+--------------------+");
+		YUKI_CORE_INFO("| OpenGL Information |");
+		YUKI_CORE_INFO("+--------------------+");
+		YUKI_CORE_INFO("Vendor   : {0}", (const char*)glGetString(GL_VENDOR));
+		YUKI_CORE_INFO("Renderer : {0}", (const char*)glGetString(GL_RENDERER));
+		YUKI_CORE_INFO("Version  : {0}", (const char*)glGetString(GL_VERSION));
+		YUKI_CORE_INFO("");
 	}
 
 	void OpenGLContext::SwapBuffers()
