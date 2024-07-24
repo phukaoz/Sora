@@ -9,6 +9,8 @@
 
 #include "Yuki/ImGui/ImGuiLayer.h"
 
+#include "Yuki/Renderer/Shader.h"
+
 namespace Yuki {
 
 	class YUKI_API Application
@@ -35,6 +37,7 @@ namespace Yuki {
 		LayerStack m_LayerStack;
 		
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<Shader> m_Shader;
 
 		static Application* s_Instance;
 	};

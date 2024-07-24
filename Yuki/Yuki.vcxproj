@@ -162,6 +162,7 @@
     <ClInclude Include="src\Yuki\Log.h" />
     <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
     <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Yuki\Renderer\Shader.h" />
     <ClInclude Include="src\Yuki\Window.h" />
     <ClInclude Include="src\Yukipch.h" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClCompile Include="src\Yukipch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Yuki\Renderer\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

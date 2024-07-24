@@ -83,6 +83,7 @@
       <Filter>Yuki</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h" />
+    <ClInclude Include="src\Yuki\Renderer\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
@@ -113,5 +114,6 @@
       <Filter>Yuki</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp" />
+    <ClCompile Include="src\Yuki\Renderer\Shader.cpp" />
   </ItemGroup>
 </Project>
