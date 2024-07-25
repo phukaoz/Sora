@@ -8,7 +8,7 @@ Game Engine
 - Window layer :heavy_check_mark:
   - Input :heavy_check_mark:
   - Event :heavy_check_mark:
-- Renderer
+- Renderer :heavy_check_mark:
 - Render API abstraction
 - Debugging support
 - Script language
