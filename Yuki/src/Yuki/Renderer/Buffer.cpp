@@ -10,11 +10,8 @@ namespace Yuki {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::None:
-			YUKI_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
-			return nullptr;
-		case RendererAPI::OpenGL:
-			return new OpenGLVertexBuffer(vertices, size);
+			case RendererAPI::None:		YUKI_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+			case RendererAPI::OpenGL:	return new OpenGLVertexBuffer(vertices, size);
 		}
 
 		YUKI_CORE_ASSERT(false, "Unknown RendererAPI!");

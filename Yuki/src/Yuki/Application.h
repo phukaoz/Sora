@@ -11,6 +11,7 @@
 
 #include "Yuki/Renderer/Shader.h"
 #include "Yuki/Renderer/Buffer.h"
+#include "Yuki/Renderer/VertexArray.h"
 
 namespace Yuki {
 
@@ -37,10 +38,11 @@ namespace Yuki {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 		
-		uint32_t m_VertexArray;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+		std::shared_ptr<Shader> m_GradientShader;
+		std::shared_ptr<VertexArray> m_TriangleVA;
+
+		std::shared_ptr<Shader> m_BlueShader;
+		std::shared_ptr<VertexArray> m_SquareVA;
 
 		static Application* s_Instance;
 	};
