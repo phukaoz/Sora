@@ -13,6 +13,8 @@
 #include "Yuki/Renderer/Buffer.h"
 #include "Yuki/Renderer/VertexArray.h"
 
+#include "Yuki/Renderer/OrthographicCamera.h"
+
 namespace Yuki {
 
 	class YUKI_API Application
@@ -43,6 +45,8 @@ namespace Yuki {
 
 		std::shared_ptr<Shader> m_BlueShader;
 		std::shared_ptr<VertexArray> m_SquareVA;
+
+		OrthographicCamera m_Camera;
 
 		static Application* s_Instance;
 	};

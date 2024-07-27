@@ -166,6 +166,7 @@
     <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
     <ClInclude Include="src\Yuki\Renderer\Buffer.h" />
     <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Yuki\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Yuki\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Yuki\Renderer\Renderer.h" />
     <ClInclude Include="src\Yuki\Renderer\RendererAPI.h" />
@@ -191,6 +192,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Yuki\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Yuki\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Yuki\Renderer\RendererAPI.cpp" />

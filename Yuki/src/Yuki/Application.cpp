@@ -5,6 +5,8 @@
 
 #include "Yuki/Renderer/Renderer.h"
 
+#include "Input.h"
+
 namespace Yuki {
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -12,6 +14,7 @@ namespace Yuki {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
+		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		YUKI_CORE_ASSERT(!s_Instance, "Application already exist");
 		s_Instance = this;
@@ -64,11 +67,13 @@ namespace Yuki {
 		squareIB.reset(IndexBuffer::Create(sqaureIndices, 6));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		std::string vertexSrc = R"(
+		std::string gradientShaderVertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
+
+			uniform mat4 u_ViewProjection;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -77,11 +82,11 @@ namespace Yuki {
 			{
 				v_Position	= a_Position;
 				v_Color		= a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 
 		)";
-		std::string fragmentSrc = R"(
+		std::string gradientShaderFragmentSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) out vec4 color;
@@ -96,19 +101,21 @@ namespace Yuki {
 			}
 
 		)";
-		m_GradientShader.reset(new Shader(vertexSrc, fragmentSrc));
+		m_GradientShader.reset(new Shader(gradientShaderVertexSrc, gradientShaderFragmentSrc));
 
 		std::string blueShaderVertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
+			
+			uniform mat4 u_ViewProjection;
 
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position	= a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 
 		)";
@@ -150,7 +157,7 @@ namespace Yuki {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
-		//YUKI_CORE_TRACE("{0}", e);
+		YUKI_CORE_TRACE("{0}", e);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
@@ -167,13 +174,12 @@ namespace Yuki {
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
+			m_Camera.SetRotation(45.0f);
 
-			m_BlueShader->Bind();
-			Renderer::Submit(m_SquareVA);
+			Renderer::BeginScene(m_Camera);
 
-			m_GradientShader->Bind();
-			Renderer::Submit(m_TriangleVA);
+			Renderer::Submit(m_BlueShader, m_SquareVA);
+			Renderer::Submit(m_GradientShader, m_TriangleVA);
 
 			Renderer::EndScene();
 
