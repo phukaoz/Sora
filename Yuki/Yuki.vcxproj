@@ -143,15 +143,16 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Yuki.h" />
     <ClInclude Include="src\Yuki\Application.h" />
     <ClInclude Include="src\Yuki\Core.h" />
+    <ClInclude Include="src\Yuki\Core\Timestep.h" />
     <ClInclude Include="src\Yuki\EntryPoint.h" />
     <ClInclude Include="src\Yuki\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Yuki\Events\Event.h" />
@@ -176,10 +177,10 @@
     <ClInclude Include="src\Yukipch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Yuki\Application.cpp" />
@@ -188,9 +189,6 @@
     <ClCompile Include="src\Yuki\Layer.cpp" />
     <ClCompile Include="src\Yuki\LayerStack.cpp" />
     <ClCompile Include="src\Yuki\Log.cpp" />
-    <ClCompile Include="src\Yukipch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Yuki\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Yuki\Renderer\RenderCommand.cpp" />
@@ -198,6 +196,9 @@
     <ClCompile Include="src\Yuki\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Shader.cpp" />
     <ClCompile Include="src\Yuki\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Yukipch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

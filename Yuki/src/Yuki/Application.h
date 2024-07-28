@@ -7,13 +7,9 @@
 #include "Yuki/Events/Event.h"
 #include "Yuki/Events/ApplicationEvent.h"
 
+#include "Yuki/Core/Timestep.h"
+
 #include "Yuki/ImGui/ImGuiLayer.h"
-
-#include "Yuki/Renderer/Shader.h"
-#include "Yuki/Renderer/Buffer.h"
-#include "Yuki/Renderer/VertexArray.h"
-
-#include "Yuki/Renderer/OrthographicCamera.h"
 
 namespace Yuki {
 
@@ -34,19 +30,13 @@ namespace Yuki {
 		inline Window& GetWindow() { return *m_Window; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
-
+	private:
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
-		
-		std::shared_ptr<Shader> m_GradientShader;
-		std::shared_ptr<VertexArray> m_TriangleVA;
-
-		std::shared_ptr<Shader> m_BlueShader;
-		std::shared_ptr<VertexArray> m_SquareVA;
-
-		OrthographicCamera m_Camera;
+		Timestep m_Timestep;
+		float m_LastFrameTime = 0.0f;
 
 		static Application* s_Instance;
 	};

@@ -2,6 +2,7 @@
 
 #include "Yuki/Core.h"
 #include "Yuki/Events/Event.h"
+#include "Yuki/Core/Timestep.h"
 
 namespace Yuki {
 	
@@ -13,7 +14,7 @@ namespace Yuki {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep ts) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 
