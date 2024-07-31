@@ -20,6 +20,7 @@
 
 #include "Yuki/Renderer/Buffer.h"
 #include "Yuki/Renderer/Shader.h"
+#include "Yuki/Renderer/Texture.h"
 #include "Yuki/Renderer/VertexArray.h"
 
 #include "Yuki/Renderer/OrthographicCamera.h"
