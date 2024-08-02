@@ -1,19 +1,6 @@
-# Yuki
-Yuki engine.<br>
-May be this is my final project.
+<div align="center">
+    <h2>Yuki</h2>
+    <p><b>An open-source 2D/3D game engine</b></p>
+</div>
 
-Game Engine
-- Entry point :heavy_check_mark:
-- Application logger :heavy_check_mark:
-- Window layer :heavy_check_mark:
-  - Input :heavy_check_mark:
-  - Event :heavy_check_mark:
-- Renderer :heavy_check_mark:
-- Render API abstraction
-- Debugging support
-- Script language
-- Memory system
-- Entity Component System (ECS)
-- Physics
-- File I/O VFS
-- Build system
+**Yuki** is an open-source 2D/3D game engine created with C++. It focuses on providing an easy-to-use experience for users and supports multiple graphics APIs while enhancing my programming and computer graphics skills.
