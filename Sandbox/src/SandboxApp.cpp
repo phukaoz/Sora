@@ -64,13 +64,13 @@ public:
 			}
 
 		)";
-		m_FlatColorShader.reset(Yuki::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+		m_FlatColorShader = Yuki::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
-		m_TextureShader.reset(Yuki::Shader::Create("assets/shaders/Texture.glsl"));
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
 		m_Texture = Yuki::Texture2D::Create("assets/textures/Brick.png");
-		std::dynamic_pointer_cast<Yuki::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<Yuki::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<Yuki::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<Yuki::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(Yuki::Timestep ts) override
@@ -122,10 +122,12 @@ public:
 			}
 		}
 
+		auto textureShader = m_ShaderLibrary.Get("Texture");
+
 		m_Texture->Bind();
 		glm::vec3 pos(-1.2f, 0.75f, 0.0f);
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * 6.0f;
-		Yuki::Renderer::Submit(m_TextureShader, m_SquareVA, transform);
+		Yuki::Renderer::Submit(textureShader, m_SquareVA, transform);
 
 		Yuki::Renderer::EndScene();
 
@@ -144,7 +146,9 @@ public:
 	}
 
 private:
-	Yuki::Ref<Yuki::Shader> m_FlatColorShader, m_TextureShader;
+	Yuki::ShaderLibrary m_ShaderLibrary;
+
+	Yuki::Ref<Yuki::Shader> m_FlatColorShader;
 	Yuki::Ref<Yuki::VertexArray> m_SquareVA;
 
 	Yuki::Ref<Yuki::Texture2D> m_Texture;
