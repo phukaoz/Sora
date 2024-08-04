@@ -167,6 +167,7 @@
     <ClInclude Include="src\Yuki\LayerStack.h" />
     <ClInclude Include="src\Yuki\Log.h" />
     <ClInclude Include="src\Yuki\MouseButtonCodes.h" />
+    <ClInclude Include="src\Yuki\OrthographicCameraController.h" />
     <ClInclude Include="src\Yuki\Renderer\Buffer.h" />
     <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\Yuki\Renderer\OrthographicCamera.h" />
@@ -611,6 +612,7 @@
     <ClCompile Include="src\Yuki\Layer.cpp" />
     <ClCompile Include="src\Yuki\LayerStack.cpp" />
     <ClCompile Include="src\Yuki\Log.cpp" />
+    <ClCompile Include="src\Yuki\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Yuki\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Yuki\Renderer\RenderCommand.cpp" />

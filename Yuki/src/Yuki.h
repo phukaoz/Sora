@@ -10,6 +10,7 @@
 #include "Yuki/Input.h"
 #include "Yuki/Keycodes.h"
 #include "Yuki/MouseButtonCodes.h"
+#include "Yuki/OrthographicCameraController.h"
 
 #include "Yuki/ImGui/ImGuiLayer.h"
 ////////////////////////////////////////////////

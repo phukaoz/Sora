@@ -11,7 +11,7 @@ class TestLayer : public Yuki::Layer
 {
 public:
 	TestLayer()
-		: Layer("Test"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(glm::vec3(0.0f))
+		: Layer("Test"), m_CameraController(1280.0f / 720.0f)
 	{
 		m_SquareVA.reset(Yuki::VertexArray::Create());
 		float squareVertices[4 * 6] = {
@@ -75,26 +75,12 @@ public:
 
 	void OnUpdate(Yuki::Timestep ts) override
 	{
-		if (Yuki::Input::IsKeyPressed(YUKI_KEY_A))
-			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
-		if (Yuki::Input::IsKeyPressed(YUKI_KEY_D))
-			m_CameraPosition.x += m_CameraMoveSpeed * ts;
-		if (Yuki::Input::IsKeyPressed(YUKI_KEY_S))
-			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-		if (Yuki::Input::IsKeyPressed(YUKI_KEY_W))
-			m_CameraPosition.y += m_CameraMoveSpeed * ts;
-		if (Yuki::Input::IsKeyPressed(YUKI_KEY_E))
-			m_CameraRotation -= m_CameraRotationSpeed * ts;
-		if (Yuki::Input::IsKeyPressed(YUKI_KEY_Q))
-			m_CameraRotation += m_CameraRotationSpeed * ts;
+		m_CameraController.OnUpdate(ts);
 
 		Yuki::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Yuki::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		Yuki::Renderer::BeginScene(m_Camera);
+		Yuki::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -133,9 +119,9 @@ public:
 
 	}
 
-	void OnEvent(Yuki::Event& event) override
+	void OnEvent(Yuki::Event& e) override
 	{
-
+		m_CameraController.OnEvent(e);
 	}
 
 	virtual void OnImGuiRender() override
@@ -153,11 +139,7 @@ private:
 
 	Yuki::Ref<Yuki::Texture2D> m_Texture;
 
-	Yuki::OrthographicCamera m_Camera;
-	glm::vec3 m_CameraPosition;
-	float m_CameraRotation = 0.0f;
-	float m_CameraMoveSpeed = 1.0f;
-	float m_CameraRotationSpeed = 90.0f;
+	Yuki::OrthographicCameraController m_CameraController;
 
 	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
 };
