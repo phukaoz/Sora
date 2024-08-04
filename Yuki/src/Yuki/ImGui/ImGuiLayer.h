@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Yuki/Layer.h"
+#include "Yuki/Core/Layer.h"
 
 #include "Yuki/Events/MouseEvent.h"
 #include "Yuki/Events/KeyEvent.h"

@@ -1,8 +1,8 @@
 #include "Yukipch.h"
 #include "OrthographicCameraController.h"
 
-#include "Yuki/Input.h"
-#include "Yuki/Keycodes.h"
+#include "Yuki/Core/Input.h"
+#include "Yuki/Core/Keycodes.h"
 
 namespace Yuki {
 

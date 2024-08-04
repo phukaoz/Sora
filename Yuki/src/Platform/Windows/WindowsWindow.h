@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Yuki/Window.h"
+#include "Yuki/Core/Window.h"
 #include "Yuki/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>

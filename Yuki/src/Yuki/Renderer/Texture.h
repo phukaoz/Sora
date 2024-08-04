@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Yuki/Core.h"
+#include "Yuki/Core/Core.h"
 
 namespace Yuki {
 

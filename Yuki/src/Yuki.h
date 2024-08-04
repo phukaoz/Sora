@@ -1,16 +1,16 @@
 #pragma once
 
 // For use by application //////////////////////
-#include "Yuki/Application.h"
-#include "Yuki/Layer.h"
-#include "Yuki/Log.h"
+#include "Yuki/Core/Application.h"
+#include "Yuki/Core/Layer.h"
+#include "Yuki/Core/Log.h"
 
 #include "Yuki/Core/Timestep.h"
 
-#include "Yuki/Input.h"
-#include "Yuki/Keycodes.h"
-#include "Yuki/MouseButtonCodes.h"
-#include "Yuki/OrthographicCameraController.h"
+#include "Yuki/Core/Input.h"
+#include "Yuki/Core/Keycodes.h"
+#include "Yuki/Core/MouseButtonCodes.h"
+#include "Yuki/Renderer/OrthographicCameraController.h"
 
 #include "Yuki/ImGui/ImGuiLayer.h"
 ////////////////////////////////////////////////
@@ -28,5 +28,5 @@
 ////////////////////////////////////////////////
 
 // Entry Point /////////////////////////////////
-#include "Yuki/EntryPoint.h"
+#include "Yuki/Core/EntryPoint.h"
 ////////////////////////////////////////////////

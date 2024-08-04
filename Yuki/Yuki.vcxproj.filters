@@ -81,17 +81,38 @@
     <ClInclude Include="src\Yuki.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Application.h">
-      <Filter>src\Yuki</Filter>
+    <ClInclude Include="src\Yuki\Core\Application.h">
+      <Filter>src\Yuki\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Core.h">
-      <Filter>src\Yuki</Filter>
+    <ClInclude Include="src\Yuki\Core\Core.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\EntryPoint.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\Input.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\Keycodes.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\Layer.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\LayerStack.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\Log.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\MouseButtonCodes.h">
+      <Filter>src\Yuki\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Core\Timestep.h">
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\EntryPoint.h">
-      <Filter>src\Yuki</Filter>
+    <ClInclude Include="src\Yuki\Core\Window.h">
+      <Filter>src\Yuki\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Events\ApplicationEvent.h">
       <Filter>src\Yuki\Events</Filter>
@@ -108,24 +129,6 @@
     <ClInclude Include="src\Yuki\ImGui\ImGuiLayer.h">
       <Filter>src\Yuki\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Input.h">
-      <Filter>src\Yuki</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Yuki\Keycodes.h">
-      <Filter>src\Yuki</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Yuki\Layer.h">
-      <Filter>src\Yuki</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Yuki\LayerStack.h">
-      <Filter>src\Yuki</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Yuki\Log.h">
-      <Filter>src\Yuki</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Yuki\MouseButtonCodes.h">
-      <Filter>src\Yuki</Filter>
-    </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\Buffer.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
@@ -133,6 +136,9 @@
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\OrthographicCamera.h">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Renderer\OrthographicCameraController.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\RenderCommand.h">
@@ -152,9 +158,6 @@
     </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\VertexArray.h">
       <Filter>src\Yuki\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Yuki\Window.h">
-      <Filter>src\Yuki</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h">
       <Filter>src</Filter>
@@ -1436,8 +1439,17 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Yuki\Application.cpp">
-      <Filter>src\Yuki</Filter>
+    <ClCompile Include="src\Yuki\Core\Application.cpp">
+      <Filter>src\Yuki\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Core\Layer.cpp">
+      <Filter>src\Yuki\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Core\LayerStack.cpp">
+      <Filter>src\Yuki\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Core\Log.cpp">
+      <Filter>src\Yuki\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\ImGui\ImGuiBuild.cpp">
       <Filter>src\Yuki\ImGui</Filter>
@@ -1445,19 +1457,13 @@
     <ClCompile Include="src\Yuki\ImGui\ImGuiLayer.cpp">
       <Filter>src\Yuki\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Yuki\Layer.cpp">
-      <Filter>src\Yuki</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Yuki\LayerStack.cpp">
-      <Filter>src\Yuki</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Yuki\Log.cpp">
-      <Filter>src\Yuki</Filter>
-    </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\Buffer.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\OrthographicCamera.cpp">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Renderer\OrthographicCameraController.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\RenderCommand.cpp">

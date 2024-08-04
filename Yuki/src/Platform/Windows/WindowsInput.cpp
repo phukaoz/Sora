@@ -1,7 +1,7 @@
 #include "Yukipch.h"
 #include "WindowsInput.h"
 
-#include "Yuki/Application.h"
+#include "Yuki/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace Yuki {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Yuki/Input.h"
+#include "Yuki/Core/Input.h"
 
 namespace Yuki {
 

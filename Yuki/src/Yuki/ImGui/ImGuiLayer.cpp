@@ -6,7 +6,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 
-#include "Yuki/Application.h"
+#include "Yuki/Core/Application.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
