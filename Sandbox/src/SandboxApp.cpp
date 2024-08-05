@@ -1,9 +1,12 @@
 #include <Yuki.h>
+#include <Yuki/Core/EntryPoint.h>
 
 #include <imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -13,7 +16,7 @@ public:
 	TestLayer()
 		: Layer("Test"), m_CameraController(1280.0f / 720.0f)
 	{
-		m_SquareVA.reset(Yuki::VertexArray::Create());
+		m_SquareVA = Yuki::VertexArray::Create();
 		float squareVertices[4 * 6] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
@@ -116,7 +119,6 @@ public:
 		Yuki::Renderer::Submit(textureShader, m_SquareVA, transform);
 
 		Yuki::Renderer::EndScene();
-
 	}
 
 	void OnEvent(Yuki::Event& e) override
@@ -149,7 +151,8 @@ class Sandbox : public Yuki::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new TestLayer());
+		//PushLayer(new TestLayer());
+		PushLayer(new Sandbox2D());
 	}
 
 	~Sandbox()
