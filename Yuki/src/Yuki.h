@@ -17,6 +17,7 @@
 
 // Renderer ////////////////////////////////////
 #include "Yuki/Renderer/Renderer.h"
+#include "Yuki/Renderer/Renderer2D.h"
 #include "Yuki/Renderer/RenderCommand.h"
 
 #include "Yuki/Renderer/Buffer.h"

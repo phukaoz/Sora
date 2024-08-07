@@ -39,21 +39,21 @@ namespace Yuki {
 		Add(name, shader);
 	}
 
-	Yuki::Ref<Yuki::Shader> ShaderLibrary::Load(const std::string& filepath)
+	Ref<Shader> ShaderLibrary::Load(const std::string& filepath)
 	{
 		auto shader = Shader::Create(filepath);
 		Add(shader);
 		return shader;
 	}
 
-	Yuki::Ref<Yuki::Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
+	Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
 	{
 		auto shader = Shader::Create(filepath);
 		Add(name, shader);
 		return shader;
 	}
 
-	Yuki::Ref<Yuki::Shader> ShaderLibrary::Get(const std::string& name)
+	Ref<Shader> ShaderLibrary::Get(const std::string& name)
 	{
 		YUKI_CORE_ASSERT(IsExist(name), "Shader '{0}' not found!", name);
 		return m_Shaders[name];

@@ -147,6 +147,9 @@
     <ClInclude Include="src\Yuki\Renderer\Renderer.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Renderer\Renderer2D.h">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\RendererAPI.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
@@ -1470,6 +1473,9 @@
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\Renderer.cpp">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Renderer\Renderer2D.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\RendererAPI.cpp">

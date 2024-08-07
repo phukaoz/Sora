@@ -6,23 +6,35 @@
 
 namespace Yuki {
 
-	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotatable)
-		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotatable(rotatable)
+	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool canRotate)
+		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_CanRotate(canRotate)
 	{
 	}
 
 	void OrthographicCameraController::OnUpdate(Timestep ts)
 	{
 		if (Input::IsKeyPressed(YUKI_KEY_A))
-			m_CameraPosition.x -= m_CameraTranslationSpeed * ts;
+		{
+			m_CameraPosition.x -= glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y -= glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+		}
 		if (Input::IsKeyPressed(YUKI_KEY_D))
-			m_CameraPosition.x += m_CameraTranslationSpeed * ts;
+		{
+			m_CameraPosition.x += glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y += glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+		}
 		if (Input::IsKeyPressed(YUKI_KEY_S))
-			m_CameraPosition.y -= m_CameraTranslationSpeed * ts;
+		{
+			m_CameraPosition.x -= -glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y -= glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+		}
 		if (Input::IsKeyPressed(YUKI_KEY_W))
-			m_CameraPosition.y += m_CameraTranslationSpeed * ts;
+		{
+			m_CameraPosition.x += -glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y += glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+		}
 
-		if (m_Rotatable)
+		if (m_CanRotate)
 		{
 			if (Input::IsKeyPressed(YUKI_KEY_E))
 				m_CameraRotation -= m_CameraRotationSpeed * ts;
@@ -41,6 +53,11 @@ namespace Yuki {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(YUKI_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(YUKI_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
+	}
+
+	void OrthographicCameraController::EnableRotation(bool canRotate)
+	{
+		m_CanRotate = canRotate;
 	}
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
