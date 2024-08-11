@@ -23,17 +23,23 @@ namespace Yuki {
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		Init(props);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
+		YUKI_PROFILE_FUNCTION();
 		YUKI_CORE_INFO("Shutdown window '{0}'", m_Data.Title);
+
 		Shutdown();
 	}
 
 	void WindowsWindow::Init(const WindowProps& props)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -42,14 +48,18 @@ namespace Yuki {
 
 		if (!s_GLFWInitialized)
 		{
+			YUKI_PROFILE_SCOPE("glfwInit");
 			int success = glfwInit();
 			YUKI_CORE_ASSERT(success, "Could not initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
 
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
-		
+		{
+			YUKI_PROFILE_SCOPE("glfwCreateWindow");
+			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
+		}
+
 		m_Context = new OpenGLContext(m_Window);
 		m_Context->Init();
 
@@ -150,17 +160,23 @@ namespace Yuki {
 
 	void WindowsWindow::Shutdown()
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(m_Window);
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else

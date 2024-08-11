@@ -23,16 +23,14 @@ public:
 			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
-		Yuki::Ref<Yuki::VertexBuffer> squareVB;
-		squareVB.reset(Yuki::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		Yuki::Ref<Yuki::VertexBuffer> squareVB = Yuki::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 		squareVB->SetLayout({
 			{ Yuki::ShaderDataType::Float3, "a_Position" },
 			{ Yuki::ShaderDataType::Float2, "a_TexCoord" }
 		});
 		m_SquareVA->AddVertexBuffer(squareVB);
 		uint32_t sqaureIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		Yuki::Ref<Yuki::IndexBuffer> squareIB;
-		squareIB.reset(Yuki::IndexBuffer::Create(sqaureIndices, 6));
+		Yuki::Ref<Yuki::IndexBuffer> squareIB = Yuki::IndexBuffer::Create(sqaureIndices, 6);
 		m_SquareVA->SetIndexBuffer(squareIB);
 
 		std::string flatColorShaderVertexSrc = R"(

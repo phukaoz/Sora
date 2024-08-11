@@ -16,6 +16,8 @@ namespace Yuki {
 
 	Application::Application()
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		YUKI_CORE_ASSERT(!s_Instance, "Application already exist");
 		s_Instance = this;
 
@@ -30,23 +32,31 @@ namespace Yuki {
 
 	Application::~Application()
 	{
+		YUKI_PROFILE_FUNCTION();
 
+		Renderer::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		m_LayerStack.PushOverlay(overlay);
 		overlay->OnAttach();
 	}
 
 	void Application::OnEvent(Event& e)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
@@ -61,6 +71,8 @@ namespace Yuki {
 
 	void Application::Run()
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		while (m_Running)
 		{
 			float time = (float)glfwGetTime(); // Platform::GetTime()
@@ -69,15 +81,24 @@ namespace Yuki {
 
 			if (!m_Minimized)
 			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(timestep);
+				{
+					YUKI_PROFILE_SCOPE("LayerStack OnUpdate");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnUpdate(timestep);
+				}
+
+				m_ImGuiLayer->Begin();
+				{
+					YUKI_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnImGuiRender();
+				}
+				m_ImGuiLayer->End();
+
 			}
-
-			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack)
-				layer->OnImGuiRender();
-			m_ImGuiLayer->End();
-
+			
 			m_Window->OnUpdate();
 		}
 	}
@@ -90,6 +111,8 @@ namespace Yuki {
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
 			m_Minimized = true;

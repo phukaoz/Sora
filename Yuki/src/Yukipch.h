@@ -14,6 +14,7 @@
 #include <unordered_set>
 
 #include "Yuki/Core/Log.h"
+#include "Yuki/Debug/Instrumentor.h"
 
 #ifdef YUKI_PLATFORM_WINDOWS
 	#include <Windows.h>

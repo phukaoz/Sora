@@ -14,6 +14,8 @@ namespace Yuki {
 
 	void OpenGLContext::Init()
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		YUKI_CORE_ASSERT(status, "Failed to initialize Glad!");
@@ -30,6 +32,8 @@ namespace Yuki {
 
 	void OpenGLContext::SwapBuffers()
 	{
+		YUKI_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_WindowHandle);
 	}
 

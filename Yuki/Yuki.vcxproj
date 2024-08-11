@@ -163,6 +163,7 @@
     <ClInclude Include="src\Yuki\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\Yuki\Core\Timestep.h" />
     <ClInclude Include="src\Yuki\Core\Window.h" />
+    <ClInclude Include="src\Yuki\Debug\Instrumentor.h" />
     <ClInclude Include="src\Yuki\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Yuki\Events\Event.h" />
     <ClInclude Include="src\Yuki\Events\KeyEvent.h" />
