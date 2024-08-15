@@ -20,7 +20,5 @@ private:
 	// Temporary
 	Yuki::Ref<Yuki::VertexArray> m_SquareVA;
 	Yuki::Ref<Yuki::Shader> m_FlatColorShader;
-	Yuki::Ref<Yuki::Texture2D> m_Texture;
-
-	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
+	Yuki::Ref<Yuki::Texture2D> m_CheckerBoard, m_Brick;
 };
