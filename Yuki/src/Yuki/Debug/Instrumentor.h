@@ -122,7 +122,7 @@ namespace Yuki {
 	};
 }
 
-#define YUKI_PROFILE 1
+#define YUKI_PROFILE 0
 #if YUKI_PROFILE
 	#define YUKI_PROFILE_BEGIN_SESSION(name, filepath) ::Yuki::Instrumentor::Get().BeginSession(name, filepath)
 	#define YUKI_PROFILE_END_SESSION() ::Yuki::Instrumentor::Get().EndSession()

@@ -19,6 +19,9 @@
     <Filter Include="src\Yuki\Core">
       <UniqueIdentifier>{B6B32ED0-2274-AA06-EBAE-F383572EEFE2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Yuki\Debug">
+      <UniqueIdentifier>{948511D6-8053-05DC-69E7-75025554E140}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Yuki\Events">
       <UniqueIdentifier>{C28ACC9B-2E16-3A60-3727-BD54A3319660}</UniqueIdentifier>
     </Filter>
@@ -113,6 +116,9 @@
     </ClInclude>
     <ClInclude Include="src\Yuki\Core\Window.h">
       <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Debug\Instrumentor.h">
+      <Filter>src\Yuki\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Events\ApplicationEvent.h">
       <Filter>src\Yuki\Events</Filter>
@@ -1416,7 +1422,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Debug\Instrumentor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
