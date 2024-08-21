@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Yuki.h"
-#include "ParticleSystem.h"
 
 class Sandbox2D : public Yuki::Layer
 {
@@ -18,10 +17,6 @@ public:
 private:
 	Yuki::OrthographicCameraController m_CameraController;
 
-	Yuki::Ref<Yuki::VertexArray> m_SquareVA;
-	Yuki::Ref<Yuki::Shader> m_FlatColorShader;
-	Yuki::Ref<Yuki::Texture2D> m_CheckerBoard, m_Brick;
-
-	ParticleSystem m_ParticleSystem;
-	ParticleProps m_Particle;
+	Yuki::Ref<Yuki::Texture2D> m_Tilemap, m_Crease, m_CheckerBoard;
+	Yuki::Ref<Yuki::SubTexture2D> m_Sprite;
 };

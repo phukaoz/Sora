@@ -15,91 +15,115 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
-	YUKI_PROFILE_FUNCTION();
-
+	m_Tilemap = Yuki::Texture2D::Create("assets/textures/tilemap.png");
+	m_Crease = Yuki::Texture2D::Create("assets/textures/crease.png");
 	m_CheckerBoard = Yuki::Texture2D::Create("assets/textures/checkerBoard.png");
-	m_Brick = Yuki::Texture2D::Create("assets/textures/brick.png");
+
+	m_Sprite = Yuki::SubTexture2D::Create(m_Tilemap, { 11, 2 }, { 8, 8 }, { 2, 2 });
+
+	m_CameraController.SetZoomLevel(5.0f);
 }
 
 void Sandbox2D::OnDetach()
 {
-	YUKI_PROFILE_FUNCTION();
 }
 
 void Sandbox2D::OnUpdate(Yuki::Timestep ts)
 {
-	YUKI_PROFILE_FUNCTION();
-
 	m_CameraController.OnUpdate(ts);
 
+	// FPS ////////////////////////////////
+	static int frameCount = 0;
+	static float fpsTimer = 0.0f;
+	frameCount++;
+	fpsTimer += ts;
+
+	if (fpsTimer >= 1.0f)
 	{
-		static int frameCount = 0;
-		static float fpsTimer = 0.0f;
-		frameCount++;
-		fpsTimer += ts;
+		fps = frameCount / fpsTimer;
 
-		if (fpsTimer >= 1.0f)
-		{
-			fps = frameCount / fpsTimer;
-
-			fpsTimer = 0.0f;
-			frameCount = 0;
-		}
+		fpsTimer = 0.0f;
+		frameCount = 0;
 	}
+	////////////////////////////////////////
 
+	////////////////////////////////////////
 	Yuki::Renderer2D::ResetStats();
-	{
-		YUKI_PROFILE_SCOPE("Rederer Prep");
-		Yuki::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-		Yuki::RenderCommand::Clear();
-	}	
-	
-	{
-		static float rotation = 0.0f;
-		rotation += ts * 50.0f;
+	Yuki::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+	Yuki::RenderCommand::Clear();
+	////////////////////////////////////////
 
-		YUKI_PROFILE_SCOPE("Renderer Draw");
-
-		Yuki::Renderer2D::BeginScene(m_CameraController.GetCamera());
-		Yuki::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, m_CheckerBoard, 20.0f);
-		Yuki::Renderer2D::DrawRotatedQuad({ -1.0f, 0.0f }, { 1.0f, 1.0f }, glm::radians(rotation), { 0.8f, 0.2f, 0.3f, 1.0f });
-		Yuki::Renderer2D::DrawQuad({ 1.0f, 0.0f }, { 1.0f, 1.0f }, m_Brick);
-		for (float y = -5.0f; y < 5.0f; y+=0.5f)
+	Yuki::Renderer2D::BeginScene(m_CameraController.GetCamera());
+	// Render //////////////////////////////
+	Yuki::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 20.0f, 20.0f }, m_CheckerBoard, 0.0f, 20.0f);
+	for (float y = -5.0f; y <= 5.0f; y += 0.5f)
+	{
+		for (float x = -5.0f; x <= 5.0f; x += 0.5f)
 		{
-			for (float x = -5.0f; x < 5.0f; x += 0.5f)
-			{
-				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-				Yuki::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-			}
+			glm::vec4 color = { (x + 5.0f) / 10.0f, 0.3f, (y + 5.0f) / 10.0f, 1.0f };
+			Yuki::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
 		}
-		Yuki::Renderer2D::EndScene();
 	}
-
-	if (Yuki::Input::IsMouseButtonPressed(YUKI_MOUSE_BUTTON_LEFT))
-	{
-		auto [x, y] = Yuki::Input::GetMousePosition();
-		auto width = Yuki::Application::Get().GetWindow().GetWidth();
-		auto height = Yuki::Application::Get().GetWindow().GetHeight();
-
-		auto bounds = m_CameraController.GetBounds();
-		auto pos = m_CameraController.GetCamera().GetPosition();
-		x = (x / width) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
-		y = bounds.GetHeight() * 0.5f - (y / height) * bounds.GetHeight();
-		m_Particle.Position = { x + pos.x, y + pos.y };
-		for (int i = 0; i < 5; i++)
-			m_ParticleSystem.Emit(m_Particle);
-	}
-	
-	m_ParticleSystem.OnUpdate(ts);
-	m_ParticleSystem.OnRender(m_CameraController.GetCamera());
+	////////////////////////////////////////
+	Yuki::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnImGuiRender()
 {
 	YUKI_PROFILE_FUNCTION();
-	
+
+	static bool dockspaceOpen = true;
+	static bool opt_fullscreen = true;
+	static bool opt_padding = false;
+	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	if (opt_fullscreen)
+	{
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+		ImGui::SetNextWindowViewport(viewport->ID);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	}
+	else
+	{
+		dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+	}
+
+	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+		window_flags |= ImGuiWindowFlags_NoBackground;
+
+	if (!opt_padding)
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("DockSpace", &dockspaceOpen, window_flags);
+	if (!opt_padding)
+		ImGui::PopStyleVar();
+
+	if (opt_fullscreen)
+		ImGui::PopStyleVar(2);
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+	{
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	}
+
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit")) Yuki::Application::Get().Close();
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
 	ImGui::Begin("Settings");
-	
 	auto stats = Yuki::Renderer2D::GetStats();
 	ImGui::Text("Renderer2D Stats:");
 	ImGui::Text("Draw Calls: %d", stats.DrawCallCount);
@@ -107,6 +131,7 @@ void Sandbox2D::OnImGuiRender()
 	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 	ImGui::Text("FPS: %f", fps);
+	ImGui::End();
 
 	ImGui::End();
 }

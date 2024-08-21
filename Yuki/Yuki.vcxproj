@@ -178,6 +178,7 @@
     <ClInclude Include="src\Yuki\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Yuki\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Yuki\Renderer\Shader.h" />
+    <ClInclude Include="src\Yuki\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\Yuki\Renderer\Texture.h" />
     <ClInclude Include="src\Yuki\Renderer\VertexArray.h" />
     <ClInclude Include="src\Yukipch.h" />
@@ -622,6 +623,7 @@
     <ClCompile Include="src\Yuki\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Yuki\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Yuki\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Texture.cpp" />
     <ClCompile Include="src\Yuki\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Yukipch.cpp">

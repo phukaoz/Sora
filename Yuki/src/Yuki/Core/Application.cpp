@@ -53,6 +53,11 @@ namespace Yuki {
 		overlay->OnAttach();
 	}
 
+	void Application::Close()
+	{
+		m_Running = false;
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		YUKI_PROFILE_FUNCTION();

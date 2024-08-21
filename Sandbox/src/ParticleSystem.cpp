@@ -43,7 +43,7 @@ void ParticleSystem::OnRender(Yuki::OrthographicCamera& camera)
 		glm::vec4 color = glm::lerp(particle.ColorEnd, particle.ColorBegin, life);
 
 		float size = glm::lerp(particle.SizeEnd, particle.SizeBegin, life);
-		Yuki::Renderer2D::DrawRotatedQuad(particle.Position, { size, size }, particle.Rotation, color);
+		Yuki::Renderer2D::DrawQuad(particle.Position, { size, size }, color, particle.Rotation);
 	}
 	Yuki::Renderer2D::EndScene();
 }
