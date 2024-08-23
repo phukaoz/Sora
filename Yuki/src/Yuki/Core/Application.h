@@ -16,7 +16,7 @@ namespace Yuki {
 	class YUKI_API Application
 	{
 	public:		
-		Application();
+		Application(const std::string& name = "Yuki App");
 		virtual ~Application();
 
 		void Run();
@@ -27,6 +27,8 @@ namespace Yuki {
 		void PushOverlay(Layer* layer);
 
 		void Close();
+
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
 		static inline Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() { return *m_Window; }

@@ -15,6 +15,7 @@ IncludeDir["Glad"] = "Yuki/vendor/Glad/include"
 IncludeDir["ImGui"] = "Yuki/vendor/imgui"
 IncludeDir["glm"] = "Yuki/vendor/glm"
 IncludeDir["stb_image"] = "Yuki/vendor/stb_image"
+IncludeDir["entt"] = "Yuki/vendor/entt/include"
 
 include "Yuki/vendor/GLFW"
 include "Yuki/vendor/Glad"
@@ -44,6 +45,7 @@ project "Yuki"
 	
 	defines{
 		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
 	}
 
 	includedirs{
@@ -54,6 +56,7 @@ project "Yuki"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}",
 	}
 
 	links{
@@ -100,8 +103,6 @@ project "Sandbox"
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
 	
 	includedirs{
@@ -109,6 +110,56 @@ project "Sandbox"
 		"Yuki/src",
 		"Yuki/vendor",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
+	}
+
+	links{
+		"Yuki"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines{ 
+			"YUKI_PLATFORM_WINDOWS",
+		}
+
+	filter "configurations:Debug"
+		defines "YUKI_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "YUKI_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Debug"
+		defines "YUKI_DIST"
+		runtime "Release"
+		optimize "on"
+
+project "Alya"
+	location "Alya"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++20"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+	}
+	
+	includedirs{
+		"Yuki/vendor/spdlog/include",
+		"Yuki/src",
+		"Yuki/vendor",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
 	}
 
 	links{

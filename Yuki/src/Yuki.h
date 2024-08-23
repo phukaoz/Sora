@@ -8,11 +8,15 @@
 #include "Yuki/Core/Timestep.h"
 
 #include "Yuki/Core/Input.h"
-#include "Yuki/Core/Keycodes.h"
-#include "Yuki/Core/MouseButtonCodes.h"
+#include "Yuki/Core/KeyCodes.h"
+#include "Yuki/Core/MouseCodes.h"
 #include "Yuki/Renderer/OrthographicCameraController.h"
 
 #include "Yuki/ImGui/ImGuiLayer.h"
+
+#include "Yuki/Scene/Scene.h"
+#include "Yuki/Scene/Component.h"
+#include "Yuki/Scene/Entity.h"
 ////////////////////////////////////////////////
 
 // Renderer ////////////////////////////////////
@@ -22,6 +26,7 @@
 
 #include "Yuki/Renderer/Buffer.h"
 #include "Yuki/Renderer/Shader.h"
+#include "Yuki/Renderer/Framebuffer.h"
 #include "Yuki/Renderer/Texture.h"
 #include "Yuki/Renderer/VertexArray.h"
 

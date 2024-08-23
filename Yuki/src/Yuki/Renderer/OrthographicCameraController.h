@@ -25,6 +25,8 @@ namespace Yuki {
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
+		void OnResize(float width, float height);
+
 		void EnableRotation(bool canRotate);
 
 		OrthographicCamera& GetCamera() { return m_Camera; }

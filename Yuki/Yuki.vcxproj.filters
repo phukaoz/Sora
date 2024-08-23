@@ -31,6 +31,9 @@
     <Filter Include="src\Yuki\Renderer">
       <UniqueIdentifier>{045215B8-7068-134E-B9DF-9E6F2535E4D5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Yuki\Scene">
+      <UniqueIdentifier>{3BE81FD7-27B6-13DD-104A-8403FCB6EF41}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -63,6 +66,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -74,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
-      <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>src\Platform\Windows</Filter>
@@ -96,7 +99,7 @@
     <ClInclude Include="src\Yuki\Core\Input.h">
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Core\Keycodes.h">
+    <ClInclude Include="src\Yuki\Core\KeyCodes.h">
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Core\Layer.h">
@@ -108,7 +111,7 @@
     <ClInclude Include="src\Yuki\Core\Log.h">
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Core\MouseButtonCodes.h">
+    <ClInclude Include="src\Yuki\Core\MouseCodes.h">
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Core\Timestep.h">
@@ -138,6 +141,9 @@
     <ClInclude Include="src\Yuki\Renderer\Buffer.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Renderer\Framebuffer.h">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
@@ -162,11 +168,17 @@
     <ClInclude Include="src\Yuki\Renderer\Shader.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Renderer\SubTexture2D.h">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\Texture.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\VertexArray.h">
       <Filter>src\Yuki\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Scene\Scene.h">
+      <Filter>src\Yuki\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h">
       <Filter>src</Filter>
@@ -1422,13 +1434,17 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Renderer\SubTexture2D.h" />
+    <ClInclude Include="src\Yuki\Scene\Component.h" />
+    <ClInclude Include="src\Yuki\Scene\Entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
@@ -1470,6 +1486,9 @@
     <ClCompile Include="src\Yuki\Renderer\Buffer.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Yuki\Renderer\Framebuffer.cpp">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\OrthographicCamera.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
@@ -1491,11 +1510,17 @@
     <ClCompile Include="src\Yuki\Renderer\Shader.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Yuki\Renderer\SubTexture2D.cpp">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\Texture.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\Renderer\VertexArray.cpp">
       <Filter>src\Yuki\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Scene\Scene.cpp">
+      <Filter>src\Yuki\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp">
       <Filter>src</Filter>
@@ -1503,6 +1528,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Yuki\Renderer\SubTexture2D.cpp" />
+    <ClCompile Include="src\Yuki\Scene\Entity.cpp" />
   </ItemGroup>
 </Project>
