@@ -187,6 +187,7 @@
     <ClInclude Include="src\Yuki\Scene\Entity.h" />
     <ClInclude Include="src\Yuki\Scene\Scene.h" />
     <ClInclude Include="src\Yukipch.h" />
+    <ClInclude Include="src\Yuki\Scene\SceneCamera.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -638,6 +639,7 @@
     <ClCompile Include="src\Yukipch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Yuki\Scene\SceneCamera.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>

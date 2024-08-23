@@ -50,7 +50,6 @@ namespace Yuki {
 				cameraTransform = &transform.Transform;
 				break;
 			}
-
 		}
 
 		if (mainCamera)
@@ -66,6 +65,20 @@ namespace Yuki {
 			}
 
 			Renderer2D::EndScene();
+		}
+	}
+
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		m_ViewportWidth = width;
+		m_ViewportHeight = height;
+
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			auto& cameraComponent = view.get<CameraComponent>(entity);
+			if (!cameraComponent.FixedAspectRatio)
+				cameraComponent.Camera.SetViewportSize(width, height);
 		}
 	}
 

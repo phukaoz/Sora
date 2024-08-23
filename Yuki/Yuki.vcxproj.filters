@@ -1437,6 +1437,7 @@
     <ClInclude Include="src\Yuki\Scene\Component.h" />
     <ClInclude Include="src\Yuki\Scene\Entity.h" />
     <ClInclude Include="src\Yuki\Renderer\Camera.h" />
+    <ClInclude Include="src\Yuki\Scene\SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1530,5 +1531,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Yuki\Scene\Entity.cpp" />
+    <ClCompile Include="src\Yuki\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>
