@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Yuki/Renderer/Camera.h"
+
 namespace Yuki {
 
 	struct TagComponent
@@ -35,6 +37,17 @@ namespace Yuki {
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 		SpriteRendererComponent(const glm::vec4& color)
 			: Color(color) {}
+	};
+
+	struct CameraComponent
+	{
+		Yuki::Camera Camera;
+		bool Primary = true;
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const glm::mat4& projection)
+			: Camera(projection) {}
 	};
 
 }

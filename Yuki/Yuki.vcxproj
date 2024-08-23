@@ -170,6 +170,7 @@
     <ClInclude Include="src\Yuki\Events\MouseEvent.h" />
     <ClInclude Include="src\Yuki\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Yuki\Renderer\Buffer.h" />
+    <ClInclude Include="src\Yuki\Renderer\Camera.h" />
     <ClInclude Include="src\Yuki\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\Yuki\Renderer\OrthographicCamera.h" />

@@ -1436,6 +1436,7 @@
     </ClInclude>
     <ClInclude Include="src\Yuki\Scene\Component.h" />
     <ClInclude Include="src\Yuki\Scene\Entity.h" />
+    <ClInclude Include="src\Yuki\Renderer\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
