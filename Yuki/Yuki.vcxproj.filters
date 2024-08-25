@@ -1438,6 +1438,7 @@
     <ClInclude Include="src\Yuki\Scene\Entity.h" />
     <ClInclude Include="src\Yuki\Renderer\Camera.h" />
     <ClInclude Include="src\Yuki\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Yuki\Scene\ScriptableEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">

@@ -188,6 +188,7 @@
     <ClInclude Include="src\Yuki\Scene\Scene.h" />
     <ClInclude Include="src\Yukipch.h" />
     <ClInclude Include="src\Yuki\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Yuki\Scene\ScriptableEntity.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />

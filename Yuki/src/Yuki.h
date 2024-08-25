@@ -17,6 +17,7 @@
 #include "Yuki/Scene/Scene.h"
 #include "Yuki/Scene/Component.h"
 #include "Yuki/Scene/Entity.h"
+#include "Yuki/Scene/ScriptableEntity.h"
 ////////////////////////////////////////////////
 
 // Renderer ////////////////////////////////////

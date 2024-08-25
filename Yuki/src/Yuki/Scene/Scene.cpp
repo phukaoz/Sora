@@ -9,16 +9,6 @@
 
 namespace Yuki {
 
-	static void DoMath(const glm::mat4& transform)
-	{
-
-	}
-
-	static void OnTransformConstruct(entt::registry& registry, entt::entity entity)
-	{
-
-	}
-
 	Scene::Scene()
 	{
 	}
@@ -38,17 +28,35 @@ namespace Yuki {
 
 	void Scene::OnUpdate(Timestep ts)
 	{
+		{
+			auto view = m_Registry.view<NativeScriptComponent>();
+			for (auto entity : view)
+			{
+				auto& script = view.get<NativeScriptComponent>(entity);
+				if (!script.Instance)
+				{
+					script.Instance = script.InstantiateScript();
+					script.Instance->m_Entity = Entity(entity, this);
+					script.Instance->OnCreate();
+				}
+
+				script.Instance->OnUpdate(ts);
+			}
+		}
+
 		Camera* mainCamera = nullptr;
 		glm::mat4* cameraTransform = nullptr;
-		auto viewCamera = m_Registry.view<TransformComponent, CameraComponent>();
-		for (auto entity : viewCamera)
 		{
-			auto [transform, camera] = viewCamera.get<TransformComponent, CameraComponent>(entity);
-			if (camera.Primary)
+			auto view = m_Registry.view<TransformComponent, CameraComponent>();
+			for (auto entity : view)
 			{
-				mainCamera = &camera.Camera;
-				cameraTransform = &transform.Transform;
-				break;
+				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+				if (camera.Primary)
+				{
+					mainCamera = &camera.Camera;
+					cameraTransform = &transform.Transform;
+					break;
+				}
 			}
 		}
 
