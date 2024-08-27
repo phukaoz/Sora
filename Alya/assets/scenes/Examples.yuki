@@ -1,29 +1,3 @@
 Scene: Untitled
 Entities:
-  - Entity: 0
-    TagComponent:
-      Tag: Square A
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      Color: [0.957529068, 0, 1, 1]
-  - Entity: 0
-    TagComponent:
-      Tag: Camera
-    TransformComponent:
-      Translation: [0.200000003, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        ProjectionType: 1
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1
-        PerspectiveFOV: 0.785398185
-        PerspectiveNear: 0.00999999978
-        PerspectiveFar: 1000
-      Primary: true
-      FixedAspectRatio: false
+  []

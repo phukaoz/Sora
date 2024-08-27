@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Yuki/Scene/SceneSerializer.h"
+#include "Yuki/Utils/PlatformUtils.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -143,16 +144,36 @@ namespace Yuki {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Serialize"))
+				if (ImGui::MenuItem("New", "Ctrl+N"))
 				{
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Serialize("assets/scenes/Examples.yuki");
+					m_ActiveScene = CreateRef<Scene>();
+					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 				}
 
-				if (ImGui::MenuItem("Deserialize"))
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
 				{
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Deserialize("assets/scenes/Examples.yuki");
+					std::string filepath = FileDialogs::OpenFile("Yuki Scene (*.yuki)\0*.yuki\0");
+					if (!filepath.empty())
+					{
+						std::cout << filepath << std::endl;
+						m_ActiveScene = CreateRef<Scene>();
+						m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+						m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+						SceneSerializer serializer(m_ActiveScene);
+						serializer.Deserialize(filepath);
+					}
+				}
+
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+				{
+					std::string filepath = FileDialogs::SaveFile("Yuki Scene (*.yuki)\0*.yuki\0");
+					if (!filepath.empty())
+					{
+						SceneSerializer serializer(m_ActiveScene);
+						serializer.Serialize(filepath);
+					}
 				}
 
 				if (ImGui::MenuItem("Exit")) Yuki::Application::Get().Close();
