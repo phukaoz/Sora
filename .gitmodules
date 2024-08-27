@@ -10,3 +10,6 @@
 [submodule "Yuki/vendor/imgui"]
 	path = Yuki/vendor/imgui
 	url = https://github.com/phukaoz/imgui
+[submodule "Yuki/vendor/yaml-cpp"]
+	path = Yuki/vendor/yaml-cpp
+	url = https://github.com/phukaoz/yaml-cpp

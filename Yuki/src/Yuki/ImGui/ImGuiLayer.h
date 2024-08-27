@@ -23,6 +23,8 @@ namespace Yuki {
 		void End();
 
 		void EnableEvents(bool enable) { m_EventsEnabled = enable; }
+
+		void SetDarkThemeColors();
 	private:
 		bool m_EventsEnabled = true;
 		float m_Time = 0.0f;

@@ -141,6 +141,9 @@
     <ClInclude Include="src\Yuki\Renderer\Buffer.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Renderer\Camera.h">
+      <Filter>src\Yuki\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Renderer\Framebuffer.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
@@ -177,7 +180,22 @@
     <ClInclude Include="src\Yuki\Renderer\VertexArray.h">
       <Filter>src\Yuki\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Scene\Component.h">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Scene\Entity.h">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yuki\Scene\Scene.h">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Scene\SceneCamera.h">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Scene\SceneSerializer.h">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Scene\ScriptableEntity.h">
       <Filter>src\Yuki\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Yukipch.h">
@@ -1434,11 +1452,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Scene\Component.h" />
-    <ClInclude Include="src\Yuki\Scene\Entity.h" />
-    <ClInclude Include="src\Yuki\Renderer\Camera.h" />
-    <ClInclude Include="src\Yuki\Scene\SceneCamera.h" />
-    <ClInclude Include="src\Yuki\Scene\ScriptableEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1522,7 +1535,16 @@
     <ClCompile Include="src\Yuki\Renderer\VertexArray.cpp">
       <Filter>src\Yuki\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Yuki\Scene\Entity.cpp">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Yuki\Scene\Scene.cpp">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Scene\SceneCamera.cpp">
+      <Filter>src\Yuki\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Yuki\Scene\SceneSerializer.cpp">
       <Filter>src\Yuki\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Yukipch.cpp">
@@ -1531,7 +1553,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Yuki\Scene\Entity.cpp" />
-    <ClCompile Include="src\Yuki\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace Yuki {
 		Ref<Framebuffer> m_Framebuffer;
 
 		Ref<Scene> m_ActiveScene;
-		Entity m_SquareEntity;
+		Entity m_Square1, m_Square2;
 		Entity m_CameraEntity;
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;

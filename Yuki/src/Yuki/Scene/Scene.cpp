@@ -26,52 +26,52 @@ namespace Yuki {
 		return entity;
 	}
 
+	void Scene::DestroyEntity(Entity entity)
+	{
+		m_Registry.destroy(entity);
+	}
+
 	void Scene::OnUpdate(Timestep ts)
 	{
+		auto native_script_view = m_Registry.view<NativeScriptComponent>();
+		for (auto entity : native_script_view)
 		{
-			auto view = m_Registry.view<NativeScriptComponent>();
-			for (auto entity : view)
+			auto& script = native_script_view.get<NativeScriptComponent>(entity);
+			if (!script.Instance)
 			{
-				auto& script = view.get<NativeScriptComponent>(entity);
-				if (!script.Instance)
-				{
-					script.Instance = script.InstantiateScript();
-					script.Instance->m_Entity = Entity(entity, this);
-					script.Instance->OnCreate();
-				}
+				script.Instance = script.InstantiateScript();
+				if(script.Instance) script.Instance->m_Entity = Entity(entity, this);
+				script.Instance->OnCreate();
+			}
 
-				script.Instance->OnUpdate(ts);
+			script.Instance->OnUpdate(ts);
+		}
+
+		Camera* main_camera = nullptr;
+		glm::mat4 camera_transform;
+		auto transfrom_camera_view = m_Registry.view<TransformComponent, CameraComponent>();
+		for (auto entity : transfrom_camera_view)
+		{
+			auto [transform, camera] = transfrom_camera_view.get<TransformComponent, CameraComponent>(entity);
+			if (camera.Primary)
+			{
+				main_camera = &camera.Camera;
+				camera_transform = transform.GetTransform();
+				break;
 			}
 		}
 
-		Camera* mainCamera = nullptr;
-		glm::mat4* cameraTransform = nullptr;
+		if (main_camera)
 		{
-			auto view = m_Registry.view<TransformComponent, CameraComponent>();
+			Renderer2D::BeginScene(main_camera->GetProjection(), camera_transform);
+
+			auto view = m_Registry.view<TransformComponent, SpriteComponent>();
 			for (auto entity : view)
 			{
-				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-				if (camera.Primary)
-				{
-					mainCamera = &camera.Camera;
-					cameraTransform = &transform.Transform;
-					break;
-				}
+				auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
+
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
 			}
-		}
-
-		if (mainCamera)
-		{
-			Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
-
-			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-			for (auto entity : view)
-			{
-				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
-				Renderer2D::DrawQuad(transform, sprite.Color);
-			}
-
 			Renderer2D::EndScene();
 		}
 	}
@@ -84,10 +84,45 @@ namespace Yuki {
 		auto view = m_Registry.view<CameraComponent>();
 		for (auto entity : view)
 		{
-			auto& cameraComponent = view.get<CameraComponent>(entity);
-			if (!cameraComponent.FixedAspectRatio)
-				cameraComponent.Camera.SetViewportSize(width, height);
+			auto& camera_component = view.get<CameraComponent>(entity);
+			if (!camera_component.FixedAspectRatio)
+				camera_component.Camera.SetViewportSize(width, height);
 		}
 	}
 
+	template<typename T>
+	void Scene::OnComponentAdded(Entity entity, T& component)
+	{
+		static_assert(false);
+	}
+
+	template<>
+	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
+	{
+
+	}
+	
+	template<>
+	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+	{
+		component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+	}
+
+	template<>
+	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+	{
+
+	}
 }

@@ -16,10 +16,12 @@ IncludeDir["ImGui"] = "Yuki/vendor/imgui"
 IncludeDir["glm"] = "Yuki/vendor/glm"
 IncludeDir["stb_image"] = "Yuki/vendor/stb_image"
 IncludeDir["entt"] = "Yuki/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "Yuki/vendor/yaml-cpp/include"
 
 include "Yuki/vendor/GLFW"
 include "Yuki/vendor/Glad"
 include "Yuki/vendor/imgui"
+include "Yuki/vendor/yaml-cpp"
 
 project "Yuki"
 	location "Yuki"
@@ -45,7 +47,8 @@ project "Yuki"
 	
 	defines{
 		"_CRT_SECURE_NO_WARNINGS",
-		"GLFW_INCLUDE_NONE"
+		"GLFW_INCLUDE_NONE",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	includedirs{
@@ -57,12 +60,14 @@ project "Yuki"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}",
 	}
 
 	links{
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"yaml-cpp",
 		"opengl32.lib",
 	}
 
@@ -85,7 +90,7 @@ project "Yuki"
 		runtime "Release"
 		optimize "on"
 
-	filter "configurations:Debug"
+	filter "configurations:Dist"
 		defines "YUKI_DIST"
 		runtime "Release"
 		optimize "on"
@@ -134,7 +139,7 @@ project "Sandbox"
 		runtime "Release"
 		optimize "on"
 
-	filter "configurations:Debug"
+	filter "configurations:Dist"
 		defines "YUKI_DIST"
 		runtime "Release"
 		optimize "on"
@@ -183,7 +188,7 @@ project "Alya"
 		runtime "Release"
 		optimize "on"
 
-	filter "configurations:Debug"
+	filter "configurations:Dist"
 		defines "YUKI_DIST"
 		runtime "Release"
 		optimize "on"
