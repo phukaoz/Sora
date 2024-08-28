@@ -34,8 +34,14 @@
     <Filter Include="src\Yuki\Scene">
       <UniqueIdentifier>{3BE81FD7-27B6-13DD-104A-8403FCB6EF41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Yuki\Utils">
+      <UniqueIdentifier>{7E7C4DD7-6A4A-41DD-53DE-B1033F4B1D42}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\ImGuizmo">
+      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -112,6 +118,9 @@
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Core\MouseCodes.h">
+      <Filter>src\Yuki\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Yuki\Core\PlatformDetection.h">
       <Filter>src\Yuki\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Yuki\Core\Timestep.h">
@@ -198,8 +207,14 @@
     <ClInclude Include="src\Yuki\Scene\ScriptableEntity.h">
       <Filter>src\Yuki\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Yuki\Utils\PlatformUtils.h">
+      <Filter>src\Yuki\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Yukipch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1452,7 +1467,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Yuki\Utils\PlatformUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1475,6 +1489,9 @@
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowPlatformUtils.cpp">
+      <Filter>src\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\Platform\Windows</Filter>
@@ -1551,9 +1568,11 @@
     <ClCompile Include="src\Yukipch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <Filter>vendor\ImGuizmo</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Windows\WindowPlatformUtils.cpp" />
   </ItemGroup>
 </Project>

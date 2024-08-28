@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{61705900-4DFC-870B-B6AA-880BA255880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Alya">
+      <UniqueIdentifier>{B7D47B47-23B4-FAE2-2CCC-85B9982A6144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Sandbox">
+      <UniqueIdentifier>{3F7B6B1D-2B33-AD6A-943A-86C68011485B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Yuki">
+      <UniqueIdentifier>{52228947-BE01-08E3-C719-93B933786E44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Yuki\vendor">
+      <UniqueIdentifier>{6FA858FB-5B76-4C01-440A-BD2730772866}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Yuki\vendor\GLFW">
+      <UniqueIdentifier>{0E0169BB-7A62-46C9-03D0-8C7B6F307D88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Yuki\vendor\Glad">
+      <UniqueIdentifier>{B68C69BB-22EE-46C9-AB5B-8D7B17BC7D88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Yuki\vendor\imgui">
+      <UniqueIdentifier>{190D032B-059C-8CF4-AEBA-A0EF9A289D9A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Yuki\vendor\yaml-cpp">
+      <UniqueIdentifier>{01FCF02C-6D33-39C4-763D-9DE7E2F35FBD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Alya\premake5.lua">
+      <Filter>..\Alya</Filter>
+    </None>
+    <None Include="..\..\Sandbox\premake5.lua">
+      <Filter>..\Sandbox</Filter>
+    </None>
+    <None Include="..\..\Yuki\premake5.lua">
+      <Filter>..\Yuki</Filter>
+    </None>
+    <None Include="..\..\Yuki\vendor\GLFW\premake5.lua">
+      <Filter>..\Yuki\vendor\GLFW</Filter>
+    </None>
+    <None Include="..\..\Yuki\vendor\Glad\premake5.lua">
+      <Filter>..\Yuki\vendor\Glad</Filter>
+    </None>
+    <None Include="..\..\Yuki\vendor\imgui\premake5.lua">
+      <Filter>..\Yuki\vendor\imgui</Filter>
+    </None>
+    <None Include="..\..\Yuki\vendor\yaml-cpp\premake5.lua">
+      <Filter>..\Yuki\vendor\yaml-cpp</Filter>
+    </None>
+    <None Include="..\..\premake5.lua">
+      <Filter>..</Filter>
+    </None>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+</Project>

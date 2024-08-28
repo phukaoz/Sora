@@ -13,3 +13,6 @@
 [submodule "Yuki/vendor/yaml-cpp"]
 	path = Yuki/vendor/yaml-cpp
 	url = https://github.com/phukaoz/yaml-cpp
+[submodule "Yuki/vendor/ImGuizmo"]
+	path = Yuki/vendor/ImGuizmo
+	url = https://github.com/phukaoz/ImGuizmo

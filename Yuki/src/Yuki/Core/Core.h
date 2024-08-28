@@ -2,27 +2,25 @@
 
 #include <memory>
 
-#ifdef YUKI_PLATFORM_WINDOWS
-#if YUKI_DYNAMIC_LINK
-	#ifdef YUKI_BUILD_DLL
-		#define YUKI_API __declspec(dllexport)
-	#else
-		#define YUKI_API __declspec(dllimport)
-	#endif
-#else
-	#define YUKI_API
-#endif
-#else
-	#error Yuki only support Windows!
-#endif
+#include "Yuki/Core/PlatformDetection.h"
 
 #ifdef YUKI_DEBUG
+	#if defined(YUKI_PLATFORM_WINDOWS)
+		#define YUKI_DEBUGBREAK() __debugbreak()
+	#elif defined(YUKI_PLATFORM_LINUX)
+		#include <signal.h>
+		#define YUKI_DEBUGBREAK() raise(SIGTRAP)
+	#else
+		#error "Platform doesn't support debugbreak yet!"
+	#endif
 	#define YUKI_ENABLE_ASSERTS
+#else
+	#define YUKI_DEBUGBREAK()
 #endif
 
 #ifdef YUKI_ENABLE_ASSERTS
-	#define YUKI_ASSERT(x, ...) {if(!(x)) { YUKI_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define YUKI_CORE_ASSERT(x, ...) {if(!(x)) { YUKI_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define YUKI_ASSERT(x, ...) {if(!(x)) { YUKI_ERROR("Assertion Failed: {0}", __VA_ARGS__); YUKI_DEBUGBREAK(); } }
+	#define YUKI_CORE_ASSERT(x, ...) {if(!(x)) { YUKI_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); YUKI_DEBUGBREAK(); } }
 #else
 	#define YUKI_ASSERT(x, ...)
 	#define YUKI_CORE_ASSERT(x, ...)

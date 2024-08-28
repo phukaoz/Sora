@@ -23,6 +23,7 @@ namespace Yuki {
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Untitled Entity" : name;
+
 		return entity;
 	}
 
@@ -65,11 +66,10 @@ namespace Yuki {
 		{
 			Renderer2D::BeginScene(main_camera->GetProjection(), camera_transform);
 
-			auto view = m_Registry.view<TransformComponent, SpriteComponent>();
-			for (auto entity : view)
+			auto transfrom_sprite_group = m_Registry.group<TransformComponent, SpriteComponent>();
+			for (auto entity : transfrom_sprite_group)
 			{
-				auto [transform, sprite] = view.get<TransformComponent, SpriteComponent>(entity);
-
+				auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
 				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
 			}
 			Renderer2D::EndScene();

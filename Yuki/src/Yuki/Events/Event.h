@@ -30,7 +30,7 @@ namespace Yuki {
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-	class YUKI_API Event
+	class Event
 	{
 	public:
 		virtual ~Event() = default;

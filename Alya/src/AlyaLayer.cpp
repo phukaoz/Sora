@@ -7,6 +7,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ImGuizmo.h>
 
 namespace Yuki {
 
@@ -145,41 +146,19 @@ namespace Yuki {
 			if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("New", "Ctrl+N"))
-				{
-					m_ActiveScene = CreateRef<Scene>();
-					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-				}
+					NewScene();
 
 				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-				{
-					std::string filepath = FileDialogs::OpenFile("Yuki Scene (*.yuki)\0*.yuki\0");
-					if (!filepath.empty())
-					{
-						std::cout << filepath << std::endl;
-						m_ActiveScene = CreateRef<Scene>();
-						m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-						m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
-						SceneSerializer serializer(m_ActiveScene);
-						serializer.Deserialize(filepath);
-					}
-				}
+					OpenScene();
 
 				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
-				{
-					std::string filepath = FileDialogs::SaveFile("Yuki Scene (*.yuki)\0*.yuki\0");
-					if (!filepath.empty())
-					{
-						SceneSerializer serializer(m_ActiveScene);
-						serializer.Serialize(filepath);
-					}
-				}
+					SaveSceneAs();
 
 				if (ImGui::MenuItem("Exit")) Yuki::Application::Get().Close();
 				
 				ImGui::EndMenu();
 			}
+
 			ImGui::EndMenuBar();
 		}
 
@@ -209,6 +188,12 @@ namespace Yuki {
 			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
 			ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(textureID)), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
+
+		Entity selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selected_entity)
+		{
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -217,6 +202,74 @@ namespace Yuki {
 
 	void AlyaLayer::OnEvent(Event& e)
 	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(YUKI_BIND_EVENT_FN(AlyaLayer::OnKeyPressed));
+	}
+
+	bool AlyaLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.GetRepeatCount() > 0)
+			return false;
+
+		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+		switch (e.GetKeyCode())
+		{
+		case Key::N:
+		{
+			if (control)
+				NewScene();
+
+			break;
+		}
+		case Key::O:
+		{
+			if (control)
+				OpenScene();
+
+			break;
+		}
+		case Key::S:
+		{
+			if (control && shift)
+				SaveSceneAs();
+
+			break;
+		}
+		}
+	}
+
+	void AlyaLayer::NewScene()
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void AlyaLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("Yuki Scene (*.yuki)\0*.yuki\0");
+		if (!filepath.empty())
+		{
+			std::cout << filepath << std::endl;
+			m_ActiveScene = CreateRef<Scene>();
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Deserialize(filepath);
+		}
+	}
+
+	void AlyaLayer::SaveSceneAs()
+	{
+		std::string filepath = FileDialogs::SaveFile("Yuki Scene (*.yuki)\0*.yuki\0");
+		if (!filepath.empty())
+		{
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(filepath);
+		}
 	}
 
 }

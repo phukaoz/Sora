@@ -5,7 +5,7 @@
 
 namespace Yuki {
 
-	class YUKI_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack();

@@ -9,10 +9,10 @@ namespace Yuki {
 	class Log 
 	{
 	public:
-		YUKI_API static void Init();
+		static void Init();
 
-		YUKI_API inline static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-		YUKI_API inline static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+		inline static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+		inline static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
 	private:
 		static Ref<spdlog::logger> s_CoreLogger;

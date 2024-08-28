@@ -1,5 +1,13 @@
 #pragma once
-	
+
+#include "Yuki/Core/PlatformDetection.h"
+
+#ifdef YUKI_PLATFORM_WINDOWS
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
+#endif
+
 #include <iostream>
 #include <memory>
 #include <utility>

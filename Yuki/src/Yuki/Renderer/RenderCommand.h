@@ -26,9 +26,17 @@ namespace Yuki {
 			s_RendererAPI->Clear();
 		}
 
-		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0)
+		/**
+		 * @brief Draws an object.
+		 *
+		 * This function renders an object using the specified vertex array
+		 *
+		 * @param vertex_array A reference to the VertexArray containing vertex data and index buffer
+		 * @param count The number of indices to use for drawing. If not provided, it uses the entire index buffer
+		 */
+		inline static void DrawIndexed(const Ref<VertexArray>& vertex_array, std::optional<uint32_t> count = std::nullopt)
 		{
-			s_RendererAPI->DrawIndexed(vertexArray, count);
+			s_RendererAPI->DrawIndexed(vertex_array, count);
 		}
 	private:
 		static RendererAPI* s_RendererAPI;

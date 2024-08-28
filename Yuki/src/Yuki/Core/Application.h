@@ -13,7 +13,7 @@
 
 namespace Yuki {
 
-	class YUKI_API Application
+	class Application
 	{
 	public:		
 		Application(const std::string& name = "Yuki App");
