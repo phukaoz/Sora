@@ -12,7 +12,7 @@ ParticleSystem::ParticleSystem(uint32_t maxParticle)
 	m_ParticlePool.resize(maxParticle);
 }
 
-void ParticleSystem::OnUpdate(Yuki::Timestep ts)
+void ParticleSystem::OnUpdate(Sora::Timestep ts)
 {
 	for (auto& particle : m_ParticlePool)
 	{
@@ -31,9 +31,9 @@ void ParticleSystem::OnUpdate(Yuki::Timestep ts)
 	}
 }
 
-void ParticleSystem::OnRender(Yuki::OrthographicCamera& camera)
+void ParticleSystem::OnRender(Sora::OrthographicCamera& camera)
 {
-	Yuki::Renderer2D::BeginScene(camera);
+	Sora::Renderer2D::BeginScene(camera);
 	for (auto& particle : m_ParticlePool)
 	{
 		if (!particle.Active)
@@ -43,9 +43,9 @@ void ParticleSystem::OnRender(Yuki::OrthographicCamera& camera)
 		glm::vec4 color = glm::lerp(particle.ColorEnd, particle.ColorBegin, life);
 
 		float size = glm::lerp(particle.SizeEnd, particle.SizeBegin, life);
-		Yuki::Renderer2D::DrawQuad(particle.Position, { size, size }, color, particle.Rotation);
+		Sora::Renderer2D::DrawQuad(particle.Position, { size, size }, color, particle.Rotation);
 	}
-	Yuki::Renderer2D::EndScene();
+	Sora::Renderer2D::EndScene();
 }
 
 void ParticleSystem::Emit(const ParticleProps& particleProps)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Yuki.h"
+#include "Sora.h"
 
 #include <glm/glm.hpp>
 
@@ -27,8 +27,8 @@ class ParticleSystem
 public:
 	ParticleSystem(uint32_t maxParticle = 1000);
 
-	void OnUpdate(Yuki::Timestep ts);
-	void OnRender(Yuki::OrthographicCamera& camera);
+	void OnUpdate(Sora::Timestep ts);
+	void OnRender(Sora::OrthographicCamera& camera);
 
 	void Emit(const ParticleProps& particleProps);
 private:

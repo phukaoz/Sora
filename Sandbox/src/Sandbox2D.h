@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Yuki.h"
+#include "Sora.h"
 
-class Sandbox2D : public Yuki::Layer
+class Sandbox2D : public Sora::Layer
 {
 public:
 	Sandbox2D();
@@ -11,12 +11,12 @@ public:
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
 
-	virtual void OnUpdate(Yuki::Timestep ts) override;
+	virtual void OnUpdate(Sora::Timestep ts) override;
 	virtual void OnImGuiRender() override;
-	virtual void OnEvent(Yuki::Event& e) override;
+	virtual void OnEvent(Sora::Event& e) override;
 private:
-	Yuki::OrthographicCameraController m_CameraController;
+	Sora::OrthographicCameraController m_CameraController;
 
-	Yuki::Ref<Yuki::Texture2D> m_Tilemap, m_Crease, m_CheckerBoard;
-	Yuki::Ref<Yuki::SubTexture2D> m_Sprite;
+	Sora::Ref<Sora::Texture2D> m_Tilemap, m_Crease, m_CheckerBoard;
+	Sora::Ref<Sora::SubTexture2D> m_Sprite;
 };

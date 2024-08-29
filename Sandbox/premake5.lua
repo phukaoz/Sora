@@ -14,31 +14,31 @@ project "Sandbox"
 	}
 	
 	includedirs{
-		"%{wks.location}/Yuki/vendor/spdlog/include",
-		"%{wks.location}/Yuki/src",
-		"%{wks.location}/Yuki/vendor",
+		"%{wks.location}/Sora/vendor/spdlog/include",
+		"%{wks.location}/Sora/src",
+		"%{wks.location}/Sora/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
 	}
 
 	links{
-		"Yuki"
+		"Sora"
 	}
 
 	filter "system:windows"
 		systemversion "latest"
 
 	filter "configurations:Debug"
-		defines "YUKI_DEBUG"
+		defines "SORA_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "YUKI_RELEASE"
+		defines "SORA_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "YUKI_DIST"
+		defines "SORA_DIST"
 		runtime "Release"
 		optimize "on"

@@ -77,13 +77,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\..\Alya\premake5.lua" />
     <None Include="..\..\Sandbox\premake5.lua" />
-    <None Include="..\..\Yuki\premake5.lua" />
-    <None Include="..\..\Yuki\vendor\GLFW\premake5.lua" />
-    <None Include="..\..\Yuki\vendor\Glad\premake5.lua" />
-    <None Include="..\..\Yuki\vendor\imgui\premake5.lua" />
-    <None Include="..\..\Yuki\vendor\yaml-cpp\premake5.lua" />
+    <None Include="..\..\Sora\premake5.lua" />
+    <None Include="..\..\Sora\vendor\GLFW\premake5.lua" />
+    <None Include="..\..\Sora\vendor\Glad\premake5.lua" />
+    <None Include="..\..\Sora\vendor\imgui\premake5.lua" />
+    <None Include="..\..\Sora\vendor\yaml-cpp\premake5.lua" />
+    <None Include="..\..\SoraEditor\premake5.lua" />
     <None Include="..\..\premake5.lua" />
     <None Include="premake5.lua" />
   </ItemGroup>

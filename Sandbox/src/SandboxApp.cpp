@@ -1,5 +1,5 @@
-#include <Yuki.h>
-#include <Yuki/Core/EntryPoint.h>
+#include <Sora.h>
+#include <Sora/Core/EntryPoint.h>
 
 #include <imgui/imgui.h>
 
@@ -10,7 +10,7 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
-class Sandbox : public Yuki::Application
+class Sandbox : public Sora::Application
 {
 public:
 	Sandbox()
@@ -24,7 +24,7 @@ public:
 	}
 };
 
-Yuki::Application* Yuki::CreateApplication()
+Sora::Application* Sora::CreateApplication()
 {
 	return new Sandbox();
 }
