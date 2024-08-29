@@ -1,1 +1,19 @@
 
+[submodule "Sora/vendor/spdlog"]
+	path = Sora/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "Sora/vendor/glfw"]
+	path = Sora/vendor/glfw
+	url = https://github.com/phukaoz/glfw
+[submodule "Sora/vendor/glm"]
+	path = Sora/vendor/glm
+	url = https://github.com/g-truc/glm
+[submodule "Sora/vendor/imgui"]
+	path = Sora/vendor/imgui
+	url = https://github.com/phukaoz/imgui
+[submodule "Sora/vendor/yaml-cpp"]
+	path = Sora/vendor/yaml-cpp
+	url = https://github.com/phukaoz/yaml-cpp
+[submodule "Sora/vendor/ImGuizmo"]
+	path = Sora/vendor/ImGuizmo
+	url = https://github.com/phukaoz/ImGuizmo
