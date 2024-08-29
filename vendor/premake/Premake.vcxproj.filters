@@ -13,11 +13,11 @@
     <Filter Include="..\Sora\vendor">
       <UniqueIdentifier>{22724590-0E40-3996-F7D3-A9BCE34015FB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\Sora\vendor\GLFW">
-      <UniqueIdentifier>{A1D246C2-0D34-24D0-96A1-6A8202025B8F}</UniqueIdentifier>
-    </Filter>
     <Filter Include="..\Sora\vendor\Glad">
       <UniqueIdentifier>{495E47C2-B5BF-24D0-3E2D-6B82AA8D5B8F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Sora\vendor\glfw">
+      <UniqueIdentifier>{21EB58C2-8D4C-36D0-16BA-7C82821A6D8F}</UniqueIdentifier>
     </Filter>
     <Filter Include="..\Sora\vendor\imgui">
       <UniqueIdentifier>{0C119B0D-F89F-24D7-A1BE-38D28D2C357D}</UniqueIdentifier>
@@ -36,11 +36,11 @@
     <None Include="..\..\Sora\premake5.lua">
       <Filter>..\Sora</Filter>
     </None>
-    <None Include="..\..\Sora\vendor\GLFW\premake5.lua">
-      <Filter>..\Sora\vendor\GLFW</Filter>
-    </None>
     <None Include="..\..\Sora\vendor\Glad\premake5.lua">
       <Filter>..\Sora\vendor\Glad</Filter>
+    </None>
+    <None Include="..\..\Sora\vendor\glfw\premake5.lua">
+      <Filter>..\Sora\vendor\glfw</Filter>
     </None>
     <None Include="..\..\Sora\vendor\imgui\premake5.lua">
       <Filter>..\Sora\vendor\imgui</Filter>
