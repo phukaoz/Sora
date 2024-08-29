@@ -16,7 +16,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sora", "Sora\Sora.vcxproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependecies", "Dependecies", "{C5F8F5E2-310F-F478-7A86-7F9AE6DBC400}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "Sora\vendor\GLFW\GLFW.vcxproj", "{154B857C-0182-860D-AA6E-6C109684020F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "Sora\vendor\glfw\GLFW.vcxproj", "{154B857C-0182-860D-AA6E-6C109684020F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glad", "Sora\vendor\Glad\Glad.vcxproj", "{BDD6857C-A90D-870D-52FA-6C103E10030F}"
 EndProject

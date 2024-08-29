@@ -24,7 +24,7 @@ workspace "Sora"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["GLFW"] = "%{wks.location}/Sora/vendor/GLFW/include"
+IncludeDir["glfw"] = "%{wks.location}/Sora/vendor/glfw/include"
 IncludeDir["Glad"] = "%{wks.location}/Sora/vendor/Glad/include"
 IncludeDir["ImGui"] = "%{wks.location}/Sora/vendor/imgui"
 IncludeDir["glm"] = "%{wks.location}/Sora/vendor/glm"
@@ -35,7 +35,7 @@ IncludeDir["ImGuizmo"] = "%{wks.location}/Sora/vendor/ImGuizmo"
 
 group "Dependecies"
 	include "vendor/premake"
-	include "Sora/vendor/GLFW"
+	include "Sora/vendor/glfw"
 	include "Sora/vendor/Glad"
 	include "Sora/vendor/imgui"
 	include "Sora/vendor/yaml-cpp"

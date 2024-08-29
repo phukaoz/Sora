@@ -33,7 +33,7 @@ project "Sora"
 	{
 		"src",
 		"vendor/spdlog/include",
-		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.glfw}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
