@@ -1,18 +1,18 @@
-[submodule "Yuki/vendor/spdlog"]
-	path = Yuki/vendor/spdlog
+[submodule "Sora/vendor/spdlog"]
+	path = Sora/vendor/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Yuki/vendor/GLFW"]
-	path = Yuki/vendor/GLFW
+[submodule "Sora/vendor/GLFW"]
+	path = Sora/vendor/GLFW
 	url = https://github.com/phukaoz/glfw
-[submodule "Yuki/vendor/glm"]
-	path = Yuki/vendor/glm
+[submodule "Sora/vendor/glm"]
+	path = Sora/vendor/glm
 	url = https://github.com/g-truc/glm
-[submodule "Yuki/vendor/imgui"]
-	path = Yuki/vendor/imgui
+[submodule "Sora/vendor/imgui"]
+	path = Sora/vendor/imgui
 	url = https://github.com/phukaoz/imgui
-[submodule "Yuki/vendor/yaml-cpp"]
-	path = Yuki/vendor/yaml-cpp
+[submodule "Sora/vendor/yaml-cpp"]
+	path = Sora/vendor/yaml-cpp
 	url = https://github.com/phukaoz/yaml-cpp
-[submodule "Yuki/vendor/ImGuizmo"]
-	path = Yuki/vendor/ImGuizmo
+[submodule "Sora/vendor/ImGuizmo"]
+	path = Sora/vendor/ImGuizmo
 	url = https://github.com/phukaoz/ImGuizmo
