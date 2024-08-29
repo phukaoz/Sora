@@ -1,5 +1,5 @@
 <div align="center">
-    <h2>Yuki</h2>
+    <h2>Sora</h2>
     <p><b>An open-source 2D/3D game engine</b></p>
 </div>
 
