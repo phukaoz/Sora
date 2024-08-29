@@ -174,8 +174,10 @@
     <ClInclude Include="src\Yuki\Events\KeyEvent.h" />
     <ClInclude Include="src\Yuki\Events\MouseEvent.h" />
     <ClInclude Include="src\Yuki\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Yuki\Math\Math.h" />
     <ClInclude Include="src\Yuki\Renderer\Buffer.h" />
     <ClInclude Include="src\Yuki\Renderer\Camera.h" />
+    <ClInclude Include="src\Yuki\Renderer\EditorCamera.h" />
     <ClInclude Include="src\Yuki\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Yuki\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\Yuki\Renderer\OrthographicCamera.h" />
@@ -632,7 +634,9 @@
     <ClCompile Include="src\Yuki\Core\Log.cpp" />
     <ClCompile Include="src\Yuki\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Yuki\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Yuki\Math\Math.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Yuki\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\Yuki\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\Yuki\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Yuki\Renderer\OrthographicCameraController.cpp" />

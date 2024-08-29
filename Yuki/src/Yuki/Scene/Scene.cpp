@@ -32,7 +32,20 @@ namespace Yuki {
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::OnUpdate(Timestep ts)
+	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto transfrom_sprite_group = m_Registry.group<TransformComponent, SpriteComponent>();
+		for (auto entity : transfrom_sprite_group)
+		{
+			auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+		Renderer2D::EndScene();
+	}
+
+	void Scene::OnUpdateRuntime(Timestep ts)
 	{
 		auto native_script_view = m_Registry.view<NativeScriptComponent>();
 		for (auto entity : native_script_view)
@@ -88,6 +101,19 @@ namespace Yuki {
 			if (!camera_component.FixedAspectRatio)
 				camera_component.Camera.SetViewportSize(width, height);
 		}
+	}
+
+	Yuki::Entity Scene::GetPrimaryCameraEntity()
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			const auto& camera_component = view.get<CameraComponent>(entity);
+			if (camera_component.Primary)
+				return Entity(entity, this);
+		}
+
+		return {};
 	}
 
 	template<typename T>

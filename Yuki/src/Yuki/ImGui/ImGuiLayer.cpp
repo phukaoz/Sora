@@ -67,7 +67,7 @@ namespace Yuki {
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
-		if (m_EventsEnabled)
+		if (!m_EventsEnabled)
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;

@@ -4,6 +4,7 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Yuki/Scene/SceneSerializer.h"
 #include "Yuki/Utils/PlatformUtils.h"
+#include "Yuki/Math/Math.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -18,23 +19,15 @@ namespace Yuki {
 
 	void AlyaLayer::OnAttach()
 	{
-		FramebufferSpecification fbSpec;
-		fbSpec.Width  = 1280;
-		fbSpec.Height = 720;
-		m_Framebuffer = Framebuffer::Create(fbSpec);
+		FramebufferSpecification fb_spec;
+		fb_spec.Width  = 1280;
+		fb_spec.Height = 720;
+		mFramebuffer = Framebuffer::Create(fb_spec);
 
-		m_ActiveScene = CreateRef<Scene>();
-		
+		mActiveScene = CreateRef<Scene>();
+
+		mEditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 		/*
-		m_Square1 = m_ActiveScene->CreateEntity("Square1");
-		m_Square1.AddComponent<SpriteComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
-
-		m_Square2 = m_ActiveScene->CreateEntity("Square2");
-		m_Square2.AddComponent<SpriteComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
-	
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
-		m_CameraEntity.AddComponent<CameraComponent>();
-
 		class CameraController : public ScriptableEntity
 		{
 		public:
@@ -67,7 +60,7 @@ namespace Yuki {
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		*/
 
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		mSceneHierarchyPanel.SetContext(mActiveScene);
 	}
 
 	void AlyaLayer::OnDetach()
@@ -76,27 +69,30 @@ namespace Yuki {
 
 	void AlyaLayer::OnUpdate(Yuki::Timestep ts)
 	{
-		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+		if (FramebufferSpecification spec = mFramebuffer->GetSpecification();
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			mFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			mEditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+			mActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
+		mEditorCamera.OnUpdate(ts);
+
 		Renderer2D::ResetStats();
-		m_Framebuffer->Bind();
+		mFramebuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
 
-		m_ActiveScene->OnUpdate(ts);
+		mActiveScene->OnUpdateEditor(ts, mEditorCamera);
 
-		m_Framebuffer->Unbind();
+		mFramebuffer->Unbind();
 	}
 
 	void AlyaLayer::OnImGuiRender()
 	{
-		static bool dockspaceOpen = true;
+		static bool dockspace_open = true;
 		static bool opt_fullscreen = true;
 		static bool opt_padding = false;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -123,7 +119,7 @@ namespace Yuki {
 
 		if (!opt_padding)
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace", &dockspaceOpen, window_flags);
+		ImGui::Begin("DockSpace", &dockspace_open, window_flags);
 		if (!opt_padding)
 			ImGui::PopStyleVar();
 
@@ -173,25 +169,64 @@ namespace Yuki {
 		}
 		ImGui::End();
 
-		m_SceneHierarchyPanel.OnImGuiRender();
+		mSceneHierarchyPanel.OnImGuiRender();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 		{
 			m_ViewportFocused = ImGui::IsWindowFocused();
 			m_ViewportHovered = ImGui::IsWindowHovered();
-			Application::Get().GetImGuiLayer()->EnableEvents(!m_ViewportFocused && !m_ViewportHovered);
+			Application::Get().GetImGuiLayer()->EnableEvents(m_ViewportFocused || m_ViewportHovered);
 
-			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+			ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
+			m_ViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
 
-			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-			ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(textureID)), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
+			ImGui::Image((void*)texture_id, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
 
-		Entity selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selected_entity)
+		Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
+		if (selected_entity && mGizmoType != -1)
 		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			float window_width = (float)ImGui::GetWindowWidth();
+			float window_height = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
+
+			//auto camera_entity = mActiveScene->GetPrimaryCameraEntity();
+			//const auto& camera = camera_entity.GetComponent<CameraComponent>().Camera;
+			//const glm::mat4& camera_projection = camera.GetProjection();
+			//glm::mat4 camera_view = glm::inverse(camera_entity.GetComponent<TransformComponent>().GetTransform());
+
+			const glm::mat4& camera_projection = mEditorCamera.GetProjection();
+			glm::mat4 camera_view = mEditorCamera.GetViewMatrix();
+
+			auto& transform_component = selected_entity.GetComponent<TransformComponent>();
+			glm::mat4 transform = transform_component.GetTransform();
+
+			bool snap = Input::IsKeyPressed(Key::LeftControl);
+			float snap_value = 0.5f;
+
+			if (mGizmoType == ImGuizmo::OPERATION::ROTATE)
+				snap_value = 45.0f;
+
+			float snap_values[3] = { snap_value, snap_value, snap_value };
+
+			ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
+				(ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+				nullptr, snap ? snap_values : nullptr);
+
+			if (ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				transform_component.Translation = translation;
+				transform_component.Rotation = rotation;
+				transform_component.Scale = scale;
+			}
 		}
 
 		ImGui::End();
@@ -216,35 +251,36 @@ namespace Yuki {
 
 		switch (e.GetKeyCode())
 		{
-		case Key::N:
-		{
-			if (control)
-				NewScene();
+			case Key::N:
+				if (control) NewScene();
+				break;
+			case Key::O:
+				if (control) OpenScene();
+				break;
+			case Key::S:
+				if (control && shift) SaveSceneAs();
+				break;
 
-			break;
-		}
-		case Key::O:
-		{
-			if (control)
-				OpenScene();
-
-			break;
-		}
-		case Key::S:
-		{
-			if (control && shift)
-				SaveSceneAs();
-
-			break;
-		}
+			case Key::Q:
+				mGizmoType = -1;
+				break;
+			case Key::W:
+				mGizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			case Key::E:
+				mGizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			case Key::R:
+				mGizmoType = ImGuizmo::OPERATION::SCALE;
+				break;
 		}
 	}
 
 	void AlyaLayer::NewScene()
 	{
-		m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		mActiveScene = CreateRef<Scene>();
+		mActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		mSceneHierarchyPanel.SetContext(mActiveScene);
 	}
 
 	void AlyaLayer::OpenScene()
@@ -253,11 +289,11 @@ namespace Yuki {
 		if (!filepath.empty())
 		{
 			std::cout << filepath << std::endl;
-			m_ActiveScene = CreateRef<Scene>();
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+			mActiveScene = CreateRef<Scene>();
+			mActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			mSceneHierarchyPanel.SetContext(mActiveScene);
 
-			SceneSerializer serializer(m_ActiveScene);
+			SceneSerializer serializer(mActiveScene);
 			serializer.Deserialize(filepath);
 		}
 	}
@@ -267,7 +303,7 @@ namespace Yuki {
 		std::string filepath = FileDialogs::SaveFile("Yuki Scene (*.yuki)\0*.yuki\0");
 		if (!filepath.empty())
 		{
-			SceneSerializer serializer(m_ActiveScene);
+			SceneSerializer serializer(mActiveScene);
 			serializer.Serialize(filepath);
 		}
 	}

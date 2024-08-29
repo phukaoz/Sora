@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Yuki/Renderer/OrthographicCamera.h"
 #include "Yuki/Renderer/Camera.h"
+#include "Yuki/Renderer/OrthographicCamera.h"
+#include "Yuki/Renderer/EditorCamera.h"
 
 #include "Yuki/Renderer/Texture.h"
 #include "Yuki/Renderer/SubTexture2D.h"
@@ -14,8 +15,9 @@ namespace Yuki {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const OrthographicCamera& camera);
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const OrthographicCamera& camera);
+		static void BeginScene(const EditorCamera& camera);
 		static void EndScene();
 		static void Flush();
 
@@ -40,7 +42,8 @@ namespace Yuki {
 		static void ResetStats();
 		static Statistics GetStats();
 	private:
-		static void StartNewBatch();
+		static void StartBatch();
+		static void NextBatch();
 	};
 
 }

@@ -207,30 +207,32 @@ namespace Yuki {
 			}
 		}
 
-		ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-
-		if (ImGui::Button("Add Component"))
-			ImGui::OpenPopup("AddComponent");
-
-		if (ImGui::BeginPopup("AddComponent"))
 		{
-			if (ImGui::MenuItem("Camera"))
+			ImGui::SameLine();
+			ImGui::PushItemWidth(-1);
+
+			if (ImGui::Button("Add Component"))
+				ImGui::OpenPopup("AddComponent");
+
+			if (ImGui::BeginPopup("AddComponent"))
 			{
-				m_SelectionContext.AddComponent<CameraComponent>();
-				ImGui::CloseCurrentPopup();
+				if (ImGui::MenuItem("Camera"))
+				{
+					m_SelectionContext.AddComponent<CameraComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItem("Sprite"))
+				{
+					m_SelectionContext.AddComponent<SpriteComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
 			}
 
-			if (ImGui::MenuItem("Sprite"))
-			{
-				m_SelectionContext.AddComponent<SpriteComponent>();
-				ImGui::CloseCurrentPopup();
-			}
-
-			ImGui::EndPopup();
+			ImGui::PopItemWidth();
 		}
-
-		ImGui::PopItemWidth();
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
@@ -298,6 +300,11 @@ namespace Yuki {
 					if (ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio))
 					{
 						//TODO: recalculate scene camera
+					}
+
+					if (ImGui::Checkbox("Primary", &component.Primary))
+					{
+
 					}
 				}
 			});

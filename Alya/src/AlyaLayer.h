@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Yuki.h"
+
 #include "Panels/SceneHierarchyPanel.h"
+#include "Yuki/Renderer/EditorCamera.h"
 
 namespace Yuki {
 
@@ -14,9 +16,9 @@ namespace Yuki {
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 
-		virtual void OnUpdate(Timestep ts) override;
-		virtual void OnImGuiRender() override;
-		virtual void OnEvent(Event& e) override;
+		virtual void OnUpdate(Timestep ts)	override;
+		virtual void OnImGuiRender()		override;
+		virtual void OnEvent(Event& e)		override;
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
 
@@ -24,16 +26,17 @@ namespace Yuki {
 		void OpenScene();
 		void SaveSceneAs();
 	private:
-		Ref<Framebuffer> m_Framebuffer;
+		Ref<Framebuffer> mFramebuffer;
 
-		Ref<Scene> m_ActiveScene;
-		Entity m_Square1, m_Square2;
-		Entity m_CameraEntity;
+		Ref<Scene> mActiveScene;
 
+		EditorCamera mEditorCamera;
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 
-		SceneHierarchyPanel m_SceneHierarchyPanel;
+		int mGizmoType = 0;
+
+		SceneHierarchyPanel mSceneHierarchyPanel;
 	};
 
 }

@@ -3,6 +3,7 @@
 #include <entt.hpp>
 
 #include "Yuki/Core/Timestep.h"
+#include "Yuki/Renderer/EditorCamera.h"
 
 namespace Yuki {
 
@@ -17,8 +18,11 @@ namespace Yuki {
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
-		void OnUpdate(Timestep ts);
+		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
+		void OnUpdateRuntime(Timestep ts);
 		void OnViewportResize(uint32_t width, uint32_t height);
+
+		Entity GetPrimaryCameraEntity();
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);

@@ -44,24 +44,24 @@ namespace Yuki {
 		Renderer2D::Statistics Stats;
 	};
 
-	static Renderer2DData s_Data;
+	static Renderer2DData sData;
 
 	void Renderer2D::Init()
 	{
 		YUKI_PROFILE_FUNCTION();
 
-		s_Data.QuadVertexArray = VertexArray::Create();
-		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
-		s_Data.QuadVertexBuffer->SetLayout({
+		sData.QuadVertexArray = VertexArray::Create();
+		sData.QuadVertexBuffer = VertexBuffer::Create(sData.MaxVertices * sizeof(QuadVertex));
+		sData.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			{ ShaderDataType::Float, "a_TexIndex" },
 			{ ShaderDataType::Float, "a_TilingFactor" },
 		});
-		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
+		sData.QuadVertexArray->AddVertexBuffer(sData.QuadVertexBuffer);
 
-		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+		sData.QuadVertexBufferBase = new QuadVertex[sData.MaxVertices];
 
 		uint32_t* quadIndices = new uint32_t[Renderer2DData::MaxIndices];
 
@@ -80,92 +80,102 @@ namespace Yuki {
 		}
 
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, Renderer2DData::MaxIndices);
-		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
+		sData.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
-		s_Data.WhiteTexture = Texture2D::Create(1, 1);
+		sData.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
-		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		sData.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
 		int32_t sampler[Renderer2DData::MaxTextureSlots];
 		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
 			sampler[i] = i;
 
-		s_Data.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetIntArray("u_Textures", sampler, Renderer2DData::MaxTextureSlots);
+		sData.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
+		sData.TextureShader->Bind();
+		sData.TextureShader->SetIntArray("u_Textures", sampler, Renderer2DData::MaxTextureSlots);
 
 		// Set white texture at index 0.
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+		sData.TextureSlots[0] = sData.WhiteTexture;
 
-		s_Data.QuadVertexPosition[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPosition[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+		sData.QuadVertexPosition[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		sData.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		sData.QuadVertexPosition[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		sData.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 	}
 
 	void Renderer2D::Shutdown()
 	{
 		YUKI_PROFILE_FUNCTION();
 
-		delete[] s_Data.QuadVertexBufferBase;
-	}
-
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
-	{
-		YUKI_PROFILE_FUNCTION();
-
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		delete[] sData.QuadVertexBufferBase;
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
 		YUKI_PROFILE_FUNCTION();
 
-		glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
+		glm::mat4 view_proj = camera.GetProjection() * glm::inverse(transform);
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+		sData.TextureShader->Bind();
+		sData.TextureShader->SetMat4("u_ViewProjection", view_proj);
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		StartBatch();
+	}
 
-		s_Data.TextureSlotIndex = 1;
+	void Renderer2D::BeginScene(const OrthographicCamera& camera)
+	{
+		YUKI_PROFILE_FUNCTION();
+
+		sData.TextureShader->Bind();
+		sData.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+
+		StartBatch();
+	}
+
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		YUKI_PROFILE_FUNCTION();
+
+		glm::mat4 view_proj = camera.GetViewProjection();
+
+		sData.TextureShader->Bind();
+		sData.TextureShader->SetMat4("u_ViewProjection", view_proj);
+
+		StartBatch();
 	}
 
 	void Renderer2D::EndScene()
 	{
 		YUKI_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
 		Flush();
 	}
 
 	void Renderer2D::Flush()
 	{
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-			s_Data.TextureSlots[i]->Bind(i);
+		uint32_t dataSize = (uint32_t)((uint8_t*)sData.QuadVertexBufferPtr - (uint8_t*)sData.QuadVertexBufferBase);
+		sData.QuadVertexBuffer->SetData(sData.QuadVertexBufferBase, dataSize);
 
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
-		s_Data.Stats.DrawCallCount++;
+		for (uint32_t i = 0; i < sData.TextureSlotIndex; i++)
+			sData.TextureSlots[i]->Bind(i);
+
+		RenderCommand::DrawIndexed(sData.QuadVertexArray, sData.QuadIndexCount);
+		sData.Stats.DrawCallCount++;
 	}
 
-	void Renderer2D::StartNewBatch()
+	void Renderer2D::StartBatch()
 	{
-		EndScene();
+		sData.QuadIndexCount = 0;
+		sData.QuadVertexBufferPtr = sData.QuadVertexBufferBase;
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		sData.TextureSlotIndex = 1;
+	}
+	
+	void Renderer2D::NextBatch()
+	{
+		Flush();
+		StartBatch();
 	}
 
 	//////////////////
@@ -220,13 +230,13 @@ namespace Yuki {
 		const glm::vec2* textureCoords = subtexture->GetTexCoords();
 		const Ref<Texture2D> texture = subtexture->GetTexture();
 
-		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			StartNewBatch();
+		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+			NextBatch();
 
 		float textureIndex = 0.0f;
-		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+		for (uint32_t i = 1; i < sData.TextureSlotIndex; i++)
 		{
-			if (*s_Data.TextureSlots[i].get() == *texture.get())
+			if (*sData.TextureSlots[i].get() == *texture.get())
 			{
 				textureIndex = (float)i;
 				break;
@@ -235,9 +245,9 @@ namespace Yuki {
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-			s_Data.TextureSlotIndex++;
+			textureIndex = (float)sData.TextureSlotIndex;
+			sData.TextureSlots[sData.TextureSlotIndex] = texture;
+			sData.TextureSlotIndex++;
 		}
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
@@ -246,17 +256,17 @@ namespace Yuki {
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
-			s_Data.QuadVertexBufferPtr->Color = color;
-			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			s_Data.QuadVertexBufferPtr++;
+			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
+			sData.QuadVertexBufferPtr->Color = color;
+			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
+			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			sData.QuadVertexBufferPtr++;
 		}
 
-		s_Data.QuadIndexCount += 6;
+		sData.QuadIndexCount += 6;
 
-		s_Data.Stats.QuadCount++;
+		sData.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
@@ -268,22 +278,22 @@ namespace Yuki {
 		const float textureIndex = 0.0f;
 		const float tilingFactor = 1.0f;
 
-		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			StartNewBatch();
+		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+			NextBatch();
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
-			s_Data.QuadVertexBufferPtr->Color = color;
-			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			s_Data.QuadVertexBufferPtr++;
+			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
+			sData.QuadVertexBufferPtr->Color = color;
+			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
+			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			sData.QuadVertexBufferPtr++;
 		}
 
-		s_Data.QuadIndexCount += 6;
+		sData.QuadIndexCount += 6;
 
-		s_Data.Stats.QuadCount++;
+		sData.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor /*= 1.0f*/, const glm::vec4& tintColor /*= glm::vec4(1.0f)*/)
@@ -294,13 +304,13 @@ namespace Yuki {
 		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			StartNewBatch();
+		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+			NextBatch();
 
 		float textureIndex = 0.0f;
-		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+		for (uint32_t i = 1; i < sData.TextureSlotIndex; i++)
 		{
-			if (*s_Data.TextureSlots[i].get() == *texture.get())
+			if (*sData.TextureSlots[i].get() == *texture.get())
 			{
 				textureIndex = (float)i;
 				break;
@@ -309,33 +319,34 @@ namespace Yuki {
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-			s_Data.TextureSlotIndex++;
+			textureIndex = (float)sData.TextureSlotIndex;
+			sData.TextureSlots[sData.TextureSlotIndex] = texture;
+			sData.TextureSlotIndex++;
 		}
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
-			s_Data.QuadVertexBufferPtr->Color = color;
-			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			s_Data.QuadVertexBufferPtr++;
+			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
+			sData.QuadVertexBufferPtr->Color = color;
+			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
+			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			sData.QuadVertexBufferPtr++;
 		}
 
-		s_Data.QuadIndexCount += 6;
+		sData.QuadIndexCount += 6;
 
-		s_Data.Stats.QuadCount++;
+		sData.Stats.QuadCount++;
 	}
 
 	void Renderer2D::ResetStats()
 	{
-		memset(&s_Data.Stats, 0, sizeof(Statistics));
+		memset(&sData.Stats, 0, sizeof(Statistics));
 	}
 
 	Renderer2D::Statistics Renderer2D::GetStats()
 	{
-		return s_Data.Stats;
+		return sData.Stats;
 	}
+
 }
