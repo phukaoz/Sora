@@ -20,7 +20,7 @@ namespace Sora {
 	void EditorLayer::OnAttach()
 	{
 		FramebufferSpecification fb_spec;
-		fb_spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		fb_spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
 		fb_spec.Width  = 1600;
 		fb_spec.Height = 900;
 		mFramebuffer = Framebuffer::Create(fb_spec);
@@ -28,38 +28,6 @@ namespace Sora {
 		mActiveScene = CreateRef<Scene>();
 
 		mEditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
-		/*
-		class CameraController : public ScriptableEntity
-		{
-		public:
-			void OnCreate()
-			{
-				auto& translation= GetComponent<TransformComponent>().Translation;
-				translation.x = rand() % 10 - 5.0f;
-			}
-
-			void OnDestroy()
-			{
-
-			}
-
-			void OnUpdate(Timestep ts)
-			{
-				auto& translation = GetComponent<TransformComponent>().Translation;
-				float speed = 5.0f;
-
-				if (Input::IsKeyPressed(Key::A))
-					translation.x -= speed * ts;
-				if (Input::IsKeyPressed(Key::D))
-					translation.x += speed * ts;
-				if (Input::IsKeyPressed(Key::W))
-					translation.y += speed * ts;
-				if (Input::IsKeyPressed(Key::S))
-					translation.y -= speed * ts;
-			}
-		};
-		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-		*/
 
 		mSceneHierarchyPanel.SetContext(mActiveScene);
 	}
@@ -87,6 +55,20 @@ namespace Sora {
 		RenderCommand::Clear();
 
 		mActiveScene->OnUpdateEditor(ts, mEditorCamera);
+
+		auto mouse = ImGui::GetMousePos();
+		mouse.x -= mViewportBounds[0].x;
+		mouse.y -= mViewportBounds[0].y;
+		glm::vec2 viewport_size = mViewportBounds[1] - mViewportBounds[0];
+		mouse.y = viewport_size.y - mouse.y; // flip for OpenGL coordinate system.
+
+		int mouse_x = (int)mouse.x;
+		int mouse_y = (int)mouse.y;
+
+		if (mouse_x >= 0 && mouse_y >= 0 && mouse_x < (int)viewport_size.x && mouse_y < (int)viewport_size.y)
+		{
+			int pixel_data = mFramebuffer->ReadPixel(1, mouse_x, mouse_y);
+		}
 
 		mFramebuffer->Unbind();
 	}
@@ -174,17 +156,26 @@ namespace Sora {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
-		{
-			mViewportFocused = ImGui::IsWindowFocused();
-			mViewportHovered = ImGui::IsWindowHovered();
-			Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
+		auto viewport_offset = ImGui::GetCursorPos();
 
-			ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
-			mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
+		mViewportFocused = ImGui::IsWindowFocused();
+		mViewportHovered = ImGui::IsWindowHovered();
+		Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
 
-			uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
-			ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-		}
+		ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
+		mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
+
+		uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
+		ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		auto window_size = ImGui::GetWindowSize();
+		ImVec2 min_bound = ImGui::GetWindowPos();
+		min_bound.x += viewport_offset.x;
+		min_bound.y += viewport_offset.y;
+
+		ImVec2 max_bound = { min_bound.x + window_size.x, min_bound.y + window_size.y };
+		mViewportBounds[0] = { min_bound.x, min_bound.y };
+		mViewportBounds[1] = { max_bound.x, max_bound.y };
 
 		Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
 		if (selected_entity && mGizmoType != -1)

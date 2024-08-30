@@ -24,7 +24,7 @@ namespace Sora {
 			glBindTexture(TextureTarget(multisampled), id);
 		}
 
-		static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(uint32_t id, int samples, GLenum internal_format, GLenum format, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;
 			if (multisampled)
@@ -33,7 +33,7 @@ namespace Sora {
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -127,7 +127,10 @@ namespace Sora {
 				switch (mColorAttachmentSpecifications[i].TextureFormat)
 				{
 				case FramebufferTextureFormat::RGBA8:
-					Utils::AttachColorTexture(mColorAttachments[i], mSpecification.Samples, GL_RGBA8, mSpecification.Width, mSpecification.Height, i);
+					Utils::AttachColorTexture(mColorAttachments[i], mSpecification.Samples, GL_RGBA8, GL_RGBA, mSpecification.Width, mSpecification.Height, i);
+					break;
+				case FramebufferTextureFormat::RED_INTEGER:
+					Utils::AttachColorTexture(mColorAttachments[i], mSpecification.Samples, GL_R32I, GL_RED_INTEGER, mSpecification.Width, mSpecification.Height, i);
 					break;
 				}
 			}
@@ -184,6 +187,17 @@ namespace Sora {
 		mSpecification.Width = width;
 		mSpecification.Height = height;
 		Invalidate();
+	}
+
+	int OpenGLFramebuffer::ReadPixel(uint32_t attachment_index, int x, int y)
+	{
+		SORA_CORE_ASSERT(attachment_index < mColorAttachments.size(), "Index {0} is out of bound. There are {1} color attachment(s)", attachment_index, mColorAttachments.size());
+		
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
+		int pixel_data;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel_data);
+		
+		return pixel_data;
 	}
 
 }
