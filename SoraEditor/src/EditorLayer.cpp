@@ -20,8 +20,9 @@ namespace Sora {
 	void EditorLayer::OnAttach()
 	{
 		FramebufferSpecification fb_spec;
-		fb_spec.Width  = 1280;
-		fb_spec.Height = 720;
+		fb_spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		fb_spec.Width  = 1600;
+		fb_spec.Height = 900;
 		mFramebuffer = Framebuffer::Create(fb_spec);
 
 		mActiveScene = CreateRef<Scene>();
@@ -70,12 +71,12 @@ namespace Sora {
 	void EditorLayer::OnUpdate(Sora::Timestep ts)
 	{
 		if (FramebufferSpecification spec = mFramebuffer->GetSpecification();
-			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
-			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+			mViewportSize.x > 0.0f && mViewportSize.y > 0.0f &&
+			(spec.Width != mViewportSize.x || spec.Height != mViewportSize.y))
 		{
-			mFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			mEditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-			mActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			mFramebuffer->Resize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
+			mEditorCamera.SetViewportSize(mViewportSize.x, mViewportSize.y);
+			mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 		}
 
 		mEditorCamera.OnUpdate(ts);
@@ -174,15 +175,15 @@ namespace Sora {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 		{
-			m_ViewportFocused = ImGui::IsWindowFocused();
-			m_ViewportHovered = ImGui::IsWindowHovered();
-			Application::Get().GetImGuiLayer()->EnableEvents(m_ViewportFocused || m_ViewportHovered);
+			mViewportFocused = ImGui::IsWindowFocused();
+			mViewportHovered = ImGui::IsWindowHovered();
+			Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
 
 			ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
-			m_ViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
+			mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
 
 			uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
-			ImGui::Image((void*)texture_id, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
 
 		Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
@@ -279,7 +280,7 @@ namespace Sora {
 	void EditorLayer::NewScene()
 	{
 		mActiveScene = CreateRef<Scene>();
-		mActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 		mSceneHierarchyPanel.SetContext(mActiveScene);
 	}
 
@@ -290,7 +291,7 @@ namespace Sora {
 		{
 			std::cout << filepath << std::endl;
 			mActiveScene = CreateRef<Scene>();
-			mActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 			mSceneHierarchyPanel.SetContext(mActiveScene);
 
 			SceneSerializer serializer(mActiveScene);

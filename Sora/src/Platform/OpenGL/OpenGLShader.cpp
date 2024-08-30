@@ -28,21 +28,21 @@ namespace Sora {
 		Compile(shaderSources);
 
 		// Get name from filepath.
-		auto lastSlash = filepath.find_last_of("/\\");
-		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-		auto lastDot = filepath.rfind('.');
-		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
-		m_Name = filepath.substr(lastSlash, count);
+		auto last_slash = filepath.find_last_of("/\\");
+		last_slash = last_slash == std::string::npos ? 0 : last_slash + 1;
+		auto last_dot = filepath.rfind('.');
+		auto count = last_dot == std::string::npos ? filepath.size() - last_slash : last_dot - last_slash;
+		mName = filepath.substr(last_slash, count);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-		: m_Name(name)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertex_src, const std::string& fragment_src)
+		: mName(name)
 	{
 		SORA_PROFILE_FUNCTION();
 
 		std::unordered_map<GLenum, std::string> sources;
-		sources[GL_VERTEX_SHADER] = vertexSrc;
-		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+		sources[GL_VERTEX_SHADER] = vertex_src;
+		sources[GL_FRAGMENT_SHADER] = fragment_src;
 		Compile(sources);
 	}
 

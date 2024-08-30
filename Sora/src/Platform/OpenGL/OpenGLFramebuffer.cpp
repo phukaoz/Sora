@@ -5,45 +5,157 @@
 
 namespace Sora {
 
-	static const uint32_t s_MaxFramebufferSize = 8192;
+	static const uint32_t sMaxFramebufferSize = 8192;
+
+	namespace Utils {
+
+		static GLenum TextureTarget(bool multisampled)
+		{
+			return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+		}
+
+		static void CreateTextures(bool multisampled, uint32_t* out_id, uint32_t count)
+		{
+			glCreateTextures(TextureTarget(multisampled), count, out_id);
+		}
+
+		static void BindTexture(bool multisampled, uint32_t id)
+		{
+			glBindTexture(TextureTarget(multisampled), id);
+		}
+
+		static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		{
+			bool multisampled = samples > 1;
+			if (multisampled)
+			{
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+			}
+			else
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
+		}
+
+		static void AttachDepthTexture(uint32_t id, int samples, GLenum format, GLenum attachment_type, uint32_t width, uint32_t height)
+		{
+			bool multisampled = samples > 1;
+			if (multisampled)
+			{
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+			}
+			else
+			{
+				glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_type, TextureTarget(multisampled), id, 0);
+		}
+
+		static bool IsDepthFormat(FramebufferTextureFormat format)
+		{
+			switch (format)
+			{
+				case Sora::FramebufferTextureFormat::DEPTH24STENCIL8: return true;
+			}
+
+			return false;
+		}
+
+	}
 
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
-		: m_Specification(spec)
+		: mSpecification(spec)
 	{
+		for (auto& spec : mSpecification.Attachments.Attachments)
+		{
+			if (!Utils::IsDepthFormat(spec.TextureFormat))
+				mColorAttachmentSpecifications.emplace_back(spec);
+			else
+				mDepthAttachmentSpecifications = spec;
+		}
+
 		Invalidate();
 	}
 
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
-		glDeleteFramebuffers(1, &m_RendererID);
-		glDeleteTextures(1, &m_ColorAttachment);
-		glDeleteTextures(1, &m_DepthAttachment);
+		glDeleteFramebuffers(1, &mRendererID);
+		glDeleteTextures(mColorAttachments.size(), mColorAttachments.data());
+		glDeleteTextures(1, &mDepthAttachment);
+
+		mColorAttachments.clear();
+		mDepthAttachment = 0;
 	}
 
 	void OpenGLFramebuffer::Invalidate()
 	{
-		if (m_RendererID)
+		if (mRendererID)
 		{
-			glDeleteFramebuffers(1, &m_RendererID);
-			glDeleteTextures(1, &m_ColorAttachment);
-			glDeleteTextures(1, &m_DepthAttachment);
+			glDeleteFramebuffers(1, &mRendererID);
+			glDeleteTextures(mColorAttachments.size(), mColorAttachments.data());
+			glDeleteTextures(1, &mDepthAttachment);
 		}
 
-		glCreateFramebuffers(1, &m_RendererID);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glCreateFramebuffers(1, &mRendererID);
+		glBindFramebuffer(GL_FRAMEBUFFER, mRendererID);
 		
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
-		glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specification.Width, m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		bool multisample = mSpecification.Samples > 1;
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);
+		if (mColorAttachmentSpecifications.size())
+		{
+			mColorAttachments.resize(mColorAttachmentSpecifications.size());
+			Utils::CreateTextures(multisample, mColorAttachments.data(), mColorAttachments.size());
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);
-		glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);
-		glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);
+			for (size_t i = 0; i < mColorAttachments.size(); i++)
+			{
+				Utils::BindTexture(multisample, mColorAttachments[i]);
+				switch (mColorAttachmentSpecifications[i].TextureFormat)
+				{
+				case FramebufferTextureFormat::RGBA8:
+					Utils::AttachColorTexture(mColorAttachments[i], mSpecification.Samples, GL_RGBA8, mSpecification.Width, mSpecification.Height, i);
+					break;
+				}
+			}
+		}
+
+		if (mDepthAttachmentSpecifications.TextureFormat != FramebufferTextureFormat::None)
+		{
+			Utils::CreateTextures(multisample, &mDepthAttachment, 1);
+			Utils::BindTexture(multisample, mDepthAttachment);
+
+			switch (mDepthAttachmentSpecifications.TextureFormat)
+			{
+			case FramebufferTextureFormat::DEPTH24STENCIL8:
+				Utils::AttachDepthTexture(mDepthAttachment, mSpecification.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, mSpecification.Width, mSpecification.Height);
+				break;
+			}
+		}
+
+		if (mColorAttachments.size() > 1)
+		{
+			SORA_CORE_ASSERT(mColorAttachments.size() <= 4, "");
+			GLenum buffer[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+			glDrawBuffers(mColorAttachments.size(), buffer);
+		}
+		else if(mColorAttachments.empty())
+		{
+			glDrawBuffer(GL_NONE);
+		}
 
 		SORA_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
@@ -52,8 +164,8 @@ namespace Sora {
 
 	void OpenGLFramebuffer::Bind()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
+		glBindFramebuffer(GL_FRAMEBUFFER, mRendererID);
+		glViewport(0, 0, mSpecification.Width, mSpecification.Height);
 	}
 
 	void OpenGLFramebuffer::Unbind()
@@ -63,14 +175,14 @@ namespace Sora {
 
 	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
-		if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)
+		if (width == 0 || height == 0 || width > sMaxFramebufferSize || height > sMaxFramebufferSize)
 		{
 			SORA_CORE_WARN("Attempted to resize framebuffer to {0}, {1}", width, height);
 			return;
 		}
 
-		m_Specification.Width = width;
-		m_Specification.Height = height;
+		mSpecification.Width = width;
+		mSpecification.Height = height;
 		Invalidate();
 	}
 
