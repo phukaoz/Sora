@@ -53,6 +53,7 @@ namespace Sora {
 		mFramebuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
+		mFramebuffer->ClearAttachment(1, -1);
 
 		mActiveScene->OnUpdateEditor(ts, mEditorCamera);
 
@@ -68,6 +69,7 @@ namespace Sora {
 		if (mouse_x >= 0 && mouse_y >= 0 && mouse_x < (int)viewport_size.x && mouse_y < (int)viewport_size.y)
 		{
 			int pixel_data = mFramebuffer->ReadPixel(1, mouse_x, mouse_y);
+			mHoveredEntity = pixel_data == -1 ? Entity() : Entity((entt::entity)pixel_data, mActiveScene.get());
 		}
 
 		mFramebuffer->Unbind();
@@ -96,141 +98,142 @@ namespace Sora {
 		{
 			dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
 		}
-
 		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 			window_flags |= ImGuiWindowFlags_NoBackground;
+		if (!opt_padding) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		if (!opt_padding)
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace", &dockspace_open, window_flags);
-		if (!opt_padding)
-			ImGui::PopStyleVar();
-
-		if (opt_fullscreen)
-			ImGui::PopStyleVar(2);
-
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiStyle& style = ImGui::GetStyle();
-		float min_window_size_x = style.WindowMinSize.x;
-		style.WindowMinSize.x = 370.0f;
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		if (ImGui::Begin("DockSpace", &dockspace_open, window_flags))
 		{
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
-		style.WindowMinSize.x = min_window_size_x;
+			if (!opt_padding)   ImGui::PopStyleVar();
+			if (opt_fullscreen) ImGui::PopStyleVar(2);
 
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
+			ImGuiIO&	io	  = ImGui::GetIO();
+			ImGuiStyle& style = ImGui::GetStyle();
+
+			float min_window_size_x = style.WindowMinSize.x;
+			style.WindowMinSize.x = 370.0f;
+			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N"))
-					NewScene();
+				ImGuiID dockspace_id = ImGui::GetID("Sora Dockspace");
+				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+			}
+			style.WindowMinSize.x = min_window_size_x;
 
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-					OpenScene();
+			if (ImGui::BeginMenuBar())
+			{
+				if (ImGui::BeginMenu("File"))
+				{
+					if (ImGui::MenuItem("New", "Ctrl+N"))				NewScene();
+					if (ImGui::MenuItem("Open...", "Ctrl+O"))			OpenScene();
+					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))	SaveSceneAs();
+					if (ImGui::MenuItem("Exit"))						Sora::Application::Get().Close();
 
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
-					SaveSceneAs();
+					ImGui::EndMenu();
+				}
 
-				if (ImGui::MenuItem("Exit")) Sora::Application::Get().Close();
-				
-				ImGui::EndMenu();
+				ImGui::EndMenuBar();
 			}
 
-			ImGui::EndMenuBar();
-		}
-
-		ImGui::Begin("Stats");
-		{
-			auto stats = Sora::Renderer2D::GetStats();
-			ImGui::Text("Renderer2D Stats:");
-			ImGui::Text("Draw Calls: %d", stats.DrawCallCount);
-			ImGui::Text("Quads: %d", stats.QuadCount);
-			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		}
-		ImGui::End();
-
-		mSceneHierarchyPanel.OnImGuiRender();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-		ImGui::Begin("Viewport");
-		auto viewport_offset = ImGui::GetCursorPos();
-
-		mViewportFocused = ImGui::IsWindowFocused();
-		mViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
-
-		ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
-		mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
-
-		uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
-		ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-		auto window_size = ImGui::GetWindowSize();
-		ImVec2 min_bound = ImGui::GetWindowPos();
-		min_bound.x += viewport_offset.x;
-		min_bound.y += viewport_offset.y;
-
-		ImVec2 max_bound = { min_bound.x + window_size.x, min_bound.y + window_size.y };
-		mViewportBounds[0] = { min_bound.x, min_bound.y };
-		mViewportBounds[1] = { max_bound.x, max_bound.y };
-
-		Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
-		if (selected_entity && mGizmoType != -1)
-		{
-			ImGuizmo::SetOrthographic(false);
-			ImGuizmo::SetDrawlist();
-			
-			float window_width = (float)ImGui::GetWindowWidth();
-			float window_height = (float)ImGui::GetWindowHeight();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
-
-			//auto camera_entity = mActiveScene->GetPrimaryCameraEntity();
-			//const auto& camera = camera_entity.GetComponent<CameraComponent>().Camera;
-			//const glm::mat4& camera_projection = camera.GetProjection();
-			//glm::mat4 camera_view = glm::inverse(camera_entity.GetComponent<TransformComponent>().GetTransform());
-
-			const glm::mat4& camera_projection = mEditorCamera.GetProjection();
-			glm::mat4 camera_view = mEditorCamera.GetViewMatrix();
-
-			auto& transform_component = selected_entity.GetComponent<TransformComponent>();
-			glm::mat4 transform = transform_component.GetTransform();
-
-			bool snap = Input::IsKeyPressed(Key::LeftControl);
-			float snap_value = 0.5f;
-
-			if (mGizmoType == ImGuizmo::OPERATION::ROTATE)
-				snap_value = 45.0f;
-
-			float snap_values[3] = { snap_value, snap_value, snap_value };
-
-			ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
-				(ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-				nullptr, snap ? snap_values : nullptr);
-
-			if (ImGuizmo::IsUsing())
+			if (ImGui::Begin("Stats"))
 			{
-				glm::vec3 translation, rotation, scale;
-				Math::DecomposeTransform(transform, translation, rotation, scale);
+				std::string name = "None";
+				if (mHoveredEntity && mHoveredEntity.HasComponent<TagComponent>())
+				{
+					name = mHoveredEntity.GetComponent<TagComponent>().Tag;
+					ImGui::SetTooltip(name.c_str());
+				}
+				ImGui::Text("Entity : %s", name);
 
-				transform_component.Translation = translation;
-				transform_component.Rotation = rotation;
-				transform_component.Scale = scale;
+				auto stats = Sora::Renderer2D::GetStats();
+				ImGui::Text("Renderer2D Stats:");
+				ImGui::Text("Draw Calls: %d", stats.DrawCallCount);
+				ImGui::Text("Quads: %d", stats.QuadCount);
+				ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+				ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
+				ImGui::End();
 			}
+
+			mSceneHierarchyPanel.OnImGuiRender();
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+			if (ImGui::Begin("Viewport"))
+			{
+				auto viewport_min_region = ImGui::GetWindowContentRegionMin();
+				auto viewport_max_region = ImGui::GetWindowContentRegionMax();
+				auto viewport_offset = ImGui::GetWindowPos();
+				mViewportBounds[0] = { viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y };
+				mViewportBounds[1] = { viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y };
+
+				mViewportFocused = ImGui::IsWindowFocused();
+				mViewportHovered = ImGui::IsWindowHovered();
+
+				auto viewport_panel_size = ImGui::GetContentRegionAvail();
+				mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
+
+				Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
+
+				uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
+				ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+				Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
+				if (selected_entity && mGizmoType != -1)
+				{
+					ImGuizmo::SetOrthographic(false);
+					ImGuizmo::SetDrawlist();
+
+					float window_width = (float)ImGui::GetWindowWidth();
+					float window_height = (float)ImGui::GetWindowHeight();
+					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
+
+					//auto camera_entity = mActiveScene->GetPrimaryCameraEntity();
+					//const auto& camera = camera_entity.GetComponent<CameraComponent>().Camera;
+					//const glm::mat4& camera_projection = camera.GetProjection();
+					//glm::mat4 camera_view = glm::inverse(camera_entity.GetComponent<TransformComponent>().GetTransform());
+
+					const glm::mat4& camera_projection = mEditorCamera.GetProjection();
+					glm::mat4 camera_view = mEditorCamera.GetViewMatrix();
+
+					auto& transform_component = selected_entity.GetComponent<TransformComponent>();
+					glm::mat4 transform = transform_component.GetTransform();
+
+					// edit snap value here!
+					bool snap = Input::IsKeyPressed(Key::LeftControl);
+					float snap_value = 0.5f;
+
+					if (mGizmoType == ImGuizmo::OPERATION::ROTATE)
+						snap_value = 45.0f;
+
+					float snap_values[3] = { snap_value, snap_value, snap_value };
+
+					ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
+						(ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+						nullptr, snap ? snap_values : nullptr);
+
+					if (ImGuizmo::IsUsing())
+					{
+						glm::vec3 translation, rotation, scale;
+						Math::DecomposeTransform(transform, translation, rotation, scale);
+
+						transform_component.Translation = translation;
+						transform_component.Rotation = rotation;
+						transform_component.Scale = scale;
+					}
+				}
+
+				ImGui::End();
+				ImGui::PopStyleVar();
+			}
+
+			ImGui::End();
 		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
-
-		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(SORA_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(SORA_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -266,6 +269,19 @@ namespace Sora {
 				mGizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 		}
+
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		if (e.GetMouseButton() == Mouse::ButtonLeft)
+		{
+			if (mViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+				mSceneHierarchyPanel.SetSelectedEntity(mHoveredEntity);
+		}
+
+		return false;
 	}
 
 	void EditorLayer::NewScene()
@@ -280,7 +296,6 @@ namespace Sora {
 		std::string filepath = FileDialogs::OpenFile("Sora Scene (*.yuki)\0*.yuki\0");
 		if (!filepath.empty())
 		{
-			std::cout << filepath << std::endl;
 			mActiveScene = CreateRef<Scene>();
 			mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 			mSceneHierarchyPanel.SetContext(mActiveScene);

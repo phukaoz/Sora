@@ -21,6 +21,7 @@ namespace Sora {
 		virtual void OnEvent(Event& e)		override;
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void NewScene();
 		void OpenScene();
@@ -38,6 +39,8 @@ namespace Sora {
 		int mGizmoType = 0;
 
 		SceneHierarchyPanel mSceneHierarchyPanel;
+
+		Entity mHoveredEntity;
 	};
 
 }

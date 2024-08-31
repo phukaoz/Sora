@@ -24,7 +24,9 @@ namespace Sora {
 		virtual const FramebufferSpecification& GetSpecification() const override { return mSpecification; }
 
 		virtual void Resize(uint32_t width, uint32_t height) override;
-		int ReadPixel(uint32_t attachment_index, int x, int y) override;
+		virtual int ReadPixel(uint32_t attachment_index, int x, int y) override;
+		
+		virtual void ClearAttachment(uint32_t attachment_index, int value) override;
 	private:
 		uint32_t mRendererID = 0;
 		FramebufferSpecification mSpecification;

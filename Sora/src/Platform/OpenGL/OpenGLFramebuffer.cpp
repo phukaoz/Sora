@@ -76,6 +76,18 @@ namespace Sora {
 			return false;
 		}
 
+		static GLenum ToGLFormat (FramebufferTextureFormat format)
+		{
+			switch (format)
+			{ 
+				case Sora::FramebufferTextureFormat::RGBA8:			return GL_RGBA8;
+				case Sora::FramebufferTextureFormat::RED_INTEGER:	return GL_RED_INTEGER;
+			}
+
+			SORA_CORE_ASSERT(false, "Unknown framebuffer texture format!");
+			return 0;
+		}
+
 	}
 
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
@@ -169,6 +181,9 @@ namespace Sora {
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, mRendererID);
 		glViewport(0, 0, mSpecification.Width, mSpecification.Height);
+
+		int value = -1;
+		glClearTexImage(mColorAttachments[1], 0, GL_RED_INTEGER, GL_INT, &value);
 	}
 
 	void OpenGLFramebuffer::Unbind()
@@ -198,6 +213,16 @@ namespace Sora {
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel_data);
 		
 		return pixel_data;
+	}
+
+	void OpenGLFramebuffer::ClearAttachment(uint32_t attachment_index, int value)
+	{
+		SORA_CORE_ASSERT(attachment_index < mColorAttachments.size(), "Index {0} is out of bound. There are {1} color attachment(s)", attachment_index, mColorAttachments.size());
+	
+		auto& spec = mColorAttachmentSpecifications[attachment_index];
+		
+		glClearTexImage(mColorAttachments[attachment_index], 0,
+			Utils::ToGLFormat(spec.TextureFormat), GL_INT, &value);
 	}
 
 }

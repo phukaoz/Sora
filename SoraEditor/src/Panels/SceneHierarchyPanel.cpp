@@ -13,51 +13,58 @@ namespace Sora {
 
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
-		m_Context = context;
-		m_SelectionContext = {};
+		mContext = context;
+		mSelectionContext = {};
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
-		ImGui::Begin("Scene Hierarchy"); 
-		
-		auto view = m_Context->m_Registry.view<TagComponent>();
-		for (auto entity : view)
+		if (ImGui::Begin("Scene Hierarchy"))
 		{
-			DrawEntityNode(Entity(entity, m_Context.get()));
+			auto view = mContext->m_Registry.view<TagComponent>();
+			for (auto entity : view)
+			{
+				DrawEntityNode(Entity(entity, mContext.get()));
+			}
+
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
+				mSelectionContext = {};
+
+			if (ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems))
+			{
+				if (ImGui::MenuItem("Create Entity"))
+					mContext->CreateEntity();
+
+				ImGui::EndPopup();
+			}
+			
+			ImGui::End();
 		}
 
-		if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
-			m_SelectionContext = {};
-
-		if (ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems))
+		if (ImGui::Begin("Properties"))
 		{
-			if (ImGui::MenuItem("Create Entity"))
-				m_Context->CreateEntity();
+			if (mSelectionContext)
+				DrawComponents(mSelectionContext);
 
-			ImGui::EndPopup();
+			ImGui::End();
 		}
+	}
 
-		ImGui::End();
-
-		ImGui::Begin("Properties");
-		if (m_SelectionContext)
-		{
-			DrawComponents(m_SelectionContext);
-		}
-		ImGui::End();
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+	{
+		mSelectionContext = entity;
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-		ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) 
+		ImGuiTreeNodeFlags flags = ((mSelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) 
 			| ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth ;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 		
 		if (ImGui::IsItemClicked())
-			m_SelectionContext = entity;
+			mSelectionContext = entity;
 
 		bool entity_deleted = false;
 		if (ImGui::BeginPopupContextItem())
@@ -76,9 +83,9 @@ namespace Sora {
 
 		if (entity_deleted)
 		{
-			m_Context->DestroyEntity(entity);
-			if (m_SelectionContext == entity)
-				m_SelectionContext = {};
+			mContext->DestroyEntity(entity);
+			if (mSelectionContext == entity)
+				mSelectionContext = {};
 		}
 	}
 
@@ -218,13 +225,13 @@ namespace Sora {
 			{
 				if (ImGui::MenuItem("Camera"))
 				{
-					m_SelectionContext.AddComponent<CameraComponent>();
+					mSelectionContext.AddComponent<CameraComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 
 				if (ImGui::MenuItem("Sprite"))
 				{
-					m_SelectionContext.AddComponent<SpriteComponent>();
+					mSelectionContext.AddComponent<SpriteComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 

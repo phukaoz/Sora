@@ -5,7 +5,7 @@
 
 namespace Sora {
 
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+	static GLenum ToGLBaseType(ShaderDataType type)
 	{
 		switch (type)
 		{
@@ -31,21 +31,21 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glCreateVertexArrays(1, &m_RendererID);
+		glCreateVertexArrays(1, &mRendererID);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glDeleteVertexArrays(1, &m_RendererID);
+		glDeleteVertexArrays(1, &mRendererID);
 	}
 
 	void OpenGLVertexArray::Bind() const
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glBindVertexArray(m_RendererID);
+		glBindVertexArray(mRendererID);
 	}
 
 	void OpenGLVertexArray::Unbind() const
@@ -55,42 +55,94 @@ namespace Sora {
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
+	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
 	{
 		SORA_PROFILE_FUNCTION();
+		SORA_CORE_ASSERT(vertex_buffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
-		SORA_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
+		glBindVertexArray(mRendererID);
+		vertex_buffer->Bind();
 
-		glBindVertexArray(m_RendererID);
-		vertexBuffer->Bind();
-
-		const BufferLayout& layout = vertexBuffer->GetLayout();
-		uint32_t index = 0;
+		const BufferLayout& layout = vertex_buffer->GetLayout();
 		for (const auto& element : layout)
 		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(
-				index,
-				element.GetComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)element.Offset
-			);
-			index++;
+			switch (element.Type)
+			{
+				case ShaderDataType::Float:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				{
+					glEnableVertexAttribArray(mVertexBufferIndex);
+					glVertexAttribPointer(
+						mVertexBufferIndex,
+						element.GetComponentCount(),
+						ToGLBaseType(element.Type),
+						element.Normalized ? GL_TRUE : GL_FALSE,
+						layout.GetStride(),
+						(const void*)element.Offset
+					);
+					mVertexBufferIndex++;
+					break;
+				}
+
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4:
+				{
+					uint8_t count = element.GetComponentCount();
+					for (uint8_t i = 0; i < count; i++)
+					{
+						glEnableVertexAttribArray(mVertexBufferIndex);
+						glVertexAttribPointer(
+							mVertexBufferIndex,
+							count,
+							ToGLBaseType(element.Type),
+							element.Normalized ? GL_TRUE : GL_FALSE,
+							layout.GetStride(),
+							(const void*)(element.Offset + sizeof(float) * count * i)
+						);
+						glVertexAttribDivisor(mVertexBufferIndex, 1);
+						mVertexBufferIndex++;
+					}
+					break;
+				}
+
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool:
+				{
+					glEnableVertexAttribArray(mVertexBufferIndex);
+					glVertexAttribIPointer(
+						mVertexBufferIndex,
+						element.GetComponentCount(),
+						ToGLBaseType(element.Type),
+						layout.GetStride(),
+						(const void*)element.Offset
+					);
+					mVertexBufferIndex++;
+					break;
+				}
+
+				default:
+					SORA_CORE_ASSERT(false, "Invalid shader data type!");
+					break;
+			}
+			
 		}
 
-		m_VertexBuffers.push_back(vertexBuffer);
+		mVertexBuffers.push_back(vertex_buffer);
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
+	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& index_buffer)
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glBindVertexArray(m_RendererID);
-		indexBuffer->Bind();
+		glBindVertexArray(mRendererID);
+		index_buffer->Bind();
 
-		m_IndexBuffer = indexBuffer;
+		mIndexBuffer = index_buffer;
 	}
 
 }

@@ -17,6 +17,7 @@ namespace Sora {
 		glm::vec2 TexCoord;
 		float TexIndex;
 		float TilingFactor;
+		int EntityID;
 	};
 
 	struct Renderer2DData
@@ -53,11 +54,12 @@ namespace Sora {
 		sData.QuadVertexArray = VertexArray::Create();
 		sData.QuadVertexBuffer = VertexBuffer::Create(sData.MaxVertices * sizeof(QuadVertex));
 		sData.QuadVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float4, "a_Color" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-			{ ShaderDataType::Float, "a_TexIndex" },
-			{ ShaderDataType::Float, "a_TilingFactor" },
+			{ ShaderDataType::Float3,	"aPosition"		},
+			{ ShaderDataType::Float4,	"aColor"		},
+			{ ShaderDataType::Float2,	"aTexCoord"		},
+			{ ShaderDataType::Float,	"aTexIndex"		},
+			{ ShaderDataType::Float,	"aTilingFactor" },
+			{ ShaderDataType::Int,		"aEntityID"		}
 		});
 		sData.QuadVertexArray->AddVertexBuffer(sData.QuadVertexBuffer);
 
@@ -93,7 +95,7 @@ namespace Sora {
 
 		sData.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		sData.TextureShader->Bind();
-		sData.TextureShader->SetIntArray("u_Textures", sampler, Renderer2DData::MaxTextureSlots);
+		sData.TextureShader->SetIntArray("uTextures", sampler, Renderer2DData::MaxTextureSlots);
 
 		// Set white texture at index 0.
 		sData.TextureSlots[0] = sData.WhiteTexture;
@@ -118,7 +120,7 @@ namespace Sora {
 		glm::mat4 view_proj = camera.GetProjection() * glm::inverse(transform);
 
 		sData.TextureShader->Bind();
-		sData.TextureShader->SetMat4("u_ViewProjection", view_proj);
+		sData.TextureShader->SetMat4("uViewProjection", view_proj);
 
 		StartBatch();
 	}
@@ -128,7 +130,7 @@ namespace Sora {
 		SORA_PROFILE_FUNCTION();
 
 		sData.TextureShader->Bind();
-		sData.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		sData.TextureShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -140,7 +142,7 @@ namespace Sora {
 		glm::mat4 view_proj = camera.GetViewProjection();
 
 		sData.TextureShader->Bind();
-		sData.TextureShader->SetMat4("u_ViewProjection", view_proj);
+		sData.TextureShader->SetMat4("uViewProjection", view_proj);
 
 		StartBatch();
 	}
@@ -183,6 +185,11 @@ namespace Sora {
 	//	   DRAW		//
 	//				//
 	//////////////////
+
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteComponent& src, int entity_id)
+	{
+		DrawQuad(transform, src.Color, entity_id);
+	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation /*= 0.0f*/)
 	{
@@ -261,6 +268,7 @@ namespace Sora {
 			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
 			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			sData.QuadVertexBufferPtr->EntityID = -1;
 			sData.QuadVertexBufferPtr++;
 		}
 
@@ -269,7 +277,7 @@ namespace Sora {
 		sData.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entity_id)
 	{
 		SORA_PROFILE_FUNCTION();
 
@@ -288,6 +296,7 @@ namespace Sora {
 			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
 			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			sData.QuadVertexBufferPtr->EntityID = entity_id;
 			sData.QuadVertexBufferPtr++;
 		}
 
@@ -296,7 +305,7 @@ namespace Sora {
 		sData.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor /*= 1.0f*/, const glm::vec4& tintColor /*= glm::vec4(1.0f)*/)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tiling_factor, const glm::vec4& tint_color, int entity_id)
 	{
 		SORA_PROFILE_FUNCTION();
 
@@ -327,10 +336,11 @@ namespace Sora {
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
 			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
-			sData.QuadVertexBufferPtr->Color = color;
+			sData.QuadVertexBufferPtr->Color = tint_color;
 			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
-			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			sData.QuadVertexBufferPtr->TilingFactor = tiling_factor;
+			sData.QuadVertexBufferPtr->EntityID = entity_id;
 			sData.QuadVertexBufferPtr++;
 		}
 

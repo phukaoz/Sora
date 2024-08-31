@@ -40,7 +40,7 @@ namespace Sora {
 		for (auto entity : transfrom_sprite_group)
 		{
 			auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 		}
 		Renderer2D::EndScene();
 	}
@@ -83,7 +83,7 @@ namespace Sora {
 			for (auto entity : transfrom_sprite_group)
 			{
 				auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 			Renderer2D::EndScene();
 		}
