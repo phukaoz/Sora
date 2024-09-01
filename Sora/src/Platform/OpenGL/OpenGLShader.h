@@ -36,15 +36,23 @@ namespace Sora {
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& value);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& value);
-
-
 	private:
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+
+		void CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shader_sources);
+		void CompileOrGetOpenGLBinaries();
+		void CreateProgram();
+		void Reflect(GLenum stage, const std::vector<uint32_t>& shader_data);
 	private:
-		uint32_t m_RendererID;
+		uint32_t mRendererID;
+		std::string mFilepath;
 		std::string mName;
+
+		std::unordered_map<GLenum, std::vector<uint32_t>> mVulkanSPIRV;
+		std::unordered_map<GLenum, std::vector<uint32_t>> mOpenGLSPIRV;
+
+		std::unordered_map<GLenum, std::string> mOpenGLSourceCode;
 	};
 
 }

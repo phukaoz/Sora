@@ -8,8 +8,6 @@
 
 #include "Sandbox2D.h"
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 class Sandbox : public Sora::Application
 {
 public:
@@ -24,7 +22,7 @@ public:
 	}
 };
 
-Sora::Application* Sora::CreateApplication()
+Sora::Application* Sora::CreateApplication(ApplicationCommandLineArgs args)
 {
 	return new Sandbox();
 }

@@ -133,7 +133,7 @@ namespace Sora {
 			mColorAttachments.resize(mColorAttachmentSpecifications.size());
 			Utils::CreateTextures(multisample, mColorAttachments.data(), mColorAttachments.size());
 
-			for (size_t i = 0; i < mColorAttachments.size(); i++)
+			for (uint32_t i = 0; i < mColorAttachments.size(); i++)
 			{
 				Utils::BindTexture(multisample, mColorAttachments[i]);
 				switch (mColorAttachmentSpecifications[i].TextureFormat)

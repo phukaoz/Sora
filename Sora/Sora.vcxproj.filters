@@ -87,6 +87,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -124,6 +127,9 @@
       <Filter>src\Sora\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Sora\Core\PlatformDetection.h">
+      <Filter>src\Sora\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sora\Core\Timer.h">
       <Filter>src\Sora\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Sora\Core\Timestep.h">
@@ -193,6 +199,9 @@
       <Filter>src\Sora\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Sora\Renderer\Texture.h">
+      <Filter>src\Sora\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sora\Renderer\UniformBuffer.h">
       <Filter>src\Sora\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Sora\Renderer\VertexArray.h">
@@ -1496,6 +1505,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1563,6 +1575,9 @@
       <Filter>src\Sora\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Sora\Renderer\Texture.cpp">
+      <Filter>src\Sora\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sora\Renderer\UniformBuffer.cpp">
       <Filter>src\Sora\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Sora\Renderer\VertexArray.cpp">

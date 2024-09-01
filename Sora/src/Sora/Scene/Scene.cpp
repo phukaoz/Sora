@@ -91,8 +91,8 @@ namespace Sora {
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
-		m_ViewportWidth = width;
-		m_ViewportHeight = height;
+		mViewportWidth = width;
+		mViewportHeight = height;
 
 		auto view = m_Registry.view<CameraComponent>();
 		for (auto entity : view)
@@ -143,7 +143,8 @@ namespace Sora {
 	template<>
 	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{
-		component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+		if(mViewportWidth > 0 && mViewportHeight > 0)
+			component.Camera.SetViewportSize(mViewportWidth, mViewportHeight);
 	}
 
 	template<>

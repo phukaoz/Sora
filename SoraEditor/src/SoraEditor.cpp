@@ -8,8 +8,8 @@ namespace Sora {
 	class SoraEditor : public Application
 	{
 	public:
-		SoraEditor()
-			: Application("Sora Editor")
+		SoraEditor(ApplicationCommandLineArgs args)
+			: Application("Sora Editor", args)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -20,9 +20,9 @@ namespace Sora {
 		}
 	};
 
-	Application* CreateApplication()
+	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		return new SoraEditor();
+		return new SoraEditor(args);
 	}
 
 }

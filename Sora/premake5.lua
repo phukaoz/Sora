@@ -2,7 +2,7 @@ project "Sora"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -41,6 +41,7 @@ project "Sora"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.VulkanSDK}",
 	}
 
 	links
@@ -49,7 +50,7 @@ project "Sora"
 		"Glad",
 		"ImGui",
 		"yaml-cpp",
-		"opengl32.lib",
+		"opengl32.lib"
 	}
 	
 	filter "files:vendor/ImGuizmo/**.cpp"
@@ -66,13 +67,34 @@ project "Sora"
 		defines "SORA_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		
+		links
+		{
+			"%{Library.ShaderC_Debug}",
+			"%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}"
+		}
 
 	filter "configurations:Release"
 		defines "SORA_RELEASE"
 		runtime "Release"
 		optimize "on"
+		
+		links
+		{
+			"%{Library.ShaderC_Debug}",
+			"%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}"
+		}
 
 	filter "configurations:Dist"
 		defines "SORA_DIST"
 		runtime "Release"
 		optimize "on"
+		
+		links
+		{
+			"%{Library.ShaderC_Debug}",
+			"%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}"
+		}

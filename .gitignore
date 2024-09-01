@@ -6,3 +6,5 @@ bin-int/
 # Files
 *.user
 Sandbox/imgui.ini
+/Sora/vendor/VulkanSDK
+/SoraEditor/assets/cache

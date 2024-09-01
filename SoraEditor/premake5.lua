@@ -2,17 +2,19 @@ project "SoraEditor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
-	files{
+	files
+	{
 		"src/**.h",
 		"src/**.cpp",
 	}
 	
-	includedirs{
+	includedirs
+	{
 		"%{wks.location}/Sora/vendor/spdlog/include",
 		"%{wks.location}/Sora/src",
 		"%{wks.location}/Sora/vendor",
@@ -21,7 +23,8 @@ project "SoraEditor"
 		"%{IncludeDir.ImGuizmo}",
 	}
 
-	links{
+	links
+	{
 		"Sora"
 	}
 

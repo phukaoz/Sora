@@ -142,7 +142,7 @@ namespace Sora {
 					name = mHoveredEntity.GetComponent<TagComponent>().Tag;
 					ImGui::SetTooltip(name.c_str());
 				}
-				ImGui::Text("Entity : %s", name);
+				ImGui::Text("Entity : %s", name.c_str());
 
 				auto stats = Sora::Renderer2D::GetStats();
 				ImGui::Text("Renderer2D Stats:");

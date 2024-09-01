@@ -3,6 +3,7 @@
 
 #include "VertexArray.h"
 #include "Shader.h"
+#include "UniformBuffer.h"
 #include "RenderCommand.h"
 
 #include <glm/ext/matrix_transform.hpp>
@@ -43,6 +44,13 @@ namespace Sora {
 		glm::vec4 QuadVertexPosition[4];
 
 		Renderer2D::Statistics Stats;
+
+		struct CameraData
+		{
+			glm::mat4 ViewProjection;
+		};
+		CameraData CameraBuffer;
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	static Renderer2DData sData;
@@ -94,8 +102,6 @@ namespace Sora {
 			sampler[i] = i;
 
 		sData.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
-		sData.TextureShader->Bind();
-		sData.TextureShader->SetIntArray("uTextures", sampler, Renderer2DData::MaxTextureSlots);
 
 		// Set white texture at index 0.
 		sData.TextureSlots[0] = sData.WhiteTexture;
@@ -104,6 +110,8 @@ namespace Sora {
 		sData.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
 		sData.QuadVertexPosition[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
 		sData.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+		sData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -117,10 +125,8 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glm::mat4 view_proj = camera.GetProjection() * glm::inverse(transform);
-
-		sData.TextureShader->Bind();
-		sData.TextureShader->SetMat4("uViewProjection", view_proj);
+		sData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+		sData.CameraUniformBuffer->SetData(&sData.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -139,10 +145,8 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glm::mat4 view_proj = camera.GetViewProjection();
-
-		sData.TextureShader->Bind();
-		sData.TextureShader->SetMat4("uViewProjection", view_proj);
+		sData.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		sData.CameraUniformBuffer->SetData(&sData.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -162,6 +166,7 @@ namespace Sora {
 		for (uint32_t i = 0; i < sData.TextureSlotIndex; i++)
 			sData.TextureSlots[i]->Bind(i);
 
+		sData.TextureShader->Bind();
 		RenderCommand::DrawIndexed(sData.QuadVertexArray, sData.QuadIndexCount);
 		sData.Stats.DrawCallCount++;
 	}
