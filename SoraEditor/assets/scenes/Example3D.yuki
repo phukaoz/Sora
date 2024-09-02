@@ -1,24 +1,24 @@
-Scene: Untitled
+Scene: Example3D
 Entities:
-  - Entity: 0
+  - Entity: 4
     TagComponent:
-      Tag: Floor
+      Tag: Left
     TransformComponent:
-      Translation: [0, -0.999999881, 1.49011612e-07]
-      Rotation: [1.57079637, -0, 0]
-      Scale: [7, 6.99949169, 6.99949837]
-    SpriteComponent:
-      Color: [0.67181468, 0.67181468, 0.67181468, 1]
-  - Entity: 0
-    TagComponent:
-      Tag: Bottom
-    TransformComponent:
-      Translation: [0, -0.5, 0]
-      Rotation: [1.57079637, 0, 0]
+      Translation: [0, 0, 0.5]
+      Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteComponent:
-      Color: [0, 0.756548226, 0.783783793, 1]
-  - Entity: 0
+      Color: [0, 0.803088784, 0.737973392, 1]
+  - Entity: 3
+    TagComponent:
+      Tag: Right
+    TransformComponent:
+      Translation: [0.5, 0, 0]
+      Rotation: [0, -1.57079637, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Color: [0, 0.903474927, 0.851150215, 1]
+  - Entity: 2
     TagComponent:
       Tag: Camera
     TransformComponent:
@@ -36,21 +36,21 @@ Entities:
         PerspectiveFar: 1000
       Primary: true
       FixedAspectRatio: false
-  - Entity: 0
+  - Entity: 1
     TagComponent:
-      Tag: Right
+      Tag: Bottom
     TransformComponent:
-      Translation: [0.5, 0, 0]
-      Rotation: [0, -1.57079637, 0]
+      Translation: [0, -0.5, 0]
+      Rotation: [1.57079637, 0, 0]
       Scale: [1, 1, 1]
     SpriteComponent:
-      Color: [0, 0.903474927, 0.851150215, 1]
+      Color: [0, 0.756548226, 0.783783793, 1]
   - Entity: 0
     TagComponent:
-      Tag: Left
+      Tag: Floor
     TransformComponent:
-      Translation: [0, 0, 0.5]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Translation: [0, -0.999999881, 1.49011612e-07]
+      Rotation: [1.57079637, -0, 0]
+      Scale: [7, 6.99949169, 6.99949837]
     SpriteComponent:
-      Color: [0, 0.803088784, 0.737973392, 1]
+      Color: [0.67181468, 0.67181468, 0.67181468, 1]

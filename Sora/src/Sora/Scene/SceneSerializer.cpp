@@ -78,7 +78,7 @@ namespace Sora {
 	}
 
 	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
-		: m_Scene(scene)
+		: mScene(scene)
 	{
 
 	}
@@ -86,7 +86,7 @@ namespace Sora {
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << "0";
+		out << YAML::Key << "Entity" << YAML::Value << (uint32_t)entity;
 		
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -163,17 +163,17 @@ namespace Sora {
 		out << YAML::EndMap;
 	}
 
-	void SceneSerializer::Serialize(const std::string& filepath)
+	void SceneSerializer::Serialize(const std::filesystem::path& filepath)
 	{
 		YAML::Emitter out;
 
 		out << YAML::BeginMap;
-		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+		out << YAML::Key << "Scene" << YAML::Value << filepath.stem().string();
 
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
-		m_Scene->m_Registry.view<entt::entity>().each([&](auto entity_id)
+		mScene->m_Registry.view<entt::entity>().each([&](auto entity_id)
 			{
-				Entity entity = { entity_id, m_Scene.get() };
+				Entity entity = { entity_id, mScene.get() };
 				if (!entity)
 					return;
 
@@ -187,17 +187,17 @@ namespace Sora {
 		fout << out.c_str();
 	}
 
-	void SceneSerializer::SerializeRuntime(const std::string& filepath)
+	void SceneSerializer::SerializeRuntime(const std::filesystem::path& filepath)
 	{
 		SORA_CORE_ASSERT(false, "Not implemented");
 	}
 
-	bool SceneSerializer::Deserialize(const std::string& filepath)
+	bool SceneSerializer::Deserialize(const std::filesystem::path& filepath)
 	{
 		std::ifstream stream(filepath);
 		std::stringstream str_stream;
 		str_stream << stream.rdbuf();
-
+		
 		YAML::Node data = YAML::Load(str_stream.str());
 		if (!data["Scene"])
 			return false;
@@ -217,9 +217,9 @@ namespace Sora {
 				if (tag_component)
 					name = tag_component["Tag"].as<std::string>();
 
-				SORA_CORE_TRACE("Deserialized entity witg ID = {0}, name = {1}", uuid, name);
+				SORA_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Entity deserialized_entity = m_Scene->CreateEntity(name);
+				Entity deserialized_entity = mScene->CreateEntity(name);
 
 				auto transform_component = entity["TransformComponent"];
 				if (transform_component)
@@ -262,7 +262,7 @@ namespace Sora {
 		return true;
 	}
 
-	bool SceneSerializer::DeserializeRuntime(const std::string& filepath)
+	bool SceneSerializer::DeserializeRuntime(const std::filesystem::path& filepath)
 	{
 		SORA_CORE_ASSERT(false, "Not implemented");
 		return false;

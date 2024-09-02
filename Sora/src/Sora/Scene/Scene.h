@@ -27,7 +27,7 @@ namespace Sora {
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 	private:
-		entt::registry m_Registry;
+		entt::registry mRegistry;
 		uint32_t mViewportWidth = 0, mViewportHeight = 0;
 
 		friend class Entity;
