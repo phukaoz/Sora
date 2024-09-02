@@ -300,7 +300,7 @@ namespace Sora {
 		for (auto&& [stage, spirv] : mOpenGLSPIRV)
 		{
 			GLuint id = shader_ids.emplace_back(glCreateShader(stage));
-			glShaderBinary(1, &id, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), spirv.size() * sizeof(uint32_t));
+			glShaderBinary(1, &id, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), static_cast<int>(spirv.size() * sizeof(uint32_t)));
 			glSpecializeShader(id, "main", 0, nullptr, nullptr);
 			glAttachShader(program, id);
 		}
@@ -346,9 +346,9 @@ namespace Sora {
 		for (const auto& resource : resources.uniform_buffers)
 		{
 			const auto& buffer_type = compiler.get_type(resource.base_type_id);
-			uint32_t buffer_size = compiler.get_declared_struct_size(buffer_type);
+			size_t buffer_size = compiler.get_declared_struct_size(buffer_type);
 			uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-			int member_count = buffer_type.member_types.size();
+			size_t member_count = buffer_type.member_types.size();
 
 			SORA_CORE_TRACE("    {0}", resource.name);
 			SORA_CORE_TRACE("    Size = {0}", buffer_size);
@@ -406,56 +406,56 @@ namespace Sora {
 		UploadUniformFloat4(name, value);
 	}
 
-	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value) 
 	{
 		SORA_PROFILE_FUNCTION();
 
 		UploadUniformMat4(name, value);
 	}
 
-	void OpenGLShader::UploadUniformInt(const std::string& name, int value)
+	void OpenGLShader::UploadUniformInt(const std::string& name, int value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform1i(location, value);
 	}
 
-	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count)
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform1iv(location, count, values);
 	}
 
-	void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
+	void OpenGLShader::UploadUniformFloat(const std::string& name, float value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform1f(location, value);
 	}
 
-	void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+	void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform2f(location, value.x, value.y);
 	}
 
-	void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
+	void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
-	void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
+	void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
-	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& value)
+	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
-	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& value)
+	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& value) const
 	{
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));

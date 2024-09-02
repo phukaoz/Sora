@@ -210,7 +210,7 @@ namespace Sora {
 		{
 			for (auto entity : entities)
 			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>();
+				uint64_t uuid = entity["Entity"].as<uint32_t>();
 
 				std::string name;
 				auto tag_component = entity["TagComponent"];

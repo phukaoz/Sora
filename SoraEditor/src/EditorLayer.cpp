@@ -12,6 +12,8 @@
 
 namespace Sora {
 
+	extern const std::filesystem::path gAssetPath;
+
 	EditorLayer::EditorLayer()
 		: Layer("Sandbox2D")
 	{
@@ -111,7 +113,7 @@ namespace Sora {
 			ImGuiStyle& style = ImGui::GetStyle();
 
 			float min_window_size_x = style.WindowMinSize.x;
-			style.WindowMinSize.x = 370.0f;
+			style.WindowMinSize.x = 300.0f;
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("Sora Dockspace");
@@ -155,6 +157,7 @@ namespace Sora {
 			}
 
 			mSceneHierarchyPanel.OnImGuiRender();
+			mContentBrowserPanel.OnImGuiRender();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 			if (ImGui::Begin("Viewport"))
@@ -175,6 +178,17 @@ namespace Sora {
 
 				uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
 				ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+					{
+						const wchar_t* path = (const wchar_t*)payload->Data;
+						OpenScene(gAssetPath / path);
+					}
+
+					ImGui::EndDragDropTarget();
+				}
 
 				Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
 				if (selected_entity && mGizmoType != -1)
@@ -296,13 +310,18 @@ namespace Sora {
 		std::string filepath = FileDialogs::OpenFile("Sora Scene (*.yuki)\0*.yuki\0");
 		if (!filepath.empty())
 		{
-			mActiveScene = CreateRef<Scene>();
-			mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
-			mSceneHierarchyPanel.SetContext(mActiveScene);
-
-			SceneSerializer serializer(mActiveScene);
-			serializer.Deserialize(filepath);
+			OpenScene(filepath);
 		}
+	}
+
+	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	{
+		mActiveScene = CreateRef<Scene>();
+		mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
+		mSceneHierarchyPanel.SetContext(mActiveScene);
+
+		SceneSerializer serializer(mActiveScene);
+		serializer.Deserialize(path.string());
 	}
 
 	void EditorLayer::SaveSceneAs()

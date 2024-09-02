@@ -3,6 +3,7 @@
 #include "Sora.h"
 
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "Sora/Renderer/EditorCamera.h"
 
 namespace Sora {
@@ -25,6 +26,7 @@ namespace Sora {
 
 		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
 	private:
 		Ref<Framebuffer> mFramebuffer;
@@ -36,11 +38,13 @@ namespace Sora {
 		glm::vec2 mViewportSize = { 0.0f, 0.0f };
 		glm::vec2 mViewportBounds[2];
 
+		Entity mHoveredEntity;
+
 		int mGizmoType = 0;
 
 		SceneHierarchyPanel mSceneHierarchyPanel;
+		ContentBrowserPanel mContentBrowserPanel;
 
-		Entity mHoveredEntity;
 	};
 
 }
