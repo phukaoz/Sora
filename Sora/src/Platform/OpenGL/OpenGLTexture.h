@@ -2,6 +2,7 @@
 
 #include "Sora/Renderer/Texture.h"
 
+#include <filesystem>
 #include <glad/glad.h>
 
 namespace Sora {
@@ -26,7 +27,7 @@ namespace Sora {
 			return mRendererID == ((OpenGLTexture2D&)other).mRendererID;
 		}
 	private:
-		std::string mPath;
+		std::filesystem::path mPath;
 		uint32_t mWidth, mHeight;
 		uint32_t mRendererID;
 		GLenum mDataFormat, mInternalFormat;

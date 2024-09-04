@@ -15,8 +15,4 @@ public:
 	virtual void OnImGuiRender() override;
 	virtual void OnEvent(Sora::Event& e) override;
 private:
-	Sora::OrthographicCameraController m_CameraController;
-
-	Sora::Ref<Sora::Texture2D> m_Tilemap, m_Crease, m_CheckerBoard;
-	Sora::Ref<Sora::SubTexture2D> m_Sprite;
 };

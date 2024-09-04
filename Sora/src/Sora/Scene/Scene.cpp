@@ -19,7 +19,7 @@ namespace Sora {
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{
-		Entity entity = { m_Registry.create(), this };
+		Entity entity = { mRegistry.create(), this };
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Untitled Entity" : name;
@@ -29,14 +29,14 @@ namespace Sora {
 
 	void Scene::DestroyEntity(Entity entity)
 	{
-		m_Registry.destroy(entity);
+		mRegistry.destroy(entity);
 	}
 
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
 
-		auto transfrom_sprite_group = m_Registry.group<TransformComponent, SpriteComponent>();
+		auto transfrom_sprite_group = mRegistry.group<TransformComponent, SpriteComponent>();
 		for (auto entity : transfrom_sprite_group)
 		{
 			auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
@@ -47,14 +47,14 @@ namespace Sora {
 
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
-		auto native_script_view = m_Registry.view<NativeScriptComponent>();
+		auto native_script_view = mRegistry.view<NativeScriptComponent>();
 		for (auto entity : native_script_view)
 		{
 			auto& script = native_script_view.get<NativeScriptComponent>(entity);
 			if (!script.Instance)
 			{
 				script.Instance = script.InstantiateScript();
-				if(script.Instance) script.Instance->m_Entity = Entity(entity, this);
+				if(script.Instance) script.Instance->mEntity = Entity(entity, this);
 				script.Instance->OnCreate();
 			}
 
@@ -63,7 +63,7 @@ namespace Sora {
 
 		Camera* main_camera = nullptr;
 		glm::mat4 camera_transform;
-		auto transfrom_camera_view = m_Registry.view<TransformComponent, CameraComponent>();
+		auto transfrom_camera_view = mRegistry.view<TransformComponent, CameraComponent>();
 		for (auto entity : transfrom_camera_view)
 		{
 			auto [transform, camera] = transfrom_camera_view.get<TransformComponent, CameraComponent>(entity);
@@ -79,7 +79,7 @@ namespace Sora {
 		{
 			Renderer2D::BeginScene(main_camera->GetProjection(), camera_transform);
 
-			auto transfrom_sprite_group = m_Registry.group<TransformComponent, SpriteComponent>();
+			auto transfrom_sprite_group = mRegistry.group<TransformComponent, SpriteComponent>();
 			for (auto entity : transfrom_sprite_group)
 			{
 				auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
@@ -94,7 +94,7 @@ namespace Sora {
 		mViewportWidth = width;
 		mViewportHeight = height;
 
-		auto view = m_Registry.view<CameraComponent>();
+		auto view = mRegistry.view<CameraComponent>();
 		for (auto entity : view)
 		{
 			auto& camera_component = view.get<CameraComponent>(entity);
@@ -105,7 +105,7 @@ namespace Sora {
 
 	Sora::Entity Scene::GetPrimaryCameraEntity()
 	{
-		auto view = m_Registry.view<CameraComponent>();
+		auto view = mRegistry.view<CameraComponent>();
 		for (auto entity : view)
 		{
 			const auto& camera_component = view.get<CameraComponent>(entity);

@@ -28,6 +28,12 @@ namespace Sora {
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
+
+		void UI_Toolbar();
+		void UI_Viewport();
+
+		void OnScenePlay();
+		void OnSceneStop();
 	private:
 		Ref<Framebuffer> mFramebuffer;
 
@@ -42,9 +48,17 @@ namespace Sora {
 
 		int mGizmoType = 0;
 
+		enum class SceneState
+		{
+			Edit = 0, Play = 1,
+		};
+
+		SceneState mSceneState = SceneState::Edit;
+
 		SceneHierarchyPanel mSceneHierarchyPanel;
 		ContentBrowserPanel mContentBrowserPanel;
 
+		Ref<Texture2D> mIconPlay, mIconStop;
 	};
 
 }

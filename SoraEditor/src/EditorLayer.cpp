@@ -21,6 +21,9 @@ namespace Sora {
 
 	void EditorLayer::OnAttach()
 	{
+		mIconPlay = Texture2D::Create("resources/icons/Toolbar/PlayButton.png");
+		mIconStop = Texture2D::Create("resources/icons/Toolbar/StopButton.png");
+
 		FramebufferSpecification fb_spec;
 		fb_spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
 		fb_spec.Width  = 1600;
@@ -49,15 +52,22 @@ namespace Sora {
 			mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 		}
 
-		mEditorCamera.OnUpdate(ts);
-
 		Renderer2D::ResetStats();
 		mFramebuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
 		mFramebuffer->ClearAttachment(1, -1);
 
-		mActiveScene->OnUpdateEditor(ts, mEditorCamera);
+		switch (mSceneState)
+		{
+		case SceneState::Edit:
+			mEditorCamera.OnUpdate(ts);
+			mActiveScene->OnUpdateEditor(ts, mEditorCamera);
+			break;
+		case SceneState::Play:
+			mActiveScene->OnUpdateRuntime(ts);
+			break;
+		}
 
 		auto mouse = ImGui::GetMousePos();
 		mouse.x -= mViewportBounds[0].x;
@@ -158,86 +168,8 @@ namespace Sora {
 
 			mSceneHierarchyPanel.OnImGuiRender();
 			mContentBrowserPanel.OnImGuiRender();
-
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-			if (ImGui::Begin("Viewport"))
-			{
-				auto viewport_min_region = ImGui::GetWindowContentRegionMin();
-				auto viewport_max_region = ImGui::GetWindowContentRegionMax();
-				auto viewport_offset = ImGui::GetWindowPos();
-				mViewportBounds[0] = { viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y };
-				mViewportBounds[1] = { viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y };
-
-				mViewportFocused = ImGui::IsWindowFocused();
-				mViewportHovered = ImGui::IsWindowHovered();
-
-				auto viewport_panel_size = ImGui::GetContentRegionAvail();
-				mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
-
-				Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
-
-				uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
-				ImGui::Image((void*)(uint64_t)texture_id, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-					{
-						const wchar_t* path = (const wchar_t*)payload->Data;
-						OpenScene(gAssetPath / path);
-					}
-
-					ImGui::EndDragDropTarget();
-				}
-
-				Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
-				if (selected_entity && mGizmoType != -1)
-				{
-					ImGuizmo::SetOrthographic(false);
-					ImGuizmo::SetDrawlist();
-
-					float window_width = (float)ImGui::GetWindowWidth();
-					float window_height = (float)ImGui::GetWindowHeight();
-					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
-
-					//auto camera_entity = mActiveScene->GetPrimaryCameraEntity();
-					//const auto& camera = camera_entity.GetComponent<CameraComponent>().Camera;
-					//const glm::mat4& camera_projection = camera.GetProjection();
-					//glm::mat4 camera_view = glm::inverse(camera_entity.GetComponent<TransformComponent>().GetTransform());
-
-					const glm::mat4& camera_projection = mEditorCamera.GetProjection();
-					glm::mat4 camera_view = mEditorCamera.GetViewMatrix();
-
-					auto& transform_component = selected_entity.GetComponent<TransformComponent>();
-					glm::mat4 transform = transform_component.GetTransform();
-
-					// edit snap value here!
-					bool snap = Input::IsKeyPressed(Key::LeftControl);
-					float snap_value = 0.5f;
-
-					if (mGizmoType == ImGuizmo::OPERATION::ROTATE)
-						snap_value = 45.0f;
-
-					float snap_values[3] = { snap_value, snap_value, snap_value };
-
-					ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
-						(ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-						nullptr, snap ? snap_values : nullptr);
-
-					if (ImGuizmo::IsUsing())
-					{
-						glm::vec3 translation, rotation, scale;
-						Math::DecomposeTransform(transform, translation, rotation, scale);
-
-						transform_component.Translation = translation;
-						transform_component.Rotation = rotation;
-						transform_component.Scale = scale;
-					}
-				}
-
-				ImGui::End();
-				ImGui::PopStyleVar();
-			}
+			UI_Toolbar();
+			UI_Viewport();
 
 			ImGui::End();
 		}
@@ -260,28 +192,28 @@ namespace Sora {
 
 		switch (e.GetKeyCode())
 		{
-			case Key::N:
-				if (control) NewScene();
-				break;
-			case Key::O:
-				if (control) OpenScene();
-				break;
-			case Key::S:
-				if (control && shift) SaveSceneAs();
-				break;
+		case Key::N:
+			if (control) NewScene();
+			break;
+		case Key::O:
+			if (control) OpenScene();
+			break;
+		case Key::S:
+			if (control && shift) SaveSceneAs();
+			break;
 
-			case Key::Q:
-				mGizmoType = -1;
-				break;
-			case Key::W:
-				mGizmoType = ImGuizmo::OPERATION::TRANSLATE;
-				break;
-			case Key::E:
-				mGizmoType = ImGuizmo::OPERATION::ROTATE;
-				break;
-			case Key::R:
-				mGizmoType = ImGuizmo::OPERATION::SCALE;
-				break;
+		case Key::Q:
+			mGizmoType = -1;
+			break;
+		case Key::W:
+			mGizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		case Key::E:
+			mGizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		case Key::R:
+			mGizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
 		}
 
 		return false;
@@ -334,4 +266,135 @@ namespace Sora {
 		}
 	}
 
+	void EditorLayer::UI_Toolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 2.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0.0f, 0.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		auto& colors = ImGui::GetStyle().Colors;
+		auto& hovered_color = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(hovered_color.x, hovered_color.y, hovered_color.z, 0.5f));
+		auto& active_color = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(active_color.x, active_color.y, active_color.z, 0.5f));
+
+		if (ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+		{
+			Ref<Texture2D> icon = mSceneState == SceneState::Edit ? mIconPlay : mIconStop;
+			float size = ImGui::GetWindowHeight() - 4.0f;
+			ImGui::SameLine((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+			if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0))
+			{
+				if (mSceneState == SceneState::Edit)
+					OnScenePlay();
+				else if (mSceneState == SceneState::Play)
+					OnSceneStop();
+			}
+
+			ImGui::End();
+			ImGui::PopStyleVar(2);
+			ImGui::PopStyleColor(3);
+		}
+	}
+
+	void EditorLayer::UI_Viewport()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		if (ImGui::Begin("Viewport"))
+		{
+			auto viewport_min_region = ImGui::GetWindowContentRegionMin();
+			auto viewport_max_region = ImGui::GetWindowContentRegionMax();
+			auto viewport_offset = ImGui::GetWindowPos();
+			mViewportBounds[0] = { viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y };
+			mViewportBounds[1] = { viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y };
+
+			mViewportFocused = ImGui::IsWindowFocused();
+			mViewportHovered = ImGui::IsWindowHovered();
+
+			auto viewport_panel_size = ImGui::GetContentRegionAvail();
+			mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
+
+			Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
+
+			uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
+			ImGui::Image((void*)(uint64_t)texture_id, ImVec2(mViewportSize.x, mViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					OpenScene(gAssetPath / path);
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+
+			// Gizmo's
+			Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
+			if (selected_entity && mGizmoType != -1)
+			{
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::SetDrawlist();
+
+				float window_width = (float)ImGui::GetWindowWidth();
+				float window_height = (float)ImGui::GetWindowHeight();
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
+
+				glm::mat4 camera_view = glm::mat4(1.0f);
+				glm::mat4 camera_projection = glm::mat4(1.0f);
+				switch (mSceneState)
+				{
+				case SceneState::Edit:
+					camera_projection	= mEditorCamera.GetProjection();
+					camera_view			= mEditorCamera.GetViewMatrix();
+					break;
+				case SceneState::Play :
+					auto camera_entity	= mActiveScene->GetPrimaryCameraEntity();
+					const auto& camera	= camera_entity.GetComponent<CameraComponent>().Camera;
+					camera_projection	= camera.GetProjection();
+					camera_view			= glm::inverse(camera_entity.GetComponent<TransformComponent>().GetTransform());
+					break;
+				}
+
+				auto& transform_component = selected_entity.GetComponent<TransformComponent>();
+				glm::mat4 transform = transform_component.GetTransform();
+
+				// edit snap value here!
+				bool snap = Input::IsKeyPressed(Key::LeftControl);
+				float snap_value = 0.5f;
+
+				if (mGizmoType == ImGuizmo::OPERATION::ROTATE)
+					snap_value = 45.0f;
+
+				float snap_values[3] = { snap_value, snap_value, snap_value };
+
+				ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
+					(ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+					nullptr, snap ? snap_values : nullptr);
+
+				if (ImGuizmo::IsUsing())
+				{
+					glm::vec3 translation, rotation, scale;
+					Math::DecomposeTransform(transform, translation, rotation, scale);
+
+					transform_component.Translation = translation;
+					transform_component.Rotation = rotation;
+					transform_component.Scale = scale;
+				}
+			}
+
+			ImGui::End();
+			ImGui::PopStyleVar();
+		}
+	}
+
+	void EditorLayer::OnScenePlay()
+	{
+		mSceneState = SceneState::Play;
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		mSceneState = SceneState::Edit;
+	}
 }

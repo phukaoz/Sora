@@ -79,6 +79,7 @@
   <ItemGroup>
     <None Include="..\..\Sandbox\premake5.lua" />
     <None Include="..\..\Sora\premake5.lua" />
+    <None Include="..\..\Sora\vendor\Box2D\premake5.lua" />
     <None Include="..\..\Sora\vendor\Glad\premake5.lua" />
     <None Include="..\..\Sora\vendor\glfw\premake5.lua" />
     <None Include="..\..\Sora\vendor\imgui\premake5.lua" />

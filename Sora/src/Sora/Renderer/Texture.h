@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
+
 #include "Sora/Core/Core.h"
 
 namespace Sora {

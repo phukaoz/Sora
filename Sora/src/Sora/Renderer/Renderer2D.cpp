@@ -193,7 +193,54 @@ namespace Sora {
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteComponent& src, int entity_id)
 	{
-		DrawQuad(transform, src.Color, entity_id);
+		SORA_PROFILE_FUNCTION();
+
+		constexpr size_t quad_vertex_count = 4;
+		constexpr glm::vec2 texture_coords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
+		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+			NextBatch();
+
+		float texture_index = -1.0f;
+		if (src.Texture)
+		{
+			for (uint32_t i = 1; i < sData.TextureSlotIndex; i++)
+			{
+				if (*sData.TextureSlots[i].get() == *src.Texture.get())
+				{
+					texture_index = (float)i;
+					break;
+				}
+			}
+
+			if (texture_index == -1.0f)
+			{
+				texture_index = (float)sData.TextureSlotIndex;
+				sData.TextureSlots[sData.TextureSlotIndex] = src.Texture;
+				sData.TextureSlotIndex++;
+			}
+		}
+		else
+		{
+			texture_index == 0.0f;
+		}
+
+		
+
+		for (size_t i = 0; i < quad_vertex_count; i++)
+		{
+			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
+			sData.QuadVertexBufferPtr->Color = src.Color;
+			sData.QuadVertexBufferPtr->TexCoord = texture_coords[i];
+			sData.QuadVertexBufferPtr->TexIndex = texture_index;
+			sData.QuadVertexBufferPtr->TilingFactor = src.TilingFactor;
+			sData.QuadVertexBufferPtr->EntityID = entity_id;
+			sData.QuadVertexBufferPtr++;
+		}
+
+		sData.QuadIndexCount += 6;
+
+		sData.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation /*= 0.0f*/)
@@ -296,12 +343,12 @@ namespace Sora {
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
-			sData.QuadVertexBufferPtr->Color = color;
-			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
+			sData.QuadVertexBufferPtr->Position		= transform * sData.QuadVertexPosition[i];
+			sData.QuadVertexBufferPtr->Color		= color;
+			sData.QuadVertexBufferPtr->TexCoord		= textureCoords[i];
+			sData.QuadVertexBufferPtr->TexIndex		= textureIndex;
 			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			sData.QuadVertexBufferPtr->EntityID = entity_id;
+			sData.QuadVertexBufferPtr->EntityID		= entity_id;
 			sData.QuadVertexBufferPtr++;
 		}
 

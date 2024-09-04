@@ -13,6 +13,9 @@
     <Filter Include="..\Sora\vendor">
       <UniqueIdentifier>{22724590-0E40-3996-F7D3-A9BCE34015FB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="..\Sora\vendor\Box2D">
+      <UniqueIdentifier>{B0ADDA0A-9C3C-64D4-455B-78CF31C9747A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="..\Sora\vendor\Glad">
       <UniqueIdentifier>{495E47C2-B5BF-24D0-3E2D-6B82AA8D5B8F}</UniqueIdentifier>
     </Filter>
@@ -35,6 +38,9 @@
     </None>
     <None Include="..\..\Sora\premake5.lua">
       <Filter>..\Sora</Filter>
+    </None>
+    <None Include="..\..\Sora\vendor\Box2D\premake5.lua">
+      <Filter>..\Sora\vendor\Box2D</Filter>
     </None>
     <None Include="..\..\Sora\vendor\Glad\premake5.lua">
       <Filter>..\Sora\vendor\Glad</Filter>

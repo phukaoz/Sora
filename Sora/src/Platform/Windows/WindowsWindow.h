@@ -15,20 +15,20 @@ namespace Sora {
 
 		void OnUpdate() override;
 
-		inline uint32_t GetWidth() const  override { return m_Data.Width; }
-		inline uint32_t GetHeight() const override { return m_Data.Height; }
+		inline uint32_t GetWidth() const  override { return mData.Width; }
+		inline uint32_t GetHeight() const override { return mData.Height; }
 
-		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
+		inline void SetEventCallback(const EventCallbackFn& callback) override { mData.EventCallback = callback; }
 		inline void SetVSync(bool enabled) override;
 		inline bool IsSync() const override;
 
-		inline virtual void* GetNativeWindow() const override { return m_Window; }
+		inline virtual void* GetNativeWindow() const override { return mWindow; }
 	private:
 		void Init(const WindowProps& props);
 		void Shutdown();
 
-		GLFWwindow* m_Window;
-		GraphicsContext* m_Context;
+		GLFWwindow* mWindow;
+		GraphicsContext* mContext;
 
 		struct WindowData 
 		{
@@ -39,7 +39,7 @@ namespace Sora {
 			EventCallbackFn EventCallback;
 		};
 
-		WindowData m_Data;
+		WindowData mData;
 	};
 
 }

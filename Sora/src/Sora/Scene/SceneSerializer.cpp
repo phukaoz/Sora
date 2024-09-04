@@ -171,7 +171,7 @@ namespace Sora {
 		out << YAML::Key << "Scene" << YAML::Value << filepath.stem().string();
 
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
-		mScene->m_Registry.view<entt::entity>().each([&](auto entity_id)
+		mScene->mRegistry.view<entt::entity>().each([&](auto entity_id)
 			{
 				Entity entity = { entity_id, mScene.get() };
 				if (!entity)
