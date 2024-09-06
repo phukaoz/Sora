@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt.hpp>
+#include <box2d/box2d.h>
 
 #include "Sora/Core/Timestep.h"
 #include "Sora/Renderer/EditorCamera.h"
@@ -18,6 +19,9 @@ namespace Sora {
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
+		void OnRuntimeStart();
+		void OnRuntimeStop();
+
 		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 		void OnUpdateRuntime(Timestep ts);
 		void OnViewportResize(uint32_t width, uint32_t height);
@@ -27,8 +31,9 @@ namespace Sora {
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 	private:
-		entt::registry mRegistry;
 		uint32_t mViewportWidth = 0, mViewportHeight = 0;
+		b2WorldId mWorldID;
+		entt::registry mRegistry;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

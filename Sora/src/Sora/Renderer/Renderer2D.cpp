@@ -222,7 +222,7 @@ namespace Sora {
 		}
 		else
 		{
-			texture_index == 0.0f;
+			texture_index = 0.0f;
 		}
 
 		

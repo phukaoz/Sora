@@ -19,7 +19,7 @@
 #endif
 
 #ifdef SORA_ENABLE_ASSERTS
-	#define SORA_ASSERT(x, ...) {if(!(x)) { SORA_ERROR("Assertion Failed: {0}", __VA_ARGS__); SORA_DEBUGBREAK(); } }
+	#define SORA_ASSERT(x, ...)	{if(!(x)) { SORA_ERROR("Assertion Failed: {0}", __VA_ARGS__); SORA_DEBUGBREAK(); } }
 	#define SORA_CORE_ASSERT(x, ...) {if(!(x)) { SORA_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); SORA_DEBUGBREAK(); } }
 #else
 	#define SORA_ASSERT(x, ...)

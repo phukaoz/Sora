@@ -42,6 +42,7 @@ project "Sora"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.VulkanSDK}",
+		"%{IncludeDir.box2d}"
 	}
 
 	links
@@ -50,7 +51,8 @@ project "Sora"
 		"Glad",
 		"ImGui",
 		"yaml-cpp",
-		"opengl32.lib"
+		"opengl32.lib",
+		"box2d"
 	}
 	
 	filter "files:vendor/ImGuizmo/**.cpp"

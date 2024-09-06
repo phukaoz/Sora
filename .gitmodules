@@ -17,3 +17,6 @@
 [submodule "Sora/vendor/ImGuizmo"]
 	path = Sora/vendor/ImGuizmo
 	url = https://github.com/phukaoz/ImGuizmo
+[submodule "Sora/vendor/box2d"]
+	path = Sora/vendor/box2d
+	url = https://github.com/phukaoz/box2d

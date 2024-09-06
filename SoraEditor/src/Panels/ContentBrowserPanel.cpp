@@ -44,11 +44,10 @@ namespace Sora {
 				const auto& path = directory.path();
 				auto relative_path = std::filesystem::relative(directory.path(), gAssetPath);
 				std::string filename = relative_path.filename().string();
-				ImGui::PushID(filename.c_str());
 
 				Ref<Texture2D> icon = directory.is_directory() ? mDirectoryIcon : mFileIcon;
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-				ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnail_size, thumbnail_size}, {0, 1}, {1, 0});
+				ImGui::ImageButton(filename.c_str(), (ImTextureID)icon->GetRendererID(), {thumbnail_size, thumbnail_size}, {0, 1}, {1, 0});
 				if (ImGui::BeginDragDropSource())
 				{
 					const wchar_t* item_path = relative_path.c_str();
@@ -65,7 +64,6 @@ namespace Sora {
 				}
 				ImGui::TextWrapped(filename.c_str());
 
-				ImGui::PopID();
 				ImGui::NextColumn();
 			}
 

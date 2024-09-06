@@ -15,7 +15,7 @@ namespace Sora {
 	extern const std::filesystem::path gAssetPath;
 
 	EditorLayer::EditorLayer()
-		: Layer("Sandbox2D")
+		: Layer("Sandbox2D"), mCurrentScenePath()
 	{
 	}
 
@@ -123,7 +123,7 @@ namespace Sora {
 			ImGuiStyle& style = ImGui::GetStyle();
 
 			float min_window_size_x = style.WindowMinSize.x;
-			style.WindowMinSize.x = 300.0f;
+			style.WindowMinSize.x = 370.0f;
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("Sora Dockspace");
@@ -137,6 +137,7 @@ namespace Sora {
 				{
 					if (ImGui::MenuItem("New", "Ctrl+N"))				NewScene();
 					if (ImGui::MenuItem("Open...", "Ctrl+O"))			OpenScene();
+					if (ImGui::MenuItem("Save", "Ctrl+S"))				SaveScene();
 					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))	SaveSceneAs();
 					if (ImGui::MenuItem("Exit"))						Sora::Application::Get().Close();
 
@@ -144,26 +145,6 @@ namespace Sora {
 				}
 
 				ImGui::EndMenuBar();
-			}
-
-			if (ImGui::Begin("Stats"))
-			{
-				std::string name = "None";
-				if (mHoveredEntity && mHoveredEntity.HasComponent<TagComponent>())
-				{
-					name = mHoveredEntity.GetComponent<TagComponent>().Tag;
-					ImGui::SetTooltip(name.c_str());
-				}
-				ImGui::Text("Entity : %s", name.c_str());
-
-				auto stats = Sora::Renderer2D::GetStats();
-				ImGui::Text("Renderer2D Stats:");
-				ImGui::Text("Draw Calls: %d", stats.DrawCallCount);
-				ImGui::Text("Quads: %d", stats.QuadCount);
-				ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-				ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-
-				ImGui::End();
 			}
 
 			mSceneHierarchyPanel.OnImGuiRender();
@@ -200,6 +181,7 @@ namespace Sora {
 			break;
 		case Key::S:
 			if (control && shift) SaveSceneAs();
+			if (control && !shift) SaveScene();
 			break;
 
 		case Key::Q:
@@ -235,6 +217,7 @@ namespace Sora {
 		mActiveScene = CreateRef<Scene>();
 		mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 		mSceneHierarchyPanel.SetContext(mActiveScene);
+		mCurrentScenePath = "";
 	}
 
 	void EditorLayer::OpenScene()
@@ -253,7 +236,10 @@ namespace Sora {
 		mSceneHierarchyPanel.SetContext(mActiveScene);
 
 		SceneSerializer serializer(mActiveScene);
-		serializer.Deserialize(path.string());
+		if (serializer.Deserialize(path))
+		{
+			mCurrentScenePath = path;
+		}
 	}
 
 	void EditorLayer::SaveSceneAs()
@@ -263,6 +249,20 @@ namespace Sora {
 		{
 			SceneSerializer serializer(mActiveScene);
 			serializer.Serialize(filepath);
+			mCurrentScenePath = filepath;
+		}
+	}
+
+	void EditorLayer::SaveScene()
+	{
+		if (mCurrentScenePath.empty())
+		{
+			SaveSceneAs();
+		}
+		else
+		{
+			SceneSerializer serializer(mActiveScene);
+			serializer.Serialize(mCurrentScenePath);
 		}
 	}
 
@@ -282,12 +282,12 @@ namespace Sora {
 			Ref<Texture2D> icon = mSceneState == SceneState::Edit ? mIconPlay : mIconStop;
 			float size = ImGui::GetWindowHeight() - 4.0f;
 			ImGui::SameLine((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-			if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0))
+			if (ImGui::ImageButton("play/stop", (ImTextureID)icon->GetRendererID(), {size, size}))
 			{
 				if (mSceneState == SceneState::Edit)
-					OnScenePlay();
+					PlayScene();
 				else if (mSceneState == SceneState::Play)
-					OnSceneStop();
+					StopScene();
 			}
 
 			ImGui::End();
@@ -388,13 +388,15 @@ namespace Sora {
 		}
 	}
 
-	void EditorLayer::OnScenePlay()
+	void EditorLayer::PlayScene()
 	{
 		mSceneState = SceneState::Play;
+		mActiveScene->OnRuntimeStart();
 	}
 
-	void EditorLayer::OnSceneStop()
+	void EditorLayer::StopScene()
 	{
 		mSceneState = SceneState::Edit;
+		mActiveScene->OnRuntimeStop();
 	}
 }

@@ -32,6 +32,18 @@ namespace Sora {
 		mRegistry.destroy(entity);
 	}
 
+	void Scene::OnRuntimeStart()
+	{
+		b2WorldDef worldDef = b2DefaultWorldDef();
+		worldDef.gravity = { 0.0f, -10.0f };
+		mWorldID = b2CreateWorld(&worldDef);
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		b2DestroyWorld(mWorldID);
+	}
+
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);

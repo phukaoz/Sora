@@ -28,16 +28,18 @@ namespace Sora {
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
+		void SaveScene();
 
 		void UI_Toolbar();
 		void UI_Viewport();
 
-		void OnScenePlay();
-		void OnSceneStop();
+		void PlayScene();
+		void StopScene();
 	private:
 		Ref<Framebuffer> mFramebuffer;
 
 		Ref<Scene> mActiveScene;
+		std::filesystem::path mCurrentScenePath;
 
 		EditorCamera mEditorCamera;
 		bool mViewportFocused = false, mViewportHovered = false;

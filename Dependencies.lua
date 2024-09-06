@@ -9,6 +9,7 @@ IncludeDir["yaml_cpp"] = "%{wks.location}/Sora/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "%{wks.location}/Sora/vendor/ImGuizmo"
 IncludeDir["shaderc"] = "%{wks.location}/Sora/vendor/shaderc/include"
 IncludeDir["VulkanSDK"] = "%{wks.location}/Sora/vendor/VulkanSDK/include"
+IncludeDir["box2d"] = "%{wks.location}/Sora/vendor/box2d/include"
 
 LibraryDir = {}
 LibraryDir = "%{wks.location}/Sora/vendor/VulkanSDK/Lib"
