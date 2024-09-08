@@ -91,7 +91,7 @@ namespace Sora {
 		}
 	}
 
-	static void DrawVec3Control(const std::string& label, glm::vec3& values, float reset_value = 0.0f, float column_width = 100.0f)
+	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		auto bold_font = io.Fonts->Fonts[0];
@@ -99,7 +99,7 @@ namespace Sora {
 		ImGui::PushID(label.c_str());
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, column_width);
+		ImGui::SetColumnWidth(0, columnWidth);
 		ImGui::Text(label.c_str());
 		ImGui::NextColumn();
 
@@ -114,7 +114,7 @@ namespace Sora {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.7f, 0.0f, 0.05f, 1.0f });
 		ImGui::PushFont(bold_font);
 		if (ImGui::Button("X", button_size))
-			values.x = reset_value;
+			values.x = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 		
@@ -128,7 +128,7 @@ namespace Sora {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.0f, 0.7f, 0.05f, 1.0f });
 		ImGui::PushFont(bold_font);
 		if (ImGui::Button("Y", button_size))
-			values.y = reset_value;
+			values.y = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 
@@ -142,7 +142,7 @@ namespace Sora {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.0f, 0.05f, 0.7f, 1.0f });
 		ImGui::PushFont(bold_font);
 		if (ImGui::Button("Z", button_size))
-			values.z = reset_value;
+			values.z = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 
@@ -158,7 +158,7 @@ namespace Sora {
 	}
 
 	template<typename ComponentType, typename UIFunction>
-	static void DrawComponent(const std::string& name, Entity entity, UIFunction ui_function)
+	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
 	{
 		const ImGuiTreeNodeFlags TREE_NODE_FLAGS = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap
 			| ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
@@ -166,17 +166,17 @@ namespace Sora {
 		if (entity.HasComponent<ComponentType>())
 		{
 			auto& component = entity.GetComponent<ComponentType>();
-			ImVec2 content_region_available = ImGui::GetContentRegionAvail();
+			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
-			float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 			ImGui::Separator();
 			bool opened = ImGui::TreeNodeEx((void*)typeid(ComponentType).hash_code(), TREE_NODE_FLAGS, name.c_str());
 			ImGui::PopStyleVar();
 
-			ImGui::SameLine(content_region_available.x - line_height * 0.5f);
+			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
 
-			if (ImGui::Button("+", ImVec2{ line_height, line_height }))
+			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
 			{
 				ImGui::OpenPopup("ComponentSettings");
 			}
@@ -192,7 +192,7 @@ namespace Sora {
 
 			if (opened)
 			{
-				ui_function(component);
+				uiFunction(component);
 				ImGui::TreePop();
 			}
 
@@ -225,16 +225,44 @@ namespace Sora {
 
 			if (ImGui::BeginPopup("AddComponent"))
 			{
-				if (ImGui::MenuItem("Camera"))
+				if (!mSelectionContext.HasComponent<CameraComponent>())
 				{
-					mSelectionContext.AddComponent<CameraComponent>();
-					ImGui::CloseCurrentPopup();
+					if (ImGui::MenuItem("Camera"))
+					{
+						mSelectionContext.AddComponent<CameraComponent>();
+
+						ImGui::CloseCurrentPopup();
+					}
 				}
 
-				if (ImGui::MenuItem("Sprite"))
+				if (!mSelectionContext.HasComponent<SpriteComponent>())
 				{
-					mSelectionContext.AddComponent<SpriteComponent>();
-					ImGui::CloseCurrentPopup();
+					if (ImGui::MenuItem("Sprite"))
+					{
+						mSelectionContext.AddComponent<SpriteComponent>();
+
+						ImGui::CloseCurrentPopup();
+					}
+				}
+
+				if (!mSelectionContext.HasComponent<Rigidbody2DComponent>())
+				{
+					if (ImGui::MenuItem("Rigidbody 2D"))
+					{
+						mSelectionContext.AddComponent<Rigidbody2DComponent>();
+
+						ImGui::CloseCurrentPopup();
+					}
+				}
+
+				if (!mSelectionContext.HasComponent<BoxCollider2DComponent>())
+				{
+					if (ImGui::MenuItem("Box Collider 2D"))
+					{
+						mSelectionContext.AddComponent<BoxCollider2DComponent>();
+
+						ImGui::CloseCurrentPopup();
+					}
 				}
 
 				ImGui::EndPopup();
@@ -328,14 +356,49 @@ namespace Sora {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 					{
 						const wchar_t* path = (const wchar_t*)payload->Data;
-						const std::filesystem::path texture_path = gAssetPath / path;
-						component.Texture = Texture2D::Create(texture_path.string());
+						const std::filesystem::path texturePath = gAssetPath / path;
+						component.Texture = Texture2D::Create(texturePath.string());
 					}
 
 					ImGui::EndDragDropTarget();
 				}
 
 				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+			});
+
+		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component)
+			{
+				const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
+				const char* currentBodyTypeStrings = bodyTypeStrings[(int)component.Type];
+
+				if (ImGui::BeginCombo("Body Type", currentBodyTypeStrings))
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						bool isSelected = currentBodyTypeStrings == bodyTypeStrings[i];
+						if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+						{
+							currentBodyTypeStrings = bodyTypeStrings[i];
+							component.Type = (Rigidbody2DComponent::BodyType)i;
+						}
+
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+				
+					ImGui::EndCombo();
+				}
+
+				ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
+			});
+
+		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component)
+			{
+				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
+				ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+				ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
 			});
 	}
 

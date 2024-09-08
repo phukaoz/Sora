@@ -222,7 +222,7 @@ namespace Sora {
 
 	void EditorLayer::OpenScene()
 	{
-		std::string filepath = FileDialogs::OpenFile("Sora Scene (*.yuki)\0*.yuki\0");
+		std::string filepath = FileDialogs::OpenFile("Sora Scene (*.sora)\0*.sora\0");
 		if (!filepath.empty())
 		{
 			OpenScene(filepath);
@@ -244,7 +244,7 @@ namespace Sora {
 
 	void EditorLayer::SaveSceneAs()
 	{
-		std::string filepath = FileDialogs::SaveFile("Sora Scene (*.yuki)\0*.yuki\0");
+		std::string filepath = FileDialogs::SaveFile("Sora Scene (*.sora)\0*.sora\0");
 		if (!filepath.empty())
 		{
 			SceneSerializer serializer(mActiveScene);
@@ -282,7 +282,7 @@ namespace Sora {
 			Ref<Texture2D> icon = mSceneState == SceneState::Edit ? mIconPlay : mIconStop;
 			float size = ImGui::GetWindowHeight() - 4.0f;
 			ImGui::SameLine((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-			if (ImGui::ImageButton("play/stop", (ImTextureID)icon->GetRendererID(), {size, size}))
+			if (ImGui::ImageButton("play/stop", (ImTextureID)(uint64_t)icon->GetRendererID(), {size, size}))
 			{
 				if (mSceneState == SceneState::Edit)
 					PlayScene();
@@ -330,8 +330,8 @@ namespace Sora {
 			}
 
 			// Gizmo's
-			Entity selected_entity = mSceneHierarchyPanel.GetSelectedEntity();
-			if (selected_entity && mGizmoType != -1)
+			Entity selectedEntity = mSceneHierarchyPanel.GetSelectedEntity();
+			if (selectedEntity && mGizmoType != -1)
 			{
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
@@ -340,46 +340,46 @@ namespace Sora {
 				float window_height = (float)ImGui::GetWindowHeight();
 				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
 
-				glm::mat4 camera_view = glm::mat4(1.0f);
-				glm::mat4 camera_projection = glm::mat4(1.0f);
+				glm::mat4 cameraView = glm::mat4(1.0f);
+				glm::mat4 cameraProjection = glm::mat4(1.0f);
 				switch (mSceneState)
 				{
 				case SceneState::Edit:
-					camera_projection	= mEditorCamera.GetProjection();
-					camera_view			= mEditorCamera.GetViewMatrix();
+					cameraProjection	= mEditorCamera.GetProjection();
+					cameraView			= mEditorCamera.GetViewMatrix();
 					break;
 				case SceneState::Play :
-					auto camera_entity	= mActiveScene->GetPrimaryCameraEntity();
-					const auto& camera	= camera_entity.GetComponent<CameraComponent>().Camera;
-					camera_projection	= camera.GetProjection();
-					camera_view			= glm::inverse(camera_entity.GetComponent<TransformComponent>().GetTransform());
+					auto cameraEntity	= mActiveScene->GetPrimaryCameraEntity();
+					const auto& camera	= cameraEntity.GetComponent<CameraComponent>().Camera;
+					cameraProjection	= camera.GetProjection();
+					cameraView			= glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 					break;
 				}
 
-				auto& transform_component = selected_entity.GetComponent<TransformComponent>();
-				glm::mat4 transform = transform_component.GetTransform();
+				auto& transformComponent = selectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 transform = transformComponent.GetTransform();
 
 				// edit snap value here!
 				bool snap = Input::IsKeyPressed(Key::LeftControl);
-				float snap_value = 0.5f;
+				float snapValue = 0.5f;
 
 				if (mGizmoType == ImGuizmo::OPERATION::ROTATE)
-					snap_value = 45.0f;
+					snapValue = 45.0f;
 
-				float snap_values[3] = { snap_value, snap_value, snap_value };
+				float snapValues[3] = { snapValue, snapValue, snapValue };
 
-				ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
+				ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
 					(ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-					nullptr, snap ? snap_values : nullptr);
+					nullptr, snap ? snapValues : nullptr);
 
 				if (ImGuizmo::IsUsing())
 				{
 					glm::vec3 translation, rotation, scale;
 					Math::DecomposeTransform(transform, translation, rotation, scale);
 
-					transform_component.Translation = translation;
-					transform_component.Rotation = rotation;
-					transform_component.Scale = scale;
+					transformComponent.Translation = translation;
+					transformComponent.Rotation = rotation;
+					transformComponent.Scale = scale;
 				}
 			}
 

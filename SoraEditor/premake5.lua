@@ -21,6 +21,7 @@ project "SoraEditor"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.box2d}"
 	}
 
 	links

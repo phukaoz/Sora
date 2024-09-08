@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SORA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Sora\vendor\spdlog\include;..\Sora\src;..\Sora\vendor;..\Sora\vendor\glm;..\Sora\vendor\entt\include;..\Sora\vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Sora\vendor\spdlog\include;..\Sora\src;..\Sora\vendor;..\Sora\vendor\glm;..\Sora\vendor\entt\include;..\Sora\vendor\ImGuizmo;..\Sora\vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SORA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Sora\vendor\spdlog\include;..\Sora\src;..\Sora\vendor;..\Sora\vendor\glm;..\Sora\vendor\entt\include;..\Sora\vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Sora\vendor\spdlog\include;..\Sora\src;..\Sora\vendor;..\Sora\vendor\glm;..\Sora\vendor\entt\include;..\Sora\vendor\ImGuizmo;..\Sora\vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -120,7 +120,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SORA_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Sora\vendor\spdlog\include;..\Sora\src;..\Sora\vendor;..\Sora\vendor\glm;..\Sora\vendor\entt\include;..\Sora\vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Sora\vendor\spdlog\include;..\Sora\src;..\Sora\vendor;..\Sora\vendor\glm;..\Sora\vendor\entt\include;..\Sora\vendor\ImGuizmo;..\Sora\vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

@@ -17,6 +17,7 @@ namespace Sora {
 		virtual uint32_t GetWidth() const override { return mWidth; }
 		virtual uint32_t GetHeight() const override { return mHeight; }
 		virtual uint32_t GetRendererID() const override { return mRendererID; }
+		virtual const std::filesystem::path& GetTexturePath() const override { return mTexturePath; }
 
 		virtual void SetData(void* data, uint32_t size) override;
 
@@ -27,7 +28,7 @@ namespace Sora {
 			return mRendererID == ((OpenGLTexture2D&)other).mRendererID;
 		}
 	private:
-		std::filesystem::path mPath;
+		std::filesystem::path mTexturePath;
 		uint32_t mWidth, mHeight;
 		uint32_t mRendererID;
 		GLenum mDataFormat, mInternalFormat;

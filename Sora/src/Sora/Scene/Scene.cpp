@@ -9,6 +9,23 @@
 
 namespace Sora {
 
+	namespace Utils{
+		
+		static b2BodyType TypeConvert(Rigidbody2DComponent::BodyType bodyType)
+		{
+			switch (bodyType)
+			{
+			case Rigidbody2DComponent::BodyType::Static:	return b2_staticBody;
+			case Rigidbody2DComponent::BodyType::Dynamic:	return b2_dynamicBody;
+			case Rigidbody2DComponent::BodyType::Kinematic:	return b2_kinematicBody;
+			}
+
+			SORA_CORE_ASSERT(false, "Unknown body type!");
+			return b2_staticBody;
+		}
+
+	}
+
 	Scene::Scene()
 	{
 	}
@@ -37,11 +54,70 @@ namespace Sora {
 		b2WorldDef worldDef = b2DefaultWorldDef();
 		worldDef.gravity = { 0.0f, -10.0f };
 		mWorldID = b2CreateWorld(&worldDef);
+
+		auto view = mRegistry.view<Rigidbody2DComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+			b2BodyDef bodyDef = b2DefaultBodyDef();
+			bodyDef.type = Utils::TypeConvert(rb2d.Type);
+			bodyDef.position.x = transform.Translation.x;
+			bodyDef.position.y = transform.Translation.y;
+			bodyDef.rotation = b2MakeRot(transform.Rotation.z);
+			bodyDef.fixedRotation = rb2d.FixedRotation;
+			
+			b2BodyId bodyID = b2CreateBody(mWorldID, &bodyDef);
+			// TODO: find the better way to store body id.
+			memcpy(&rb2d.RuntimeBody, &bodyID, sizeof(b2BodyId));
+		
+			if (entity.HasComponent<BoxCollider2DComponent>())
+			{
+				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+				b2ShapeDef shapeDef = b2DefaultShapeDef();
+				shapeDef.density = bc2d.Density;
+				shapeDef.friction = bc2d.Friction;
+				shapeDef.restitution = bc2d.Restitution;
+
+				b2Polygon polygon = b2MakeBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);
+				b2ShapeId shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
+				// TODO: find the better way to store shape id.
+				memcpy(&bc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
 		b2DestroyWorld(mWorldID);
+	}
+
+	void Scene::OnUpdatePhysics(Timestep ts)
+	{
+		const int32_t subStepCount = 4;
+		b2World_Step(mWorldID, ts, subStepCount);
+
+		auto view = mRegistry.view<Rigidbody2DComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+			// TODO: find the better way to get body.
+			b2BodyId bodyID;
+			memcpy(&bodyID, &rb2d.RuntimeBody, sizeof(b2BodyId));
+
+			b2Vec2 position = b2Body_GetPosition(bodyID);
+			transform.Translation.x = position.x;
+			transform.Translation.y = position.y;
+
+			b2Rot rotation = b2Body_GetRotation(bodyID);
+			transform.Rotation.z = b2Rot_GetAngle(rotation);
+		}
 	}
 
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
@@ -72,6 +148,8 @@ namespace Sora {
 
 			script.Instance->OnUpdate(ts);
 		}
+
+		OnUpdatePhysics(ts);
 
 		Camera* main_camera = nullptr;
 		glm::mat4 camera_transform;
@@ -164,4 +242,17 @@ namespace Sora {
 	{
 
 	}
+
+	template<>
+	void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	{
+
+	}
+
 }

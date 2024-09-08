@@ -10,6 +10,29 @@
 namespace YAML {
 
 	template<>
+	struct convert<glm::vec2>
+	{
+		static Node encode(const glm::vec2& right)
+		{
+			Node node;
+			node.push_back(right.x);
+			node.push_back(right.y);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& right)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			right.x = node[0].as<float>();
+			right.y = node[1].as<float>();
+			return true;
+		}
+	};
+
+	template<>
 	struct convert<glm::vec3>
 	{
 		static Node encode(const glm::vec3& right)
@@ -18,6 +41,7 @@ namespace YAML {
 			node.push_back(right.x);
 			node.push_back(right.y);
 			node.push_back(right.z);
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 
@@ -43,6 +67,7 @@ namespace YAML {
 			node.push_back(right.y);
 			node.push_back(right.z);
 			node.push_back(right.w);
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 
@@ -62,6 +87,13 @@ namespace YAML {
 }
 
 namespace Sora {
+
+	static YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& vector)
+	{
+		out << YAML::Flow;
+		out << YAML::BeginSeq << vector.x << vector.y << YAML::EndSeq;
+		return out;
+	}
 
 	static YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& vector)
 	{
@@ -92,11 +124,12 @@ namespace Sora {
 		{
 			out << YAML::Key << "TagComponent";
 			out << YAML::BeginMap;
-
-			auto& tag = entity.GetComponent<TagComponent>().Tag;
-			out << YAML::Key << "Tag" << YAML::Value << tag;
-
-			out << YAML::EndMap;
+			{
+				auto& tag = entity.GetComponent<TagComponent>().Tag;
+				out << YAML::Key << "Tag" << YAML::Value << tag;
+			
+				out << YAML::EndMap;
+			}
 		}
 		
 		if (entity.HasComponent<TransformComponent>())
@@ -104,16 +137,17 @@ namespace Sora {
 			out << YAML::Key << "TransformComponent";
 			out << YAML::BeginMap;
 			{
-				auto& transform_component = entity.GetComponent<TransformComponent>();
-				auto& translation = transform_component.Translation;
-				auto& rotation = transform_component.Rotation;
-				auto& scale = transform_component.Scale;
+				auto& transformComponent = entity.GetComponent<TransformComponent>();
+				auto& translation = transformComponent.Translation;
+				auto& rotation = transformComponent.Rotation;
+				auto& scale = transformComponent.Scale;
 
-				out << YAML::Key << "Translation" << YAML::Value << translation;
-				out << YAML::Key << "Rotation" << YAML::Value << rotation;
-				out << YAML::Key << "Scale" << YAML::Value << scale;
+				out << YAML::Key << "Translation"	<< YAML::Value << translation;
+				out << YAML::Key << "Rotation"		<< YAML::Value << rotation;
+				out << YAML::Key << "Scale"			<< YAML::Value << scale;
+			
+				out << YAML::EndMap;
 			}
-			out << YAML::EndMap;
 		}
 
 		if (entity.HasComponent<SpriteComponent>())
@@ -121,12 +155,16 @@ namespace Sora {
 			out << YAML::Key << "SpriteComponent";
 			out << YAML::BeginMap;
 			{
-				auto& sprite_component = entity.GetComponent<SpriteComponent>();
-				auto& color = sprite_component.Color;
+				auto& spriteComponent = entity.GetComponent<SpriteComponent>();
+				auto& color = spriteComponent.Color;
+				auto& texture = spriteComponent.Texture;
 
-				out << YAML::Key << "Color" << YAML::Value << color;
+				out << YAML::Key << "Color"	<< YAML::Value << color;
+				if (texture.get())
+					out << YAML::Key << "Texture" << YAML::Value << texture->GetTexturePath().string();
+
+				out << YAML::EndMap;
 			}
-			out << YAML::EndMap;
 		}
 
 		if (entity.HasComponent<CameraComponent>())
@@ -134,30 +172,70 @@ namespace Sora {
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap;
 			{
-				auto& camera_component = entity.GetComponent<CameraComponent>();
-				auto& camera = camera_component.Camera;
-				auto& primary = camera_component.Primary;
-				auto& fixed_aspect_ratio = camera_component.FixedAspectRatio;
+				auto& cameraComponent = entity.GetComponent<CameraComponent>();
+				auto& camera = cameraComponent.Camera;
+				auto& primary = cameraComponent.Primary;
+				auto& fixedAspectRatio = cameraComponent.FixedAspectRatio;
 
 				out << YAML::Key << "Camera" << YAML::Value;
 				out << YAML::BeginMap;
 				{
-					out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
+					out << YAML::Key << "ProjectionType"	<< YAML::Value << (int)camera.GetProjectionType();
 
-					out << YAML::Key << "OrthographicSize" << YAML::Value << camera.GetOrthographicSize();
-					out << YAML::Key << "OrthographicNear" << YAML::Value << camera.GetOrthographicNearClip();
-					out << YAML::Key << "OrthographicFar" << YAML::Value << camera.GetOrthographicFarClip();
+					out << YAML::Key << "OrthographicSize"	<< YAML::Value << camera.GetOrthographicSize();
+					out << YAML::Key << "OrthographicNear"	<< YAML::Value << camera.GetOrthographicNearClip();
+					out << YAML::Key << "OrthographicFar"	<< YAML::Value << camera.GetOrthographicFarClip();
 
-					out << YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveVerticalFOV();
-					out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
-					out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
+					out << YAML::Key << "PerspectiveFOV"	<< YAML::Value << camera.GetPerspectiveVerticalFOV();
+					out << YAML::Key << "PerspectiveNear"	<< YAML::Value << camera.GetPerspectiveNearClip();
+					out << YAML::Key << "PerspectiveFar"	<< YAML::Value << camera.GetPerspectiveFarClip();
+
+					out << YAML::EndMap;
 				}
-				out << YAML::EndMap;
 
-				out << YAML::Key << "Primary" << YAML::Value << camera_component.Primary;
-				out << YAML::Key << "FixedAspectRatio" << YAML::Value << camera_component.FixedAspectRatio;
+				out << YAML::Key << "Primary"			<< YAML::Value << cameraComponent.Primary;
+				out << YAML::Key << "FixedAspectRatio"	<< YAML::Value << cameraComponent.FixedAspectRatio;
+
+				out << YAML::EndMap;
 			}
-			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<Rigidbody2DComponent>())
+		{
+			out << YAML::Key << "Rigidbody2DComponent";
+			out << YAML::BeginMap;
+			{
+				auto& spriteComponent	= entity.GetComponent<Rigidbody2DComponent>();
+				auto  type				= spriteComponent.Type;
+				auto  fixedRotation		= spriteComponent.FixedRotation;
+
+				out << YAML::Key << "Type"			<< YAML::Value << (int)type;
+				out << YAML::Key << "FixedRotation" << YAML::Value << fixedRotation;
+			
+				out << YAML::EndMap;
+			}
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap;
+			{
+				auto& spriteComponent	= entity.GetComponent<BoxCollider2DComponent>();
+				auto& offset			= spriteComponent.Offset;
+				auto& size				= spriteComponent.Size;
+				auto  density			= spriteComponent.Density;
+				auto  friction			= spriteComponent.Friction;
+				auto  restitution		= spriteComponent.Restitution;
+
+				out << YAML::Key << "Offset"		<< YAML::Value << offset;
+				out << YAML::Key << "Size"			<< YAML::Value << size;
+				out << YAML::Key << "Density"		<< YAML::Value << density;
+				out << YAML::Key << "Friction"		<< YAML::Value << friction;
+				out << YAML::Key << "Restitution"	<< YAML::Value << restitution;
+
+				out << YAML::EndMap;
+			}
 		}
 
 		out << YAML::EndMap;
@@ -195,15 +273,15 @@ namespace Sora {
 	bool SceneSerializer::Deserialize(const std::filesystem::path& filepath)
 	{
 		std::ifstream stream(filepath);
-		std::stringstream str_stream;
-		str_stream << stream.rdbuf();
+		std::stringstream strStream;
+		strStream << stream.rdbuf();
 		
-		YAML::Node data = YAML::Load(str_stream.str());
+		YAML::Node data = YAML::Load(strStream.str());
 		if (!data["Scene"])
 			return false;
 
-		std::string scene_name = data["Scene"].as<std::string>();
-		SORA_CORE_TRACE("Deserializing scene '{0}'", scene_name);
+		std::string sceneName = data["Scene"].as<std::string>();
+		SORA_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
 		auto entities = data["Entities"];
 		if (entities)
@@ -213,48 +291,70 @@ namespace Sora {
 				uint64_t uuid = entity["Entity"].as<uint32_t>();
 
 				std::string name;
-				auto tag_component = entity["TagComponent"];
-				if (tag_component)
-					name = tag_component["Tag"].as<std::string>();
+				auto tagComponent = entity["TagComponent"];
+				if (tagComponent)
+					name = tagComponent["Tag"].as<std::string>();
 
 				SORA_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Entity deserialized_entity = mScene->CreateEntity(name);
+				Entity deserializedEntity = mScene->CreateEntity(name);
 
-				auto transform_component = entity["TransformComponent"];
-				if (transform_component)
+				auto transformComponent = entity["TransformComponent"];
+				if (transformComponent)
 				{
-					auto& componet = deserialized_entity.GetComponent<TransformComponent>();
-					componet.Translation = transform_component["Translation"].as<glm::vec3>();
-					componet.Rotation = transform_component["Rotation"].as<glm::vec3>();
-					componet.Scale = transform_component["Scale"].as<glm::vec3>();
+					auto& componet			= deserializedEntity.GetComponent<TransformComponent>();
+					componet.Translation	= transformComponent["Translation"].as<glm::vec3>();
+					componet.Rotation		= transformComponent["Rotation"].as<glm::vec3>();
+					componet.Scale			= transformComponent["Scale"].as<glm::vec3>();
 				}
 
-				auto camera_component = entity["CameraComponent"];
-				if (camera_component)
+				auto cameraComponent = entity["CameraComponent"];
+				if (cameraComponent)
 				{
-					auto& component = deserialized_entity.AddComponent<CameraComponent>();
+					auto& component = deserializedEntity.AddComponent<CameraComponent>();
 
-					auto camera_props = camera_component["Camera"];
-					component.Camera.SetProjectionType((SceneCamera::ProjectionType)camera_props["ProjectionType"].as<int>());
+					auto cameraProps = cameraComponent["Camera"];
+					component.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
 				
-					component.Camera.SetOrthographicSize(camera_props["OrthographicSize"].as<float>());
-					component.Camera.SetOrthographicNearClip(camera_props["OrthographicNear"].as<float>());
-					component.Camera.SetOrthographicFarClip(camera_props["OrthographicFar"].as<float>());
+					component.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+					component.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+					component.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
 
-					component.Camera.SetPerspectiveVerticalFOV(camera_props["PerspectiveFOV"].as<float>());
-					component.Camera.SetPerspectiveNearClip(camera_props["PerspectiveNear"].as<float>());
-					component.Camera.SetPerspectiveFarClip(camera_props["PerspectiveFar"].as<float>());
+					component.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+					component.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+					component.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
 
-					component.Primary = camera_component["Primary"].as<bool>();
-					component.FixedAspectRatio = camera_component["FixedAspectRatio"].as<bool>();
+					component.Primary			= cameraComponent["Primary"].as<bool>();
+					component.FixedAspectRatio	= cameraComponent["FixedAspectRatio"].as<bool>();
 				}
 
-				auto sprite_component = entity["SpriteComponent"];
-				if (sprite_component)
+				auto spriteComponent = entity["SpriteComponent"];
+				if (spriteComponent)
 				{
-					auto& component = deserialized_entity.AddComponent<SpriteComponent>();
-					component.Color = sprite_component["Color"].as<glm::vec4>();
+					auto& component		= deserializedEntity.AddComponent<SpriteComponent>();
+
+					component.Color		= spriteComponent["Color"].as<glm::vec4>();
+					if(spriteComponent["Texture"])
+						component.Texture	= Texture2D::Create(spriteComponent["Texture"].as<std::string>());
+				}
+
+				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
+				if (rigidbody2DComponent)
+				{
+					auto& component			= deserializedEntity.AddComponent<Rigidbody2DComponent>();
+					component.Type			= (Rigidbody2DComponent::BodyType)rigidbody2DComponent["Type"].as<int>();
+					component.FixedRotation = rigidbody2DComponent["FixedRotation"].as<bool>();
+				}
+
+				auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
+				if (boxCollider2DComponent)
+				{
+					auto& component			= deserializedEntity.AddComponent<BoxCollider2DComponent>();
+					component.Offset		= boxCollider2DComponent["Offset"].as<glm::vec2>();
+					component.Size			= boxCollider2DComponent["Size"].as<glm::vec2>();
+					component.Density		= boxCollider2DComponent["Density"].as<float>();
+					component.Friction		= boxCollider2DComponent["Friction"].as<float>();
+					component.Restitution	= boxCollider2DComponent["Restitution"].as<float>();
 				}
 			}
 		}

@@ -47,7 +47,7 @@ namespace Sora {
 
 				Ref<Texture2D> icon = directory.is_directory() ? mDirectoryIcon : mFileIcon;
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-				ImGui::ImageButton(filename.c_str(), (ImTextureID)icon->GetRendererID(), {thumbnail_size, thumbnail_size}, {0, 1}, {1, 0});
+				ImGui::ImageButton(filename.c_str(), (ImTextureID)(uint64_t)icon->GetRendererID(), {thumbnail_size, thumbnail_size}, {0, 1}, {1, 0});
 				if (ImGui::BeginDragDropSource())
 				{
 					const wchar_t* item_path = relative_path.c_str();

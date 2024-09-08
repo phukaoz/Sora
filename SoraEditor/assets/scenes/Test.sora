@@ -1,0 +1,12 @@
+Scene: Test
+Entities:
+  - Entity: 0
+    TagComponent:
+      Tag: Sqaure A
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Color: [0.00766239036, 0.99227798, 0, 1]
+      Texture: 

@@ -24,7 +24,7 @@ namespace Sora {
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
-		: mPath(path)
+		: mTexturePath(path)
 	{
 		SORA_PROFILE_FUNCTION();
 
