@@ -169,6 +169,7 @@
     <ClInclude Include="src\Sora\Core\PlatformDetection.h" />
     <ClInclude Include="src\Sora\Core\Timer.h" />
     <ClInclude Include="src\Sora\Core\Timestep.h" />
+    <ClInclude Include="src\Sora\Core\UUID.h" />
     <ClInclude Include="src\Sora\Core\Window.h" />
     <ClInclude Include="src\Sora\Debug\Instrumentor.h" />
     <ClInclude Include="src\Sora\Events\ApplicationEvent.h" />
@@ -636,6 +637,7 @@
     <ClCompile Include="src\Sora\Core\Layer.cpp" />
     <ClCompile Include="src\Sora\Core\LayerStack.cpp" />
     <ClCompile Include="src\Sora\Core\Log.cpp" />
+    <ClCompile Include="src\Sora\Core\UUID.cpp" />
     <ClCompile Include="src\Sora\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Sora\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Sora\Math\Math.cpp" />

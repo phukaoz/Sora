@@ -9,4 +9,3 @@ Entities:
       Scale: [1, 1, 1]
     SpriteComponent:
       Color: [0.00766239036, 0.99227798, 0, 1]
-      Texture: 

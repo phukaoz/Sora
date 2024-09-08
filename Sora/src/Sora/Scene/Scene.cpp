@@ -3,8 +3,9 @@
 
 #include <glm/glm.hpp>
 
-#include "Component.h"
-#include "Entity.h"
+#include "Sora/Scene/Entity.h"
+#include "Sora/Scene/Component.h"
+#include "Sora/Scene/ScriptableEntity.h"
 #include "Sora/Renderer/Renderer2D.h"
 
 namespace Sora {
@@ -34,9 +35,10 @@ namespace Sora {
 	{
 	}
 
-	Entity Scene::CreateEntity(const std::string& name)
+	Entity Scene::CreateEntity(const std::string& name, const std::optional<UUID>& uuid)
 	{
 		Entity entity = { mRegistry.create(), this };
+		entity.AddComponent<IDComponent>(uuid.value_or(UUID()));
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Untitled Entity" : name;
@@ -213,21 +215,23 @@ namespace Sora {
 	}
 
 	template<>
+	void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
+	{
+	}
+
+	template<>
 	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
 	{
-
 	}
 
 	template<>
 	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
 	{
-
 	}
 
 	template<>
 	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
 	{
-
 	}
 	
 	template<>
@@ -240,19 +244,16 @@ namespace Sora {
 	template<>
 	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
 	{
-
 	}
 
 	template<>
 	void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
 	{
-
 	}
 
 	template<>
 	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
 	{
-
 	}
 
 }

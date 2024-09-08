@@ -4,6 +4,7 @@
 #include <box2d/box2d.h>
 
 #include "Sora/Core/Timestep.h"
+#include "Sora/Core/UUID.h"
 #include "Sora/Renderer/EditorCamera.h"
 
 namespace Sora {
@@ -16,7 +17,7 @@ namespace Sora {
 		Scene();
 		~Scene();
 
-		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateEntity(const std::string& name = std::string(), const std::optional<UUID>& uuid = std::nullopt);
 		void DestroyEntity(Entity entity);
 
 		void OnRuntimeStart();

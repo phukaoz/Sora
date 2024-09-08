@@ -6,12 +6,21 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "SceneCamera.h"
-#include "ScriptableEntity.h"
-
+#include "Sora/Scene/SceneCamera.h"
 #include "Sora/Renderer/Texture.h"
+#include "Sora/Core/UUID.h"
 
 namespace Sora {
+
+	struct IDComponent
+	{
+		UUID ID;
+
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+		IDComponent(const UUID& uuid)
+			: ID(uuid) {}
+	};
 
 	struct TagComponent
 	{
@@ -64,6 +73,7 @@ namespace Sora {
 		CameraComponent(const CameraComponent&) = default;
 	};
 
+	class ScriptableEntity;
 	struct NativeScriptComponent
 	{
 		ScriptableEntity* Instance = nullptr;

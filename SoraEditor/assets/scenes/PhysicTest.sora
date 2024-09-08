@@ -1,6 +1,6 @@
 Scene: PhysicTest
 Entities:
-  - Entity: 2
+  - Entity: 4423724874617898655
     TagComponent:
       Tag: Object B
     TransformComponent:
@@ -18,7 +18,7 @@ Entities:
       Density: 1
       Friction: 0.5
       Restitution: 0
-  - Entity: 1
+  - Entity: 12835331563133460373
     TagComponent:
       Tag: Object A
     TransformComponent:
@@ -36,7 +36,7 @@ Entities:
       Density: 1
       Friction: 0.5
       Restitution: 0
-  - Entity: 0
+  - Entity: 6441084675354544434
     TagComponent:
       Tag: Camera
     TransformComponent:

@@ -2,7 +2,9 @@
 
 #include <entt.hpp>
 
-#include "Scene.h"
+#include "Sora/Scene/Scene.h"
+#include "Sora/Scene/Component.h"
+#include "Sora/Core/UUID.h"
 
 namespace Sora {
 
@@ -48,6 +50,8 @@ namespace Sora {
 		operator entt::entity() const { return mEntityHandle; }
 		operator uint32_t() const { return (uint32_t)mEntityHandle; }
 		
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+
 		bool operator ==(const Entity& other) const
 		{
 			return mEntityHandle == other.mEntityHandle && mScene == other.mScene;

@@ -117,8 +117,10 @@ namespace Sora {
 
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
+		SORA_CORE_ASSERT(entity.HasComponent<IDComponent>(), "Entity doesn't have an id!");
+
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << (uint32_t)entity;
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 		
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -288,16 +290,16 @@ namespace Sora {
 		{
 			for (auto entity : entities)
 			{
-				uint64_t uuid = entity["Entity"].as<uint32_t>();
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];
 				if (tagComponent)
 					name = tagComponent["Tag"].as<std::string>();
 
-				SORA_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
+				SORA_CORE_TRACE("Deserialized entity '{0}' ID: {1}", name, uuid);
 
-				Entity deserializedEntity = mScene->CreateEntity(name);
+				Entity deserializedEntity = mScene->CreateEntity(name, uuid);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)
