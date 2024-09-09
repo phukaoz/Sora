@@ -29,29 +29,29 @@ namespace Sora {
 			}
 
 			static float padding = 16.0f;
-			static float thumbnail_size = 128.0f;
-			float cell_size = thumbnail_size + padding;
+			static float thumbnailSize = 128.0f;
+			float cellSize = thumbnailSize + padding;
 
-			float panel_width = ImGui::GetContentRegionAvail().x;
-			int column_count = (int)(panel_width / cell_size);
-			if (column_count < 1)
-				column_count = 1;
+			float panelWidth = ImGui::GetContentRegionAvail().x;
+			int columnCount = (int)(panelWidth / cellSize);
+			if (columnCount < 1)
+				columnCount = 1;
 
-			ImGui::Columns(column_count, 0, false);
+			ImGui::Columns(columnCount, 0, false);
 
 			for (auto& directory : std::filesystem::directory_iterator(mCurrentDirectory))
 			{
 				const auto& path = directory.path();
-				auto relative_path = std::filesystem::relative(directory.path(), gAssetPath);
-				std::string filename = relative_path.filename().string();
+				auto relativePath = std::filesystem::relative(directory.path(), gAssetPath);
+				std::string filename = relativePath.filename().string();
 
 				Ref<Texture2D> icon = directory.is_directory() ? mDirectoryIcon : mFileIcon;
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-				ImGui::ImageButton(filename.c_str(), (ImTextureID)(uint64_t)icon->GetRendererID(), {thumbnail_size, thumbnail_size}, {0, 1}, {1, 0});
+				ImGui::ImageButton(filename.c_str(), (ImTextureID)(uint64_t)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 				if (ImGui::BeginDragDropSource())
 				{
-					const wchar_t* item_path = relative_path.c_str();
-					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", item_path, (wcslen(item_path) + 1) * sizeof(wchar_t), ImGuiCond_Once);
+					const wchar_t* itemPath = relativePath.c_str();
+					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t), ImGuiCond_Once);
 
 					ImGui::EndDragDropSource();
 				}

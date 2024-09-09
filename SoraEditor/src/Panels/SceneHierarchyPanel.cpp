@@ -68,12 +68,12 @@ namespace Sora {
 		if (ImGui::IsItemClicked())
 			mSelectionContext = entity;
 
-		bool entity_deleted = false;
+		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
 		{
 			ImGui::SeparatorText(tag.c_str());
 			if (ImGui::MenuItem("Delete Entity"))
-				entity_deleted = true;
+				entityDeleted = true;
 
 			ImGui::EndPopup();
 		}
@@ -83,7 +83,7 @@ namespace Sora {
 			ImGui::TreePop();
 		}
 
-		if (entity_deleted)
+		if (entityDeleted)
 		{
 			mContext->DestroyEntity(entity);
 			if (mSelectionContext == entity)
@@ -284,17 +284,17 @@ namespace Sora {
 			{
 				auto& camera = component.Camera;
 
-				const char* projection_type_string[] = { "Perspective", "Orthographic" };
-				const char* current_projection_type_string = projection_type_string[(int)camera.GetProjectionType()];
+				const char* projectionTypeStr[] = { "Perspective", "Orthographic" };
+				const char* currentProjectionTypeStr = projectionTypeStr[(int)camera.GetProjectionType()];
 
-				if (ImGui::BeginCombo("Projection", current_projection_type_string))
+				if (ImGui::BeginCombo("Projection", currentProjectionTypeStr))
 				{
 					for (int i = 0; i < 2; i++)
 					{
-						bool is_selected = current_projection_type_string == projection_type_string[i];
-						if (ImGui::Selectable(projection_type_string[i], is_selected))
+						bool is_selected = currentProjectionTypeStr == projectionTypeStr[i];
+						if (ImGui::Selectable(projectionTypeStr[i], is_selected))
 						{
-							current_projection_type_string = projection_type_string[i];
+							currentProjectionTypeStr = projectionTypeStr[i];
 							camera.SetProjectionType((SceneCamera::ProjectionType)i);
 						}
 
@@ -307,32 +307,32 @@ namespace Sora {
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
 				{
-					float vertical_FOV = glm::degrees(camera.GetPerspectiveVerticalFOV());
-					if (ImGui::DragFloat("FOV", &vertical_FOV))
-						camera.SetPerspectiveVerticalFOV(glm::radians(vertical_FOV));
+					float verticalFOV = glm::degrees(camera.GetPerspectiveVerticalFOV());
+					if (ImGui::DragFloat("FOV", &verticalFOV))
+						camera.SetPerspectiveVerticalFOV(glm::radians(verticalFOV));
 
-					float vertical_near = camera.GetPerspectiveNearClip();
-					if (ImGui::DragFloat("Near", &vertical_near))
-						camera.SetPerspectiveNearClip(vertical_near);
+					float verticalNear = camera.GetPerspectiveNearClip();
+					if (ImGui::DragFloat("Near", &verticalNear))
+						camera.SetPerspectiveNearClip(verticalNear);
 
-					float vertical_far = camera.GetPerspectiveFarClip();
-					if (ImGui::DragFloat("Far", &vertical_far))
-						camera.SetPerspectiveFarClip(vertical_far);
+					float verticalFar = camera.GetPerspectiveFarClip();
+					if (ImGui::DragFloat("Far", &verticalFar))
+						camera.SetPerspectiveFarClip(verticalFar);
 				}
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
 				{
-					float ortho_size = camera.GetOrthographicSize();
-					if (ImGui::DragFloat("Size", &ortho_size))
-						camera.SetOrthographicSize(ortho_size);
+					float orthoSize = camera.GetOrthographicSize();
+					if (ImGui::DragFloat("Size", &orthoSize))
+						camera.SetOrthographicSize(orthoSize);
 
-					float ortho_near = camera.GetOrthographicNearClip();
-					if (ImGui::DragFloat("Near", &ortho_near))
-						camera.SetOrthographicNearClip(ortho_near);
+					float orthoNear = camera.GetOrthographicNearClip();
+					if (ImGui::DragFloat("Near", &orthoNear))
+						camera.SetOrthographicNearClip(orthoNear);
 
-					float ortho_far = camera.GetOrthographicFarClip();
-					if (ImGui::DragFloat("Far", &ortho_far))
-						camera.SetOrthographicFarClip(ortho_far);
+					float orthoFar = camera.GetOrthographicFarClip();
+					if (ImGui::DragFloat("Far", &orthoFar))
+						camera.SetOrthographicFarClip(orthoFar);
 
 					if (ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio))
 					{

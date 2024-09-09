@@ -39,6 +39,7 @@ namespace Sora {
 		Ref<Framebuffer> mFramebuffer;
 
 		Ref<Scene> mActiveScene;
+		Ref<Scene> mEditorScene, mRuntimeScene;
 		std::filesystem::path mCurrentScenePath;
 
 		EditorCamera mEditorCamera;

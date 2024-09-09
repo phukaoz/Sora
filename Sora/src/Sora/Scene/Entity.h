@@ -46,6 +46,12 @@ namespace Sora {
 			mScene->mRegistry.remove<T>(mEntityHandle);
 		}
 
+		template<typename T, typename Func>
+		void OnComponentAdded()
+		{
+
+		}
+
 		operator bool() const { return mEntityHandle != entt::null; }
 		operator entt::entity() const { return mEntityHandle; }
 		operator uint32_t() const { return (uint32_t)mEntityHandle; }

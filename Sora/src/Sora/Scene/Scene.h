@@ -16,6 +16,7 @@ namespace Sora {
 	public:
 		Scene();
 		~Scene();
+		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string& name = std::string(), const std::optional<UUID>& uuid = std::nullopt);
 		void DestroyEntity(Entity entity);

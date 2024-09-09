@@ -35,6 +35,50 @@ namespace Sora {
 	{
 	}
 
+	template<typename Component>
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+	{
+		auto view = src.view<Component>();
+		for (auto e : view)
+		{
+			UUID uuid = src.get<IDComponent>(e).ID;
+			entt::entity dstHandle = enttMap.at(uuid);
+
+			auto& srcComponent = src.get<Component>(e);
+			dst.emplace_or_replace<Component>(dstHandle, srcComponent);
+		}
+	}
+
+	Ref<Scene> Scene::Copy(Ref<Scene> other)
+	{
+		Ref<Scene> newScene = CreateRef<Scene>();
+
+		newScene->mViewportWidth = other->mViewportWidth;
+		newScene->mViewportHeight = other->mViewportHeight;
+		
+		std::unordered_map<UUID, entt::entity> enttMap;
+			
+		auto& srcRegistry = other->mRegistry;
+		auto& dstRegistry = newScene->mRegistry;
+		auto view = srcRegistry.view<IDComponent>();
+		for (auto e : view)
+		{
+			UUID uuid = srcRegistry.get<IDComponent>(e).ID;
+			auto& name = srcRegistry.get<TagComponent>(e).Tag;
+			Entity entity = newScene->CreateEntity(name, uuid);
+			enttMap[uuid] = entity;
+		}
+		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+
+		//newScene->mWorldID = other->mWorldID;
+		return newScene;
+	}
+
 	Entity Scene::CreateEntity(const std::string& name, const std::optional<UUID>& uuid)
 	{
 		Entity entity = { mRegistry.create(), this };
@@ -126,10 +170,10 @@ namespace Sora {
 	{
 		Renderer2D::BeginScene(camera);
 
-		auto transfrom_sprite_group = mRegistry.group<TransformComponent, SpriteComponent>();
-		for (auto entity : transfrom_sprite_group)
+		auto transfromSpriteGroup = mRegistry.group<TransformComponent, SpriteComponent>();
+		for (auto entity : transfromSpriteGroup)
 		{
-			auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
+			auto [transform, sprite] = transfromSpriteGroup.get<TransformComponent, SpriteComponent>(entity);
 			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 		}
 		Renderer2D::EndScene();
@@ -137,10 +181,10 @@ namespace Sora {
 
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
-		auto native_script_view = mRegistry.view<NativeScriptComponent>();
-		for (auto entity : native_script_view)
+		auto nativeScriptView = mRegistry.view<NativeScriptComponent>();
+		for (auto entity : nativeScriptView)
 		{
-			auto& script = native_script_view.get<NativeScriptComponent>(entity);
+			auto& script = nativeScriptView.get<NativeScriptComponent>(entity);
 			if (!script.Instance)
 			{
 				script.Instance = script.InstantiateScript();
@@ -153,28 +197,28 @@ namespace Sora {
 
 		OnUpdatePhysics(ts);
 
-		Camera* main_camera = nullptr;
-		glm::mat4 camera_transform;
-		auto transfrom_camera_view = mRegistry.view<TransformComponent, CameraComponent>();
-		for (auto entity : transfrom_camera_view)
+		Camera* mainCamera = nullptr;
+		glm::mat4 cameraTransform;
+		auto transfromCameraView = mRegistry.view<TransformComponent, CameraComponent>();
+		for (auto entity : transfromCameraView)
 		{
-			auto [transform, camera] = transfrom_camera_view.get<TransformComponent, CameraComponent>(entity);
+			auto [transform, camera] = transfromCameraView.get<TransformComponent, CameraComponent>(entity);
 			if (camera.Primary)
 			{
-				main_camera = &camera.Camera;
-				camera_transform = transform.GetTransform();
+				mainCamera = &camera.Camera;
+				cameraTransform = transform.GetTransform();
 				break;
 			}
 		}
 
-		if (main_camera)
+		if (mainCamera)
 		{
-			Renderer2D::BeginScene(main_camera->GetProjection(), camera_transform);
+			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
-			auto transfrom_sprite_group = mRegistry.group<TransformComponent, SpriteComponent>();
-			for (auto entity : transfrom_sprite_group)
+			auto transfromSpriteGroup = mRegistry.group<TransformComponent, SpriteComponent>();
+			for (auto entity : transfromSpriteGroup)
 			{
-				auto [transform, sprite] = transfrom_sprite_group.get<TransformComponent, SpriteComponent>(entity);
+				auto [transform, sprite] = transfromSpriteGroup.get<TransformComponent, SpriteComponent>(entity);
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 			Renderer2D::EndScene();

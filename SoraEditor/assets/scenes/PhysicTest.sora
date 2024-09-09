@@ -1,41 +1,5 @@
 Scene: PhysicTest
 Entities:
-  - Entity: 4423724874617898655
-    TagComponent:
-      Tag: Object B
-    TransformComponent:
-      Translation: [0, -1.70000005, 0]
-      Rotation: [0, 0, 0]
-      Scale: [10.1000004, 0.5, 1]
-    SpriteComponent:
-      Color: [0.397683382, 0.397683382, 0.397683382, 1]
-    Rigidbody2DComponent:
-      Type: 0
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-  - Entity: 12835331563133460373
-    TagComponent:
-      Tag: Object A
-    TransformComponent:
-      Translation: [-0.000107162195, -0.950088203, 0]
-      Rotation: [0, 0, -3.58285916e-07]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      Color: [0.810810804, 0.363143057, 0.363143057, 1]
-    Rigidbody2DComponent:
-      Type: 1
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
   - Entity: 6441084675354544434
     TagComponent:
       Tag: Camera
@@ -54,3 +18,39 @@ Entities:
         PerspectiveFar: 1000
       Primary: true
       FixedAspectRatio: false
+  - Entity: 12835331563133460373
+    TagComponent:
+      Tag: Object A
+    TransformComponent:
+      Translation: [-0.000106266481, 1.54991174, 0]
+      Rotation: [0, -0, -3.58285916e-07]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Color: [0.810810804, 0.363143057, 0.363143057, 1]
+    Rigidbody2DComponent:
+      Type: 1
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+  - Entity: 4423724874617898655
+    TagComponent:
+      Tag: Object B
+    TransformComponent:
+      Translation: [0, -1.70000005, 0]
+      Rotation: [0, 0, 0]
+      Scale: [10.1000004, 0.5, 1]
+    SpriteComponent:
+      Color: [0.397683382, 0.397683382, 0.397683382, 1]
+    Rigidbody2DComponent:
+      Type: 0
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0

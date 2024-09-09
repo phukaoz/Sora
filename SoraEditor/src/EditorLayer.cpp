@@ -24,11 +24,11 @@ namespace Sora {
 		mIconPlay = Texture2D::Create("resources/icons/Toolbar/PlayButton.png");
 		mIconStop = Texture2D::Create("resources/icons/Toolbar/StopButton.png");
 
-		FramebufferSpecification fb_spec;
-		fb_spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
-		fb_spec.Width  = 1600;
-		fb_spec.Height = 900;
-		mFramebuffer = Framebuffer::Create(fb_spec);
+		FramebufferSpecification fbSpec;
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		fbSpec.Width  = 1600;
+		fbSpec.Height = 900;
+		mFramebuffer = Framebuffer::Create(fbSpec);
 
 		mActiveScene = CreateRef<Scene>();
 
@@ -231,14 +231,20 @@ namespace Sora {
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
-		mActiveScene = CreateRef<Scene>();
-		mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
-		mSceneHierarchyPanel.SetContext(mActiveScene);
+		if (mSceneState == SceneState::Play)
+			StopScene();
 
-		SceneSerializer serializer(mActiveScene);
+		Ref<Scene> newScene = CreateRef<Scene>(); 
+		SceneSerializer serializer(newScene);
 		if (serializer.Deserialize(path))
 		{
+			mEditorScene = newScene;
+			mEditorScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
+			mSceneHierarchyPanel.SetContext(mEditorScene);
+			
 			mCurrentScenePath = path;
+
+			mActiveScene = mEditorScene;
 		}
 	}
 
@@ -272,10 +278,10 @@ namespace Sora {
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0.0f, 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		auto& colors = ImGui::GetStyle().Colors;
-		auto& hovered_color = colors[ImGuiCol_ButtonHovered];
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(hovered_color.x, hovered_color.y, hovered_color.z, 0.5f));
-		auto& active_color = colors[ImGuiCol_ButtonActive];
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(active_color.x, active_color.y, active_color.z, 0.5f));
+		auto& hoveredColor = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(hoveredColor.x, hoveredColor.y, hoveredColor.z, 0.5f));
+		auto& activeColor = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(activeColor.x, activeColor.y, activeColor.z, 0.5f));
 
 		if (ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 		{
@@ -301,22 +307,22 @@ namespace Sora {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		if (ImGui::Begin("Viewport"))
 		{
-			auto viewport_min_region = ImGui::GetWindowContentRegionMin();
-			auto viewport_max_region = ImGui::GetWindowContentRegionMax();
-			auto viewport_offset = ImGui::GetWindowPos();
-			mViewportBounds[0] = { viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y };
-			mViewportBounds[1] = { viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y };
+			auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+			auto viewportOffset = ImGui::GetWindowPos();
+			mViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+			mViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
 			mViewportFocused = ImGui::IsWindowFocused();
 			mViewportHovered = ImGui::IsWindowHovered();
 
-			auto viewport_panel_size = ImGui::GetContentRegionAvail();
-			mViewportSize = { viewport_panel_size.x, viewport_panel_size.y };
+			auto viewportPanelSize = ImGui::GetContentRegionAvail();
+			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
 			Application::Get().GetImGuiLayer()->EnableEvents(mViewportFocused || mViewportHovered);
 
-			uint32_t texture_id = mFramebuffer->GetColorAttachmentRendererID();
-			ImGui::Image((void*)(uint64_t)texture_id, ImVec2(mViewportSize.x, mViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+			uint32_t textureID = mFramebuffer->GetColorAttachmentRendererID();
+			ImGui::Image((void*)(uint64_t)textureID, ImVec2(mViewportSize.x, mViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -336,9 +342,9 @@ namespace Sora {
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
 
-				float window_width = (float)ImGui::GetWindowWidth();
-				float window_height = (float)ImGui::GetWindowHeight();
-				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
+				float windowWidth = (float)ImGui::GetWindowWidth();
+				float windowHeight = (float)ImGui::GetWindowHeight();
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
 				glm::mat4 cameraView = glm::mat4(1.0f);
 				glm::mat4 cameraProjection = glm::mat4(1.0f);
@@ -391,12 +397,18 @@ namespace Sora {
 	void EditorLayer::PlayScene()
 	{
 		mSceneState = SceneState::Play;
-		mActiveScene->OnRuntimeStart();
+		mRuntimeScene = Scene::Copy(mEditorScene);
+		mRuntimeScene->OnRuntimeStart();
+		
+		mActiveScene = mRuntimeScene;
 	}
 
 	void EditorLayer::StopScene()
 	{
 		mSceneState = SceneState::Edit;
-		mActiveScene->OnRuntimeStop();
+		mRuntimeScene->OnRuntimeStop();
+		mRuntimeScene = nullptr;
+
+		mActiveScene = mEditorScene;
 	}
 }
