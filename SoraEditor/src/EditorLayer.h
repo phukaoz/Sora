@@ -35,6 +35,8 @@ namespace Sora {
 
 		void PlayScene();
 		void StopScene();
+		
+		void DuplicateEntity();
 	private:
 		Ref<Framebuffer> mFramebuffer;
 

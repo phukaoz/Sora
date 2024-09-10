@@ -23,14 +23,15 @@ namespace Sora {
 		if (Input::IsKeyPressed(Key::LeftAlt))
 		{
 			const glm::vec2& mouse = { Input::GetMouseX(), Input::GetMouseY() };
-			glm::vec2 delta = (mouse - mInitialMousePosition) * 0.003f;
+			constexpr float speed = 0.003f;
+			glm::vec2 delta = (mouse - mInitialMousePosition) * speed;
 			mInitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
+			if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
 				MousePan(delta);
 			else if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
 				MouseRotate(delta);
-			else if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
+			else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
 				MouseZoom(delta.y);
 		}
 
@@ -71,7 +72,7 @@ namespace Sora {
 
 	void EditorCamera::UpdateView()
 	{
-		// mYaw = mPitch = 0.0f;
+		//mYaw = mPitch = 0.0f;
 		mPosition = CalculatePosition();
 
 		glm::quat orientation = GetOrientation();
@@ -81,9 +82,12 @@ namespace Sora {
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{
-		float delta = e.GetYOffset() * 0.1f;
-		MouseZoom(delta);
-		UpdateView();
+		if (Input::IsKeyPressed(Key::LeftAlt))
+		{
+			float delta = e.GetYOffset() * 0.1f;
+			MouseZoom(delta);
+			UpdateView();
+		}
 
 		return false;
 	}

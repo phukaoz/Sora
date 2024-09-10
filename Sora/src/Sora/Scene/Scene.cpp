@@ -25,6 +25,26 @@ namespace Sora {
 			return b2_staticBody;
 		}
 
+		template<typename Component>
+		static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+		{
+			auto view = src.view<Component>();
+			for (auto e : view)
+			{
+				UUID uuid = src.get<IDComponent>(e).ID;
+				entt::entity dstHandle = enttMap.at(uuid);
+
+				auto& srcComponent = src.get<Component>(e);
+				dst.emplace_or_replace<Component>(dstHandle, srcComponent);
+			}
+		}
+
+		template<typename Component>
+		static void CopyComponentIfExist(Entity dst, Entity src)
+		{
+			if (src.HasComponent<Component>())
+				dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+		}
 	}
 
 	Scene::Scene()
@@ -35,20 +55,6 @@ namespace Sora {
 	{
 	}
 
-	template<typename Component>
-	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
-	{
-		auto view = src.view<Component>();
-		for (auto e : view)
-		{
-			UUID uuid = src.get<IDComponent>(e).ID;
-			entt::entity dstHandle = enttMap.at(uuid);
-
-			auto& srcComponent = src.get<Component>(e);
-			dst.emplace_or_replace<Component>(dstHandle, srcComponent);
-		}
-	}
-
 	Ref<Scene> Scene::Copy(Ref<Scene> other)
 	{
 		Ref<Scene> newScene = CreateRef<Scene>();
@@ -56,24 +62,23 @@ namespace Sora {
 		newScene->mViewportWidth = other->mViewportWidth;
 		newScene->mViewportHeight = other->mViewportHeight;
 		
-		std::unordered_map<UUID, entt::entity> enttMap;
-			
+		std::unordered_map<UUID, entt::entity> enttMap;	
 		auto& srcRegistry = other->mRegistry;
 		auto& dstRegistry = newScene->mRegistry;
 		auto view = srcRegistry.view<IDComponent>();
 		for (auto e : view)
 		{
 			UUID uuid = srcRegistry.get<IDComponent>(e).ID;
-			auto& name = srcRegistry.get<TagComponent>(e).Tag;
+			const std::string& name = srcRegistry.get<TagComponent>(e).Tag;
 			Entity entity = newScene->CreateEntity(name, uuid);
 			enttMap[uuid] = entity;
 		}
-		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
 
 		//newScene->mWorldID = other->mWorldID;
 		return newScene;
@@ -95,14 +100,29 @@ namespace Sora {
 		mRegistry.destroy(entity);
 	}
 
+	Entity Scene::DuplicateEntity(Entity entity)
+	{
+		std::string name = entity.GetName();
+		Entity newEntity = CreateEntity(name);
+
+		Utils::CopyComponentIfExist<TransformComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<SpriteComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<CameraComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<NativeScriptComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<Rigidbody2DComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<BoxCollider2DComponent>(newEntity, entity);
+
+		return newEntity;
+	}
+
 	void Scene::OnRuntimeStart()
 	{
 		b2WorldDef worldDef = b2DefaultWorldDef();
 		worldDef.gravity = { 0.0f, -10.0f };
 		mWorldID = b2CreateWorld(&worldDef);
 
-		auto view = mRegistry.view<Rigidbody2DComponent>();
-		for (auto e : view)
+		auto viewRigidbody2D = mRegistry.view<Rigidbody2DComponent>();
+		for (auto e : viewRigidbody2D)
 		{
 			Entity entity = { e, this };
 			auto& transform = entity.GetComponent<TransformComponent>();
@@ -146,8 +166,8 @@ namespace Sora {
 		const int32_t subStepCount = 4;
 		b2World_Step(mWorldID, ts, subStepCount);
 
-		auto view = mRegistry.view<Rigidbody2DComponent>();
-		for (auto e : view)
+		auto viewRigidbody2D = mRegistry.view<Rigidbody2DComponent>();
+		for (auto e : viewRigidbody2D)
 		{
 			Entity entity = { e, this };
 			auto& transform = entity.GetComponent<TransformComponent>();
@@ -170,10 +190,10 @@ namespace Sora {
 	{
 		Renderer2D::BeginScene(camera);
 
-		auto transfromSpriteGroup = mRegistry.group<TransformComponent, SpriteComponent>();
-		for (auto entity : transfromSpriteGroup)
+		auto groupTransformSprite = mRegistry.group<TransformComponent, SpriteComponent>();
+		for (auto entity : groupTransformSprite)
 		{
-			auto [transform, sprite] = transfromSpriteGroup.get<TransformComponent, SpriteComponent>(entity);
+			auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteComponent>(entity);
 			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 		}
 		Renderer2D::EndScene();
@@ -181,10 +201,10 @@ namespace Sora {
 
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
-		auto nativeScriptView = mRegistry.view<NativeScriptComponent>();
-		for (auto entity : nativeScriptView)
+		auto viewNativeScript = mRegistry.view<NativeScriptComponent>();
+		for (auto entity : viewNativeScript)
 		{
-			auto& script = nativeScriptView.get<NativeScriptComponent>(entity);
+			auto& script = viewNativeScript.get<NativeScriptComponent>(entity);
 			if (!script.Instance)
 			{
 				script.Instance = script.InstantiateScript();
@@ -199,10 +219,10 @@ namespace Sora {
 
 		Camera* mainCamera = nullptr;
 		glm::mat4 cameraTransform;
-		auto transfromCameraView = mRegistry.view<TransformComponent, CameraComponent>();
-		for (auto entity : transfromCameraView)
+		auto viewTransformCamera = mRegistry.view<TransformComponent, CameraComponent>();
+		for (auto entity : viewTransformCamera)
 		{
-			auto [transform, camera] = transfromCameraView.get<TransformComponent, CameraComponent>(entity);
+			auto [transform, camera] = viewTransformCamera.get<TransformComponent, CameraComponent>(entity);
 			if (camera.Primary)
 			{
 				mainCamera = &camera.Camera;
@@ -215,10 +235,10 @@ namespace Sora {
 		{
 			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
-			auto transfromSpriteGroup = mRegistry.group<TransformComponent, SpriteComponent>();
-			for (auto entity : transfromSpriteGroup)
+			auto groupTransformSprite = mRegistry.group<TransformComponent, SpriteComponent>();
+			for (auto entity : groupTransformSprite)
 			{
-				auto [transform, sprite] = transfromSpriteGroup.get<TransformComponent, SpriteComponent>(entity);
+				auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteComponent>(entity);
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 			Renderer2D::EndScene();
@@ -230,22 +250,22 @@ namespace Sora {
 		mViewportWidth = width;
 		mViewportHeight = height;
 
-		auto view = mRegistry.view<CameraComponent>();
-		for (auto entity : view)
+		auto viewCamera = mRegistry.view<CameraComponent>();
+		for (auto entity : viewCamera)
 		{
-			auto& camera_component = view.get<CameraComponent>(entity);
+			auto& camera_component = viewCamera.get<CameraComponent>(entity);
 			if (!camera_component.FixedAspectRatio)
 				camera_component.Camera.SetViewportSize(width, height);
 		}
 	}
 
-	Sora::Entity Scene::GetPrimaryCameraEntity()
+	Entity Scene::GetPrimaryCameraEntity()
 	{
-		auto view = mRegistry.view<CameraComponent>();
-		for (auto entity : view)
+		auto viewCamera = mRegistry.view<CameraComponent>();
+		for (auto entity : viewCamera)
 		{
-			const auto& camera_component = view.get<CameraComponent>(entity);
-			if (camera_component.Primary)
+			const auto& cameraComponent = viewCamera.get<CameraComponent>(entity);
+			if (cameraComponent.Primary)
 				return Entity(entity, this);
 		}
 

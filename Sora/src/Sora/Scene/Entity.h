@@ -24,6 +24,14 @@ namespace Sora {
 			return component;
 		}
 
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args)
+		{
+			T& component = mScene->mRegistry.emplace_or_replace<T>(mEntityHandle, std::forward<Args>(args)...);
+			mScene->OnComponentAdded<T>(*this, component);
+			return component;
+		}
+
 		template<typename T>
 		T& GetComponent()
 		{
@@ -56,7 +64,9 @@ namespace Sora {
 		operator entt::entity() const { return mEntityHandle; }
 		operator uint32_t() const { return (uint32_t)mEntityHandle; }
 		
-		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		UUID				GetUUID()		{ return GetComponent<IDComponent>().ID; }
+		const std::string&	GetName()		{ return GetComponent<TagComponent>().Tag; }
+		glm::mat4			GetTransform()	{ return GetComponent<TransformComponent>().GetTransform(); }
 
 		bool operator ==(const Entity& other) const
 		{

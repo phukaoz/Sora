@@ -8,3 +8,4 @@ bin-int/
 Sandbox/imgui.ini
 /Sora/vendor/VulkanSDK
 /SoraEditor/assets/cache
+*.sora

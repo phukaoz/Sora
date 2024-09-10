@@ -158,6 +158,8 @@ namespace Sora {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
+		mEditorCamera.OnEvent(e);
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(SORA_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(SORA_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
@@ -170,31 +172,36 @@ namespace Sora {
 
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+		bool alt = Input::IsKeyPressed(Key::LeftAlt) || Input::IsKeyPressed(Key::RightAlt);
 
 		switch (e.GetKeyCode())
 		{
 		case Key::N:
-			if (control) NewScene();
+			if (control && !shift) NewScene();
 			break;
 		case Key::O:
-			if (control) OpenScene();
+			if (control && !shift) OpenScene();
 			break;
 		case Key::S:
 			if (control && shift) SaveSceneAs();
-			if (control && !shift) SaveScene();
+			else if (control && !shift) SaveScene();
+			break;
+
+		case Key::D:
+			if (control && !shift) DuplicateEntity();
 			break;
 
 		case Key::Q:
-			mGizmoType = -1;
+			if (!control && !shift) mGizmoType = -1;
 			break;
 		case Key::W:
-			mGizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			if (!control && !shift) mGizmoType = ImGuizmo::OPERATION::TRANSLATE;
 			break;
 		case Key::E:
-			mGizmoType = ImGuizmo::OPERATION::ROTATE;
+			if (!control && !shift) mGizmoType = ImGuizmo::OPERATION::ROTATE;
 			break;
 		case Key::R:
-			mGizmoType = ImGuizmo::OPERATION::SCALE;
+			if (!control && !shift) mGizmoType = ImGuizmo::OPERATION::SCALE;
 			break;
 		}
 
@@ -217,16 +224,14 @@ namespace Sora {
 		mActiveScene = CreateRef<Scene>();
 		mActiveScene->OnViewportResize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
 		mSceneHierarchyPanel.SetContext(mActiveScene);
-		mCurrentScenePath = "";
+		mCurrentScenePath = std::filesystem::path();
 	}
 
 	void EditorLayer::OpenScene()
 	{
 		std::string filepath = FileDialogs::OpenFile("Sora Scene (*.sora)\0*.sora\0");
 		if (!filepath.empty())
-		{
 			OpenScene(filepath);
-		}
 	}
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
@@ -411,4 +416,15 @@ namespace Sora {
 
 		mActiveScene = mEditorScene;
 	}
+
+	void EditorLayer::DuplicateEntity()
+	{
+		if (mSceneState != SceneState::Edit)
+			return;
+
+		Entity selectedEntity = mSceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity)
+			mEditorScene->DuplicateEntity(selectedEntity);
+	}
+
 }
