@@ -1,11 +1,11 @@
 #include "EditorLayer.h"
 
-#include "imgui/imgui.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Sora/Scene/SceneSerializer.h"
 #include "Sora/Utils/PlatformUtils.h"
 #include "Sora/Math/Math.h"
 
+#include <imgui/imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <ImGuizmo.h>
@@ -72,16 +72,16 @@ namespace Sora {
 		auto mouse = ImGui::GetMousePos();
 		mouse.x -= mViewportBounds[0].x;
 		mouse.y -= mViewportBounds[0].y;
-		glm::vec2 viewport_size = mViewportBounds[1] - mViewportBounds[0];
-		mouse.y = viewport_size.y - mouse.y; // flip for OpenGL coordinate system.
+		glm::vec2 viewportSize = mViewportBounds[1] - mViewportBounds[0];
+		mouse.y = viewportSize.y - mouse.y; // flip for OpenGL coordinate system.
 
-		int mouse_x = (int)mouse.x;
-		int mouse_y = (int)mouse.y;
+		int mouseX = (int)mouse.x;
+		int mouseY = (int)mouse.y;
 
-		if (mouse_x >= 0 && mouse_y >= 0 && mouse_x < (int)viewport_size.x && mouse_y < (int)viewport_size.y)
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
-			int pixel_data = mFramebuffer->ReadPixel(1, mouse_x, mouse_y);
-			mHoveredEntity = pixel_data == -1 ? Entity() : Entity((entt::entity)pixel_data, mActiveScene.get());
+			int pixelData = mFramebuffer->ReadPixel(1, mouseX, mouseY);
+			mHoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, mActiveScene.get());
 		}
 
 		mFramebuffer->Unbind();
@@ -89,13 +89,18 @@ namespace Sora {
 
 	void EditorLayer::OnImGuiRender()
 	{
-		static bool dockspace_open = true;
-		static bool opt_fullscreen = true;
-		static bool opt_padding = false;
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+		if (mViewportFocused)
+		{
+			ImGui::SetItemKeyOwner(ImGuiMod_Alt);
+		}
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-		if (opt_fullscreen)
+		static bool dockspace_open = true;
+		static bool optFullscreen = true;
+		static bool optPadding = false;
+		static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		if (optFullscreen)
 		{
 			const ImGuiViewport* viewport = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -103,33 +108,35 @@ namespace Sora {
 			ImGui::SetNextWindowViewport(viewport->ID);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+			windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 		}
 		else
 		{
-			dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+			dockspaceFlags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
 		}
-		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-			window_flags |= ImGuiWindowFlags_NoBackground;
-		if (!opt_padding) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+			windowFlags |= ImGuiWindowFlags_NoBackground;
+		if (!optPadding) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		if (ImGui::Begin("DockSpace", &dockspace_open, window_flags))
+		if (ImGui::Begin("DockSpace", &dockspace_open, windowFlags))
 		{
-			if (!opt_padding)   ImGui::PopStyleVar();
-			if (opt_fullscreen) ImGui::PopStyleVar(2);
+			//ImGui::ShowDemoWindow();
+
+			if (!optPadding)   ImGui::PopStyleVar();
+			if (optFullscreen) ImGui::PopStyleVar(2);
 
 			ImGuiIO&	io	  = ImGui::GetIO();
 			ImGuiStyle& style = ImGui::GetStyle();
 
-			float min_window_size_x = style.WindowMinSize.x;
+			float minWindowSizeX = style.WindowMinSize.x;
 			style.WindowMinSize.x = 370.0f;
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("Sora Dockspace");
-				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
 			}
-			style.WindowMinSize.x = min_window_size_x;
+			style.WindowMinSize.x = minWindowSizeX;
 
 			if (ImGui::BeginMenuBar())
 			{
@@ -151,9 +158,11 @@ namespace Sora {
 			mContentBrowserPanel.OnImGuiRender();
 			UI_Toolbar();
 			UI_Viewport();
-
+	
 			ImGui::End();
 		}
+
+		
 	}
 
 	void EditorLayer::OnEvent(Event& e)

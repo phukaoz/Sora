@@ -140,9 +140,9 @@ namespace Sora {
 			out << YAML::BeginMap;
 			{
 				auto& transformComponent = entity.GetComponent<TransformComponent>();
-				auto& translation = transformComponent.Translation;
-				auto& rotation = transformComponent.Rotation;
-				auto& scale = transformComponent.Scale;
+				auto& translation		= transformComponent.Translation;
+				auto& rotation			= transformComponent.Rotation;
+				auto& scale				= transformComponent.Scale;
 
 				out << YAML::Key << "Translation"	<< YAML::Value << translation;
 				out << YAML::Key << "Rotation"		<< YAML::Value << rotation;
@@ -152,18 +152,36 @@ namespace Sora {
 			}
 		}
 
-		if (entity.HasComponent<SpriteComponent>())
+		if (entity.HasComponent<SpriteRendererComponent>())
 		{
-			out << YAML::Key << "SpriteComponent";
+			out << YAML::Key << "SpriteRendererComponent";
 			out << YAML::BeginMap;
 			{
-				auto& spriteComponent = entity.GetComponent<SpriteComponent>();
-				auto& color = spriteComponent.Color;
-				auto& texture = spriteComponent.Texture;
+				auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
+				auto& color		= spriteRendererComponent.Color;
+				auto& texture	= spriteRendererComponent.Texture;
 
 				out << YAML::Key << "Color"	<< YAML::Value << color;
 				if (texture.get())
 					out << YAML::Key << "Texture" << YAML::Value << texture->GetTexturePath().string();
+
+				out << YAML::EndMap;
+			}
+		}
+
+		if (entity.HasComponent<CircleRendererComponent>())
+		{
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap;
+			{
+				auto& circleRendererComponent = entity.GetComponent<CircleRendererComponent>();
+				auto& color		= circleRendererComponent.Color;
+				float thickness = circleRendererComponent.Thickness;
+				float fade		= circleRendererComponent.Fade;
+
+				out << YAML::Key << "Color" << YAML::Value << color;
+				out << YAML::Key << "Thickness" << YAML::Value << thickness;
+				out << YAML::Key << "Fade" << YAML::Value << fade;
 
 				out << YAML::EndMap;
 			}
@@ -174,10 +192,10 @@ namespace Sora {
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap;
 			{
-				auto& cameraComponent = entity.GetComponent<CameraComponent>();
-				auto& camera = cameraComponent.Camera;
-				auto& primary = cameraComponent.Primary;
-				auto& fixedAspectRatio = cameraComponent.FixedAspectRatio;
+				auto& cameraComponent	= entity.GetComponent<CameraComponent>();
+				auto& camera			= cameraComponent.Camera;
+				auto& primary			= cameraComponent.Primary;
+				auto& fixedAspectRatio	= cameraComponent.FixedAspectRatio;
 
 				out << YAML::Key << "Camera" << YAML::Value;
 				out << YAML::BeginMap;
@@ -207,9 +225,9 @@ namespace Sora {
 			out << YAML::Key << "Rigidbody2DComponent";
 			out << YAML::BeginMap;
 			{
-				auto& spriteComponent	= entity.GetComponent<Rigidbody2DComponent>();
-				auto  type				= spriteComponent.Type;
-				auto  fixedRotation		= spriteComponent.FixedRotation;
+				auto& rigidbody2DComponent	= entity.GetComponent<Rigidbody2DComponent>();
+				auto  type					= rigidbody2DComponent.Type;
+				auto  fixedRotation			= rigidbody2DComponent.FixedRotation;
 
 				out << YAML::Key << "Type"			<< YAML::Value << (int)type;
 				out << YAML::Key << "FixedRotation" << YAML::Value << fixedRotation;
@@ -223,12 +241,12 @@ namespace Sora {
 			out << YAML::Key << "BoxCollider2DComponent";
 			out << YAML::BeginMap;
 			{
-				auto& spriteComponent	= entity.GetComponent<BoxCollider2DComponent>();
-				auto& offset			= spriteComponent.Offset;
-				auto& size				= spriteComponent.Size;
-				auto  density			= spriteComponent.Density;
-				auto  friction			= spriteComponent.Friction;
-				auto  restitution		= spriteComponent.Restitution;
+				auto& boxColiider2DComponent	= entity.GetComponent<BoxCollider2DComponent>();
+				auto& offset			= boxColiider2DComponent.Offset;
+				auto& size				= boxColiider2DComponent.Size;
+				auto  density			= boxColiider2DComponent.Density;
+				auto  friction			= boxColiider2DComponent.Friction;
+				auto  restitution		= boxColiider2DComponent.Restitution;
 
 				out << YAML::Key << "Offset"		<< YAML::Value << offset;
 				out << YAML::Key << "Size"			<< YAML::Value << size;
@@ -330,14 +348,24 @@ namespace Sora {
 					component.FixedAspectRatio	= cameraComponent["FixedAspectRatio"].as<bool>();
 				}
 
-				auto spriteComponent = entity["SpriteComponent"];
-				if (spriteComponent)
+				auto spriteRendererComponent = entity["SpriteRendererComponent"];
+				if (spriteRendererComponent)
 				{
-					auto& component		= deserializedEntity.AddComponent<SpriteComponent>();
+					auto& component		= deserializedEntity.AddComponent<SpriteRendererComponent>();
 
-					component.Color		= spriteComponent["Color"].as<glm::vec4>();
-					if(spriteComponent["Texture"])
-						component.Texture	= Texture2D::Create(spriteComponent["Texture"].as<std::string>());
+					component.Color		= spriteRendererComponent["Color"].as<glm::vec4>();
+					if(spriteRendererComponent["Texture"])
+						component.Texture	= Texture2D::Create(spriteRendererComponent["Texture"].as<std::string>());
+				}
+
+				auto circleRendererComponent = entity["CircleRendererComponent"];
+				if (circleRendererComponent)
+				{
+					auto& component		= deserializedEntity.AddComponent<CircleRendererComponent>();
+
+					component.Color		= circleRendererComponent["Color"].as<glm::vec4>();
+					component.Thickness = circleRendererComponent["Thickness"].as<float>();
+					component.Fade		= circleRendererComponent["Fade"].as<float>();
 				}
 
 				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];

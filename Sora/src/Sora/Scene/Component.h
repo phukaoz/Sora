@@ -51,16 +51,26 @@ namespace Sora {
 		}
 	};
 
-	struct SpriteComponent
+	struct SpriteRendererComponent
 	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
 		float TilingFactor = 1.0f;
 
-		SpriteComponent() = default;
-		SpriteComponent(const SpriteComponent&) = default;
-		SpriteComponent(const glm::vec4& color)
+		SpriteRendererComponent() = default;
+		SpriteRendererComponent(const SpriteRendererComponent&) = default;
+		SpriteRendererComponent(const glm::vec4& color)
 			: Color(color) {}
+	};
+
+	struct CircleRendererComponent
+	{
+		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+		float Thickness = 1.0f;
+		float Fade = 0.005f;
+
+		CircleRendererComponent() = default;
+		CircleRendererComponent(const CircleRendererComponent&) = default;
 	};
 
 	struct CameraComponent

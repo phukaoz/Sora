@@ -99,11 +99,11 @@ namespace Sora {
 		Utils::CreateCacheDirectoryIfNeeded();
 
 		std::string source = ReadFile(filepath);
-		auto shader_sources = PreProcess(source);
+		auto shaderSources = PreProcess(source);
 
 		{
 			Timer timer;
-			CompileOrGetVulkanBinaries(shader_sources);
+			CompileOrGetVulkanBinaries(shaderSources);
 			CompileOrGetOpenGLBinaries();
 			CreateProgram();
 			SORA_CORE_WARN("Shader creation took {0} ms", timer.ElapsedMillis());

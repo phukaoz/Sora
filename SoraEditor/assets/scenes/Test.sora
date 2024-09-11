@@ -1,11 +1,13 @@
 Scene: Test
 Entities:
-  - Entity: 0
+  - Entity: 1928557794322953177
     TagComponent:
-      Tag: Sqaure A
+      Tag: Circle
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    SpriteComponent:
-      Color: [0.00766239036, 0.99227798, 0, 1]
+    CircleRendererComponent:
+      Color: [1, 1, 1, 1]
+      Thickness: 1
+      Fade: 0.00499999989

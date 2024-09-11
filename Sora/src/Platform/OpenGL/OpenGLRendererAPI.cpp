@@ -31,10 +31,10 @@ namespace Sora {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertex_array, std::optional<uint32_t> index_count /*= std::nullopt*/)
+	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, std::optional<uint32_t> indexCount /*= std::nullopt*/)
 	{
-		vertex_array->Bind();
-		uint32_t count = index_count.value_or(vertex_array->GetIndexBuffer()->GetCount());
+		vertexArray->Bind();
+		uint32_t count = indexCount.value_or(vertexArray->GetIndexBuffer()->GetCount());
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 

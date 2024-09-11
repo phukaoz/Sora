@@ -74,7 +74,7 @@ namespace Sora {
 			enttMap[uuid] = entity;
 		}
 		Utils::CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<SpriteRendererComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
@@ -106,7 +106,7 @@ namespace Sora {
 		Entity newEntity = CreateEntity(name);
 
 		Utils::CopyComponentIfExist<TransformComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<SpriteComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<SpriteRendererComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<CameraComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<NativeScriptComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<Rigidbody2DComponent>(newEntity, entity);
@@ -190,12 +190,20 @@ namespace Sora {
 	{
 		Renderer2D::BeginScene(camera);
 
-		auto groupTransformSprite = mRegistry.group<TransformComponent, SpriteComponent>();
+		auto groupTransformSprite = mRegistry.group<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : groupTransformSprite)
 		{
-			auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteComponent>(entity);
+			auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteRendererComponent>(entity);
 			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 		}
+
+		auto viewTransformCircle = mRegistry.view<TransformComponent, CircleRendererComponent>();
+		for (auto entity : viewTransformCircle)
+		{
+			auto [transform, circle] = viewTransformCircle.get<TransformComponent, CircleRendererComponent>(entity);
+			Renderer2D::DrawCircle(transform.GetTransform(), circle, (int)entity);
+		}
+
 		Renderer2D::EndScene();
 	}
 
@@ -235,12 +243,20 @@ namespace Sora {
 		{
 			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
-			auto groupTransformSprite = mRegistry.group<TransformComponent, SpriteComponent>();
+			auto groupTransformSprite = mRegistry.group<TransformComponent, SpriteRendererComponent>();
 			for (auto entity : groupTransformSprite)
 			{
-				auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteComponent>(entity);
+				auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteRendererComponent>(entity);
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
+
+			auto viewTransformCircle = mRegistry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : viewTransformCircle)
+			{
+				auto [transform, circle] = viewTransformCircle.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::DrawCircle(transform.GetTransform(), circle, (int)entity);
+			}
+
 			Renderer2D::EndScene();
 		}
 	}
@@ -294,10 +310,15 @@ namespace Sora {
 	}
 
 	template<>
-	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
+	void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
 	{
 	}
 	
+	template<>
+	void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
+	{
+	}
+
 	template<>
 	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{

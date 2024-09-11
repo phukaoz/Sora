@@ -23,7 +23,8 @@ namespace Sora {
 		static void EndScene();
 		static void Flush();
 
-		static void DrawSprite(const glm::mat4& transform, SpriteComponent& src, int entity_id);
+		static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID);
+		static void DrawCircle(const glm::mat4& transform, CircleRendererComponent& src, int entityID);
 
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);
@@ -32,7 +33,7 @@ namespace Sora {
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float rotation = 0.0f, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float rotation = 0.0f, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 
-		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entity_id = -1);
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), int entity_id = -1);
 
 		struct Statistics

@@ -235,11 +235,21 @@ namespace Sora {
 					}
 				}
 
-				if (!mSelectionContext.HasComponent<SpriteComponent>())
+				if (!mSelectionContext.HasComponent<SpriteRendererComponent>())
 				{
-					if (ImGui::MenuItem("Sprite"))
+					if (ImGui::MenuItem("Sprite Renderer"))
 					{
-						mSelectionContext.AddComponent<SpriteComponent>();
+						mSelectionContext.AddComponent<SpriteRendererComponent>();
+
+						ImGui::CloseCurrentPopup();
+					}
+				}
+
+				if (!mSelectionContext.HasComponent<CircleRendererComponent>())
+				{
+					if (ImGui::MenuItem("Circle Renderer"))
+					{
+						mSelectionContext.AddComponent<CircleRendererComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}
@@ -346,7 +356,7 @@ namespace Sora {
 				}
 			});
 	
-		DrawComponent<SpriteComponent>("Sprite", entity, [](auto& component)
+		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
 			{
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
@@ -364,6 +374,13 @@ namespace Sora {
 				}
 
 				ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+			});
+
+		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
+			{
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
+				ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
 			});
 
 		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component)
