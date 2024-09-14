@@ -121,8 +121,6 @@ namespace Sora {
 
 		if (ImGui::Begin("DockSpace", &dockspace_open, windowFlags))
 		{
-			//ImGui::ShowDemoWindow();
-
 			if (!optPadding)   ImGui::PopStyleVar();
 			if (optFullscreen) ImGui::PopStyleVar(2);
 

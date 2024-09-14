@@ -89,7 +89,7 @@ namespace Sora {
 		ScriptableEntity* Instance = nullptr;
 
 		ScriptableEntity*(*InstantiateScript)();
-		void (*DestroyScript)(NativeScriptComponent*);
+		void (*DestroyScript)(NativeScriptComponent*) = nullptr;
 
 		template<typename T>
 		void Bind()
@@ -134,8 +134,8 @@ namespace Sora {
 	struct CircleCollider2DComponent
 	{
 		glm::vec2 Offset = { 0.0f, 0.0f };
+		float Radius = 0.5f;
 
-		float Radius = 1.0f; 
 		float Density = 1.0f;
 		float Friction = 0.5f;
 		float Restitution = 0.0f;
@@ -149,5 +149,5 @@ namespace Sora {
 }
 // When adding a new component, remember to update the following files:
 // 1. 'SceneSerializer.cpp': Add Serialize and Deserialize methods for the component
-// 2. 'Scene.cpp': Implement OnComponentAdded<> function for the new component
+// 2. 'Scene.cpp': Implement OnComponentAdded, Util::CopyComponentIfExist, Util::CopyComponent function for the new component
 // 3. 'SceneHierarchyPanel.cpp': Create UI elements for the component

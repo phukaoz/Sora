@@ -242,17 +242,39 @@ namespace Sora {
 			out << YAML::BeginMap;
 			{
 				auto& boxColiider2DComponent	= entity.GetComponent<BoxCollider2DComponent>();
-				auto& offset			= boxColiider2DComponent.Offset;
-				auto& size				= boxColiider2DComponent.Size;
-				auto  density			= boxColiider2DComponent.Density;
-				auto  friction			= boxColiider2DComponent.Friction;
-				auto  restitution		= boxColiider2DComponent.Restitution;
+				auto& offset		= boxColiider2DComponent.Offset;
+				auto& size			= boxColiider2DComponent.Size;
+				auto  density		= boxColiider2DComponent.Density;
+				auto  friction		= boxColiider2DComponent.Friction;
+				auto  restitution	= boxColiider2DComponent.Restitution;
 
 				out << YAML::Key << "Offset"		<< YAML::Value << offset;
 				out << YAML::Key << "Size"			<< YAML::Value << size;
 				out << YAML::Key << "Density"		<< YAML::Value << density;
 				out << YAML::Key << "Friction"		<< YAML::Value << friction;
 				out << YAML::Key << "Restitution"	<< YAML::Value << restitution;
+
+				out << YAML::EndMap;
+			}
+		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>())
+		{
+			out << YAML::Key << "CircleCollider2DComponent";
+			out << YAML::BeginMap;
+			{
+				auto& circleColiider2DComponent = entity.GetComponent<CircleCollider2DComponent>();
+				auto& offset		= circleColiider2DComponent.Offset;
+				auto& radius		= circleColiider2DComponent.Radius;
+				auto  density		= circleColiider2DComponent.Density;
+				auto  friction		= circleColiider2DComponent.Friction;
+				auto  restitution	= circleColiider2DComponent.Restitution;
+
+				out << YAML::Key << "Offset" << YAML::Value << offset;
+				out << YAML::Key << "Radius" << YAML::Value << radius;
+				out << YAML::Key << "Density" << YAML::Value << density;
+				out << YAML::Key << "Friction" << YAML::Value << friction;
+				out << YAML::Key << "Restitution" << YAML::Value << restitution;
 
 				out << YAML::EndMap;
 			}
@@ -385,6 +407,17 @@ namespace Sora {
 					component.Density		= boxCollider2DComponent["Density"].as<float>();
 					component.Friction		= boxCollider2DComponent["Friction"].as<float>();
 					component.Restitution	= boxCollider2DComponent["Restitution"].as<float>();
+				}
+
+				auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
+				if (circleCollider2DComponent)
+				{
+					auto& component			= deserializedEntity.AddComponent<CircleCollider2DComponent>();
+					component.Offset		= circleCollider2DComponent["Offset"].as<glm::vec2>();
+					component.Radius		= circleCollider2DComponent["Radius"].as<float>();
+					component.Density		= circleCollider2DComponent["Density"].as<float>();
+					component.Friction		= circleCollider2DComponent["Friction"].as<float>();
+					component.Restitution	= circleCollider2DComponent["Restitution"].as<float>();
 				}
 			}
 		}

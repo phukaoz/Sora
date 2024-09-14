@@ -25,7 +25,7 @@ namespace Sora {
 
 		openFilename.lpstrFilter = filter;
 		openFilename.nFilterIndex = 1;
-		openFilename.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+		openFilename.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_EXPLORER;
 
 		if (GetOpenFileNameA(&openFilename) == TRUE)
 			return openFilename.lpstrFile;
@@ -48,7 +48,7 @@ namespace Sora {
 
 		openFilename.lpstrFilter = filter;
 		openFilename.nFilterIndex = 1;
-		openFilename.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+		openFilename.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_OVERWRITEPROMPT | OFN_EXPLORER;
 
 		if (GetSaveFileNameA(&openFilename) == TRUE)
 		{

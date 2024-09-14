@@ -37,7 +37,7 @@ namespace Sora {
 		void OnComponentAdded(Entity entity, T& component);
 	private:
 		uint32_t mViewportWidth = 0, mViewportHeight = 0;
-		b2WorldId mWorldID;
+		b2WorldId mWorldID = {};
 		entt::registry mRegistry;
 
 		friend class Entity;

@@ -47,7 +47,7 @@ namespace Sora {
 		EditorCamera mEditorCamera;
 		bool mViewportFocused = false, mViewportHovered = false;
 		glm::vec2 mViewportSize = { 0.0f, 0.0f };
-		glm::vec2 mViewportBounds[2];
+		glm::vec2 mViewportBounds[2] = { {}, {} };
 
 		Entity mHoveredEntity;
 

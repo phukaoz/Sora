@@ -49,6 +49,7 @@ namespace Sora {
 
 	Scene::Scene()
 	{
+
 	}
 
 	Scene::~Scene()
@@ -58,6 +59,9 @@ namespace Sora {
 	Ref<Scene> Scene::Copy(Ref<Scene> other)
 	{
 		Ref<Scene> newScene = CreateRef<Scene>();
+
+		if (!other)
+			return newScene;
 
 		newScene->mViewportWidth = other->mViewportWidth;
 		newScene->mViewportHeight = other->mViewportHeight;
@@ -73,12 +77,15 @@ namespace Sora {
 			Entity entity = newScene->CreateEntity(name, uuid);
 			enttMap[uuid] = entity;
 		}
+
 		Utils::CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<SpriteRendererComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<CircleRendererComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<CircleCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
 
 		//newScene->mWorldID = other->mWorldID;
 		return newScene;
@@ -107,10 +114,12 @@ namespace Sora {
 
 		Utils::CopyComponentIfExist<TransformComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<SpriteRendererComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<CircleRendererComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<CameraComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<NativeScriptComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<Rigidbody2DComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<BoxCollider2DComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<CircleCollider2DComponent>(newEntity, entity);
 
 		return newEntity;
 	}
@@ -144,14 +153,32 @@ namespace Sora {
 				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
 
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
+				
 				shapeDef.density = bc2d.Density;
 				shapeDef.friction = bc2d.Friction;
 				shapeDef.restitution = bc2d.Restitution;
 
-				b2Polygon polygon = b2MakeBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);
+				b2Polygon polygon = b2MakeOffsetBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y, b2Vec2{bc2d.Offset.x, bc2d.Offset.y}, b2MakeRot(0.0f));
 				b2ShapeId shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
 				// TODO: find the better way to store shape id.
 				memcpy(&bc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
+			}
+
+			else if (entity.HasComponent<CircleCollider2DComponent>())
+			{
+				auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+				b2ShapeDef shapeDef = b2DefaultShapeDef();
+				shapeDef.density = cc2d.Density;
+				shapeDef.friction = cc2d.Friction;	
+				shapeDef.restitution = cc2d.Restitution;
+
+				b2Circle circle;
+				circle.center = {cc2d.Offset.x, cc2d.Offset.y};
+				circle.radius = cc2d.Radius;
+				b2ShapeId shapeID = b2CreateCircleShape(bodyID, &shapeDef, &circle);
+
+				memcpy(&cc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
 			}
 		}
 	}
@@ -338,6 +365,11 @@ namespace Sora {
 
 	template<>
 	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
 	{
 	}
 
