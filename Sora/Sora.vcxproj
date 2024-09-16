@@ -155,7 +155,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\Platform\Windows\Win32Window.h" />
     <ClInclude Include="src\Sora.h" />
     <ClInclude Include="src\Sora\Core\Application.h" />
     <ClInclude Include="src\Sora\Core\Core.h" />
@@ -630,9 +630,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowPlatformUtils.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\Platform\Windows\Win32PlatformUtils.cpp" />
+    <ClCompile Include="src\Platform\Windows\Win32Input.cpp" />
+    <ClCompile Include="src\Platform\Windows\Win32Window.cpp" />
     <ClCompile Include="src\Sora\Core\Application.cpp" />
     <ClCompile Include="src\Sora\Core\Layer.cpp" />
     <ClCompile Include="src\Sora\Core\LayerStack.cpp" />

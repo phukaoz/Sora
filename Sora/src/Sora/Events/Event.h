@@ -54,20 +54,20 @@ namespace Sora {
 		using EventFn = std::function<bool(T&)>;
 	public:
 		EventDispatcher(Event &event)
-			: mEvent(event) {}
+			: m_Event(event) {}
 
 		template<typename T>
 		bool Dispatch(EventFn<T> func)
 		{
-			if (mEvent.GetEventType() == T::GetStaticType())
+			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				mEvent.Handled = func(*(T*)&mEvent);
+				m_Event.Handled = func(*(T*)&m_Event);
 				return true;
 			}
 			return false;
 		}
 	private:
-		Event& mEvent;
+		Event& m_Event;
 	};
 
 	inline std::ostream& operator<<(std::ostream &os, const Event &e)

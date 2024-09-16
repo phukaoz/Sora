@@ -18,22 +18,22 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		if (Input::IsKeyPressed(Key::A))
+		if (Input::IsKeyPressed(KeyCode::A))
 		{
 			m_CameraPosition.x -= glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 			m_CameraPosition.y -= glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
-		if (Input::IsKeyPressed(Key::D))
+		if (Input::IsKeyPressed(KeyCode::D))
 		{
 			m_CameraPosition.x += glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 			m_CameraPosition.y += glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
-		if (Input::IsKeyPressed(Key::S))
+		if (Input::IsKeyPressed(KeyCode::S))
 		{
 			m_CameraPosition.x -= -glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 			m_CameraPosition.y -= glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
-		if (Input::IsKeyPressed(Key::W))
+		if (Input::IsKeyPressed(KeyCode::W))
 		{
 			m_CameraPosition.x += -glm::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 			m_CameraPosition.y += glm::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
@@ -41,9 +41,9 @@ namespace Sora {
 
 		if (m_CanRotate)
 		{
-			if (Input::IsKeyPressed(Key::E))
+			if (Input::IsKeyPressed(KeyCode::E))
 				m_CameraRotation -= m_CameraRotationSpeed * ts;
-			if (Input::IsKeyPressed(Key::Q))
+			if (Input::IsKeyPressed(KeyCode::Q))
 				m_CameraRotation += m_CameraRotationSpeed * ts;
 		
 			m_Camera.SetRotation(m_CameraRotation);

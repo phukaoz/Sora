@@ -12,23 +12,23 @@ namespace Sora {
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
-	Application* Application::sInstance = nullptr;
+	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const std::string& name /*= "Sora App"*/, ApplicationCommandLineArgs args /*= default*/)
-		: mCommandLineArgs(args)
+		: m_CommandLineArgs(args)
 	{
 		SORA_PROFILE_FUNCTION();
 
-		SORA_CORE_ASSERT(!sInstance, "Application already exist");
-		sInstance = this;
+		SORA_CORE_ASSERT(!s_Instance, "Application already exist");
+		s_Instance = this;
 
-		mWindow = Window::Create(WindowProps(name));
-		mWindow->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window = Window::Create(WindowProps(name));
+		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();
 
-		mImGuiLayer = new ImGuiLayer();
-		PushOverlay(mImGuiLayer);
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -42,7 +42,7 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		mLayerStack.PushLayer(layer);
+		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
@@ -50,13 +50,13 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		mLayerStack.PushOverlay(overlay);
+		m_LayerStack.PushOverlay(overlay);
 		overlay->OnAttach();
 	}
 
 	void Application::Close()
 	{
-		mRunning = false;
+		m_Running = false;
 	}
 
 	void Application::OnEvent(Event& e)
@@ -67,7 +67,7 @@ namespace Sora {
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 
-		for (auto it = mLayerStack.end(); it != mLayerStack.begin(); )
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(e);
 			if (e.Handled)
@@ -79,39 +79,39 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		while (mRunning)
+		while (m_Running)
 		{
 			float time = (float)glfwGetTime(); // Platform::GetTime()
-			Timestep timestep = time - mLastFrameTime;
-			mLastFrameTime = time;
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 
-			if (!mMinimized)
+			if (!m_Minimized)
 			{
 				{
 					SORA_PROFILE_SCOPE("LayerStack OnUpdate");
 
-					for (Layer* layer : mLayerStack)
+					for (Layer* layer : m_LayerStack)
 						layer->OnUpdate(timestep);
 				}
 
-				mImGuiLayer->Begin();
+				m_ImGuiLayer->Begin();
 				{
 					SORA_PROFILE_SCOPE("LayerStack OnImGuiRender");
 
-					for (Layer* layer : mLayerStack)
+					for (Layer* layer : m_LayerStack)
 						layer->OnImGuiRender();
 				}
-				mImGuiLayer->End();
+				m_ImGuiLayer->End();
 
 			}
 			
-			mWindow->OnUpdate();
+			m_Window->OnUpdate();
 		}
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
-		mRunning = false;
+		m_Running = false;
 		return true;
 	}
 
@@ -121,10 +121,10 @@ namespace Sora {
 
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
-			mMinimized = true;
+			m_Minimized = true;
 			return false;
 		}
-		mMinimized = false;
+		m_Minimized = false;
 
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 

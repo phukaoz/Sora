@@ -13,7 +13,7 @@ namespace Sora {
 	{
 	public:
 		EditorCamera() = default;
-		EditorCamera(float fov, float aspect_ratio, float near_clip, float far_clip);
+		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
@@ -21,20 +21,20 @@ namespace Sora {
 		inline float GetDistance() const {}
 		inline float SetDistance() const {}
 
-		inline void SetViewportSize(float width, float height) { mViewportWidth = width; mViewportHeight = height; UpdateProjection(); }
+		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
-		const	glm::mat4&	GetViewMatrix()			const { return mViewMatrix; }
-				glm::mat4	GetViewProjection()		const { return mProjection * mViewMatrix; }
+		const	glm::mat4&	GetViewMatrix()			const { return m_ViewMatrix; }
+				glm::mat4	GetViewProjection()		const { return m_Projection * m_ViewMatrix; }
 
 				glm::vec3	GetUpDirection()		const;
 				glm::vec3	GetRightDirection()		const;
 				glm::vec3	GetFowardDirection()	const;
 
-		const	glm::vec3&	GetPosition()			const { return mPosition; }
+		const	glm::vec3&	GetPosition()			const { return m_Position; }
 				glm::quat	GetOrientation()		const;
 
-				float		GetPitch()				const { return mPitch; }
-				float		GetYaw()				const { return mYaw; }
+				float		GetPitch()				const { return m_Pitch; }
+				float		GetYaw()				const { return m_Yaw; }
 	private:
 		void UpdateProjection();
 		void UpdateView();
@@ -51,18 +51,18 @@ namespace Sora {
 		float RotationSpeed() const;
 		float ZoomSpeed() const;
 	private:
-		float mFOV = 45.0f, mAspectRatio = 1.778f, mNearClip = 0.1f, mFarClip = 1000.0f;
+		float m_FOV = 45.0f, m_AspectRatio = 1.778f, m_NearClip = 0.1f, m_FarClip = 1000.0f;
 
-		glm::mat4 mViewMatrix;
-		glm::vec3 mPosition		= { 0.0f, 0.0f, 0.0f };
-		glm::vec3 mFocalPoint	= { 0.0f, 0.0f, 0.0f };
+		glm::mat4 m_ViewMatrix;
+		glm::vec3 m_Position	= { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_FocalPoint	= { 0.0f, 0.0f, 0.0f };
 
-		glm::vec2 mInitialMousePosition;
+		glm::vec2 m_InitialMousePosition;
 
-		float mDistance = 10.0f;
-		float mPitch	= 0.0f, mYaw = 0.0f;
+		float m_Distance = 10.0f;
+		float m_Pitch = 0.0f, m_Yaw = 0.0f;
 
-		float mViewportWidth = 1280, mViewportHeight = 720;
+		float m_ViewportWidth = 1280, m_ViewportHeight = 720;
 	};
 
 }

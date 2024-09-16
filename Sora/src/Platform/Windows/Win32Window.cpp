@@ -1,5 +1,5 @@
 #include "sorapch.h"
-#include "WindowsWindow.h"
+#include "Win32Window.h"
 
 #include "Sora/Events/ApplicationEvent.h"
 #include "Sora/Events/KeyEvent.h"
@@ -18,31 +18,31 @@ namespace Sora {
 
 	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return CreateScope<WindowsWindow>(props);
+		return CreateScope<Win32Window>(props);
 	}
 
-	WindowsWindow::WindowsWindow(const WindowProps& props)
+	Win32Window::Win32Window(const WindowProps& props)
 	{
 		SORA_PROFILE_FUNCTION();
 
 		Init(props);
 	}
 
-	WindowsWindow::~WindowsWindow()
+	Win32Window::~Win32Window()
 	{
 		SORA_PROFILE_FUNCTION();
-		SORA_CORE_INFO("Shutdown window '{0}'", mData.Title);
+		SORA_CORE_INFO("Shutdown window '{0}'", m_Data.Title);
 
 		Shutdown();
 	}
 
-	void WindowsWindow::Init(const WindowProps& props)
+	void Win32Window::Init(const WindowProps& props)
 	{
 		SORA_PROFILE_FUNCTION();
 
-		mData.Title = props.Title;
-		mData.Width = props.Width;
-		mData.Height = props.Height;
+		m_Data.Title = props.Title;
+		m_Data.Width = props.Width;
+		m_Data.Height = props.Height;
 
 		SORA_CORE_INFO("Creating window '{0}' ({1}, {2})", props.Title, props.Width, props.Height);
 
@@ -59,27 +59,20 @@ namespace Sora {
 			SORA_PROFILE_SCOPE("glfwCreateWindow");
 			glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 			
-			mWindow = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
+			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
 			
-			int count = 0;
-			int monitor_x = 0, monitor_y = 0;
-			GLFWmonitor** monitor = glfwGetMonitors(&count);
-			const GLFWvidmode* video_mode = glfwGetVideoMode(monitor[0]);
-			glfwGetMonitorPos(monitor[0], &monitor_x, &monitor_y);
-			
-			glfwDefaultWindowHints();
-			glfwSetWindowPos(mWindow, monitor_x + (video_mode->width - props.Width)/2, monitor_y + (video_mode->height - props.Height)/2);
-			glfwShowWindow(mWindow);
+			glfwMaximizeWindow(m_Window);
+			glfwShowWindow(m_Window);
 		}
 
-		mContext = new OpenGLContext(mWindow);
+		mContext = new OpenGLContext(m_Window);
 		mContext->Init();
 
-		glfwSetWindowUserPointer(mWindow, &mData);
+		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
 		// Set GLFW callbacks
-		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* window, int width, int height)
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				data.Width = width;
@@ -89,14 +82,14 @@ namespace Sora {
 				data.EventCallback(event);
 			});
 
-		glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window)
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				WindowCloseEvent event;
 				data.EventCallback(event);
 			});
 
-		glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -123,7 +116,7 @@ namespace Sora {
 				}
 			});
 
-		glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int keycode)
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -131,7 +124,7 @@ namespace Sora {
 				data.EventCallback(event);
 			});
 
-		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) 
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) 
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -152,7 +145,7 @@ namespace Sora {
 				}
 			});
 
-		glfwSetScrollCallback(mWindow, [](GLFWwindow* window, double xOffset, double yOffset)
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -160,7 +153,7 @@ namespace Sora {
 				data.EventCallback(event);
 			});
 
-		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, double xPos, double yPos)
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -170,14 +163,14 @@ namespace Sora {
 
 	}
 
-	void WindowsWindow::Shutdown()
+	void Win32Window::Shutdown()
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glfwDestroyWindow(mWindow);
+		glfwDestroyWindow(m_Window);
 	}
 
-	void WindowsWindow::OnUpdate()
+	void Win32Window::OnUpdate()
 	{
 		SORA_PROFILE_FUNCTION();
 
@@ -185,7 +178,7 @@ namespace Sora {
 		mContext->SwapBuffers();
 	}
 
-	void WindowsWindow::SetVSync(bool enabled)
+	void Win32Window::SetVSync(bool enabled)
 	{
 		SORA_PROFILE_FUNCTION();
 
@@ -194,12 +187,12 @@ namespace Sora {
 		else
 			glfwSwapInterval(0);
 
-		mData.VSync = enabled;
+		m_Data.VSync = enabled;
 	}
 
-	bool WindowsWindow::IsSync() const
+	bool Win32Window::IsSync() const
 	{
-		return mData.VSync;
+		return m_Data.VSync;
 	}
 
 }

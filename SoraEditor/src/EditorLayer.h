@@ -30,40 +30,42 @@ namespace Sora {
 		void SaveSceneAs();
 		void SaveScene();
 
+		// UI
 		void UI_Toolbar();
 		void UI_Viewport();
+		void UI_DockspaceSetup();
 
 		void PlayScene();
 		void StopScene();
 		
 		void DuplicateEntity();
 	private:
-		Ref<Framebuffer> mFramebuffer;
+		Ref<Framebuffer> m_Framebuffer;
 
-		Ref<Scene> mActiveScene;
-		Ref<Scene> mEditorScene, mRuntimeScene;
-		std::filesystem::path mCurrentScenePath;
+		Ref<Scene> m_ActiveScene;
+		Ref<Scene> m_EditorScene, m_RuntimeScene;
+		std::filesystem::path m_CurrentScenePath;
 
-		EditorCamera mEditorCamera;
-		bool mViewportFocused = false, mViewportHovered = false;
-		glm::vec2 mViewportSize = { 0.0f, 0.0f };
-		glm::vec2 mViewportBounds[2] = { {}, {} };
+		EditorCamera m_EditorCamera;
+		bool m_ViewportFocused = false, m_ViewportHovered = false;
+		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
+		glm::vec2 m_ViewportBounds[2] = { {}, {} };
 
-		Entity mHoveredEntity;
+		Entity m_HoveredEntity;
 
-		int mGizmoType = 0;
+		int m_GizmoType = 0;
 
 		enum class SceneState
 		{
 			Edit = 0, Play = 1,
 		};
 
-		SceneState mSceneState = SceneState::Edit;
+		SceneState m_SceneState = SceneState::Edit;
 
-		SceneHierarchyPanel mSceneHierarchyPanel;
-		ContentBrowserPanel mContentBrowserPanel;
+		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 
-		Ref<Texture2D> mIconPlay, mIconStop;
+		Ref<Texture2D> m_IconPlay, m_IconStop;
 	};
 
 }
