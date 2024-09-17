@@ -10,13 +10,13 @@ namespace Sora {
 	static std::uniform_int_distribution<uint64_t> sUniformDistribution;
 
 	UUID::UUID()
-		: mUUID(sUniformDistribution(sEngine))
+		: m_UUID(sUniformDistribution(sEngine))
 	{
 		
 	}
 
 	UUID::UUID(uint64_t uuid)
-		: mUUID(uuid)
+		: m_UUID(uuid)
 	{
 
 	}

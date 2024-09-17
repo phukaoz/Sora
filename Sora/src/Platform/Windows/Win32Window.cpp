@@ -65,8 +65,8 @@ namespace Sora {
 			glfwShowWindow(m_Window);
 		}
 
-		mContext = new OpenGLContext(m_Window);
-		mContext->Init();
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -175,7 +175,7 @@ namespace Sora {
 		SORA_PROFILE_FUNCTION();
 
 		glfwPollEvents();
-		mContext->SwapBuffers();
+		m_Context->SwapBuffers();
 	}
 
 	void Win32Window::SetVSync(bool enabled)

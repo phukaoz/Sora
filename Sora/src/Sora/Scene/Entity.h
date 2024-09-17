@@ -19,16 +19,16 @@ namespace Sora {
 		T& AddComponent(Args&&... args)
 		{
 			SORA_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
-			T& component = mScene->mRegistry.emplace<T>(mEntityHandle, std::forward<Args>(args)...);
-			mScene->OnComponentAdded<T>(*this, component);
+			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			m_Scene->OnComponentAdded<T>(*this, component);
 			return component;
 		}
 
 		template<typename T, typename... Args>
 		T& AddOrReplaceComponent(Args&&... args)
 		{
-			T& component = mScene->mRegistry.emplace_or_replace<T>(mEntityHandle, std::forward<Args>(args)...);
-			mScene->OnComponentAdded<T>(*this, component);
+			T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			m_Scene->OnComponentAdded<T>(*this, component);
 			return component;
 		}
 
@@ -37,13 +37,13 @@ namespace Sora {
 		{
 			SORA_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
 
-			return mScene->mRegistry.get<T>(mEntityHandle);
+			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
 		template<typename T>
 		bool HasComponent()
 		{
-			return mScene->mRegistry.all_of<T>(mEntityHandle);
+			return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
 		}
 
 		template<typename T>
@@ -51,7 +51,7 @@ namespace Sora {
 		{
 			SORA_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
 
-			mScene->mRegistry.remove<T>(mEntityHandle);
+			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
 		template<typename T, typename Func>
@@ -60,9 +60,9 @@ namespace Sora {
 
 		}
 
-		operator bool() const { return mEntityHandle != entt::null; }
-		operator entt::entity() const { return mEntityHandle; }
-		operator uint32_t() const { return (uint32_t)mEntityHandle; }
+		operator bool() const { return m_EntityHandle != entt::null; }
+		operator entt::entity() const { return m_EntityHandle; }
+		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 		
 		UUID				GetUUID()		{ return GetComponent<IDComponent>().ID; }
 		const std::string&	GetName()		{ return GetComponent<TagComponent>().Tag; }
@@ -70,7 +70,7 @@ namespace Sora {
 
 		bool operator ==(const Entity& other) const
 		{
-			return mEntityHandle == other.mEntityHandle && mScene == other.mScene;
+			return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
 		}
 
 		bool operator !=(const Entity& other) const
@@ -78,8 +78,8 @@ namespace Sora {
 			return !(*this == other);
 		}
 	private:
-		entt::entity mEntityHandle = entt::null;
-		Scene* mScene = nullptr;
+		entt::entity m_EntityHandle = entt::null;
+		Scene* m_Scene = nullptr;
 	};
 
 }

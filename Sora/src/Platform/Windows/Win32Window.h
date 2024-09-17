@@ -28,7 +28,7 @@ namespace Sora {
 		void Shutdown();
 
 		GLFWwindow* m_Window;
-		GraphicsContext* mContext;
+		GraphicsContext* m_Context;
 
 		struct WindowData 
 		{

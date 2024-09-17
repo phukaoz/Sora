@@ -15,27 +15,27 @@ namespace Sora {
 
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
-		mContext = context;
-		mSelectionContext = {};
+		m_Context = context;
+		m_SelectionContext = {};
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		if (ImGui::Begin("Scene Hierarchy"))
 		{
-			auto view = mContext->mRegistry.view<TagComponent>();
+			auto view = m_Context->m_Registry.view<TagComponent>();
 			for (auto entity : view)
 			{
-				DrawEntityNode(Entity(entity, mContext.get()));
+				DrawEntityNode(Entity(entity, m_Context.get()));
 			}
 
 			if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
-				mSelectionContext = {};
+				m_SelectionContext = {};
 
 			if (ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems))
 			{
 				if (ImGui::MenuItem("Create Entity"))
-					mContext->CreateEntity();
+					m_Context->CreateEntity();
 
 				ImGui::EndPopup();
 			}
@@ -45,8 +45,8 @@ namespace Sora {
 
 		if (ImGui::Begin("Properties"))
 		{
-			if (mSelectionContext)
-				DrawComponents(mSelectionContext);
+			if (m_SelectionContext)
+				DrawComponents(m_SelectionContext);
 
 			ImGui::End();
 		}
@@ -54,19 +54,19 @@ namespace Sora {
 
 	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
 	{
-		mSelectionContext = entity;
+		m_SelectionContext = entity;
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-		ImGuiTreeNodeFlags flags = ((mSelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) 
+		ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) 
 			| ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth ;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 		
 		if (ImGui::IsItemClicked())
-			mSelectionContext = entity;
+			m_SelectionContext = entity;
 
 		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
@@ -85,9 +85,9 @@ namespace Sora {
 
 		if (entityDeleted)
 		{
-			mContext->DestroyEntity(entity);
-			if (mSelectionContext == entity)
-				mSelectionContext = {};
+			m_Context->DestroyEntity(entity);
+			if (m_SelectionContext == entity)
+				m_SelectionContext = {};
 		}
 	}
 
@@ -106,14 +106,14 @@ namespace Sora {
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
 
-		float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 button_size = { line_height + 3.0f, line_height };
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.25f, 1.0f });
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.7f, 0.0f, 0.05f, 1.0f });
 		ImGui::PushFont(bold_font);
-		if (ImGui::Button("X", button_size))
+		if (ImGui::Button("X", buttonSize))
 			values.x = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
@@ -127,7 +127,7 @@ namespace Sora {
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.9f, 0.25f, 1.0f });
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.0f, 0.7f, 0.05f, 1.0f });
 		ImGui::PushFont(bold_font);
-		if (ImGui::Button("Y", button_size))
+		if (ImGui::Button("Y", buttonSize))
 			values.y = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
@@ -141,7 +141,7 @@ namespace Sora {
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.25f, 0.9f, 1.0f });
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.0f, 0.05f, 0.7f, 1.0f });
 		ImGui::PushFont(bold_font);
-		if (ImGui::Button("Z", button_size))
+		if (ImGui::Button("Z", buttonSize))
 			values.z = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
@@ -225,61 +225,61 @@ namespace Sora {
 
 			if (ImGui::BeginPopup("AddComponent"))
 			{
-				if (!mSelectionContext.HasComponent<CameraComponent>())
+				if (!m_SelectionContext.HasComponent<CameraComponent>())
 				{
 					if (ImGui::MenuItem("Camera"))
 					{
-						mSelectionContext.AddComponent<CameraComponent>();
+						m_SelectionContext.AddComponent<CameraComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}
 				}
 
-				if (!mSelectionContext.HasComponent<SpriteRendererComponent>())
+				if (!m_SelectionContext.HasComponent<SpriteRendererComponent>())
 				{
 					if (ImGui::MenuItem("Sprite Renderer"))
 					{
-						mSelectionContext.AddComponent<SpriteRendererComponent>();
+						m_SelectionContext.AddComponent<SpriteRendererComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}
 				}
 
-				if (!mSelectionContext.HasComponent<CircleRendererComponent>())
+				if (!m_SelectionContext.HasComponent<CircleRendererComponent>())
 				{
 					if (ImGui::MenuItem("Circle Renderer"))
 					{
-						mSelectionContext.AddComponent<CircleRendererComponent>();
+						m_SelectionContext.AddComponent<CircleRendererComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}
 				}
 
-				if (!mSelectionContext.HasComponent<Rigidbody2DComponent>())
+				if (!m_SelectionContext.HasComponent<Rigidbody2DComponent>())
 				{
 					if (ImGui::MenuItem("Rigidbody 2D"))
 					{
-						mSelectionContext.AddComponent<Rigidbody2DComponent>();
+						m_SelectionContext.AddComponent<Rigidbody2DComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}
 				}
 
-				if (!mSelectionContext.HasComponent<BoxCollider2DComponent>())
+				if (!m_SelectionContext.HasComponent<BoxCollider2DComponent>())
 				{
 					if (ImGui::MenuItem("Box Collider 2D"))
 					{
-						mSelectionContext.AddComponent<BoxCollider2DComponent>();
+						m_SelectionContext.AddComponent<BoxCollider2DComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}
 				}
 
-				if (!mSelectionContext.HasComponent<CircleCollider2DComponent>())
+				if (!m_SelectionContext.HasComponent<CircleCollider2DComponent>())
 				{
 					if (ImGui::MenuItem("Circle Collider 2D"))
 					{
-						mSelectionContext.AddComponent<CircleCollider2DComponent>();
+						m_SelectionContext.AddComponent<CircleCollider2DComponent>();
 
 						ImGui::CloseCurrentPopup();
 					}

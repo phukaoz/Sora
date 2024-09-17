@@ -4,6 +4,6 @@
 
 namespace Sora { namespace Math {
 
-	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& out_translation, glm::vec3& out_rotaion, glm::vec3& out_scale);
+	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& o_Translation, glm::vec3& o_Rotaion, glm::vec3& o_Scale);
 
 } }

@@ -52,7 +52,11 @@ project "Sora"
 		"ImGui",
 		"yaml-cpp",
 		"opengl32.lib",
-		"box2d"
+		"box2d",
+		"d3d11.lib",
+		"dxgi.lib",
+		"d3dcompiler.lib",
+		"dxguid.lib"
 	}
 	
 	filter "files:vendor/ImGuizmo/**.cpp"

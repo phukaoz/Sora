@@ -17,7 +17,7 @@ namespace Sora {
 		bool Deserialize(const std::filesystem::path& filepath);
 		bool DeserializeRuntime(const std::filesystem::path& filepath);
 	private:
-		Ref<Scene> mScene;
+		Ref<Scene> m_Scene;
 	};
 
 }

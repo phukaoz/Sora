@@ -135,6 +135,9 @@
     <ClInclude Include="src\Sora\Core\Timestep.h">
       <Filter>src\Sora\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Sora\Core\UUID.h">
+      <Filter>src\Sora\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Sora\Core\Window.h">
       <Filter>src\Sora\Core</Filter>
     </ClInclude>
@@ -1485,7 +1488,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Sora\Core\UUID.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1512,10 +1514,10 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Windows\Win32PlatformUtils.cpp">
+    <ClCompile Include="src\Platform\Windows\Win32Input.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Windows\Win32Input.cpp">
+    <ClCompile Include="src\Platform\Windows\Win32PlatformUtils.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\Win32Window.cpp">
@@ -1531,6 +1533,9 @@
       <Filter>src\Sora\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Sora\Core\Log.cpp">
+      <Filter>src\Sora\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sora\Core\UUID.cpp">
       <Filter>src\Sora\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Sora\ImGui\ImGuiBuild.cpp">
@@ -1605,6 +1610,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Sora\Core\UUID.cpp" />
   </ItemGroup>
 </Project>

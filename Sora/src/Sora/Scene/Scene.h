@@ -36,9 +36,9 @@ namespace Sora {
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 	private:
-		uint32_t mViewportWidth = 0, mViewportHeight = 0;
-		b2WorldId mWorldID = {};
-		entt::registry mRegistry;
+		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+		b2WorldId m_WorldID = {};
+		entt::registry m_Registry;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

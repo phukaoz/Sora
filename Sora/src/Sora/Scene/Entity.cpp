@@ -4,7 +4,7 @@
 namespace Sora {
 
 	Entity::Entity(entt::entity handle, Scene* scene)
-		: mEntityHandle(handle), mScene(scene)
+		: m_EntityHandle(handle), m_Scene(scene)
 	{
 
 	}

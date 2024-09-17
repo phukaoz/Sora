@@ -110,7 +110,7 @@ namespace Sora {
 	}
 
 	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
-		: mScene(scene)
+		: m_Scene(scene)
 	{
 
 	}
@@ -291,9 +291,9 @@ namespace Sora {
 		out << YAML::Key << "Scene" << YAML::Value << filepath.stem().string();
 
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
-		mScene->mRegistry.view<entt::entity>().each([&](auto entity_id)
+		m_Scene->m_Registry.view<entt::entity>().each([&](auto entity_id)
 			{
-				Entity entity = { entity_id, mScene.get() };
+				Entity entity = { entity_id, m_Scene.get() };
 				if (!entity)
 					return;
 
@@ -339,7 +339,7 @@ namespace Sora {
 
 				SORA_CORE_TRACE("Deserialized entity '{0}' ID: {1}", name, uuid);
 
-				Entity deserializedEntity = mScene->CreateEntity(name, uuid);
+				Entity deserializedEntity = m_Scene->CreateEntity(name, uuid);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)
