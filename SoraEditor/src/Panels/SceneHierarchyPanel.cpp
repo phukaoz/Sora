@@ -75,6 +75,9 @@ namespace Sora {
 			if (ImGui::MenuItem("Delete Entity"))
 				entityDeleted = true;
 
+			if (ImGui::MenuItem("Duplicate Entity"))
+				m_Context->DuplicateEntity(entity);
+
 			ImGui::EndPopup();
 		}
 		
