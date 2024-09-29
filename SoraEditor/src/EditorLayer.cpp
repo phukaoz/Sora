@@ -31,11 +31,13 @@ namespace Sora {
 		fbSpec.Height = 900;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
-		m_ActiveScene = CreateRef<Scene>();
+		m_EditorScene = CreateRef<Scene>();
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+		m_ActiveScene = m_EditorScene;
 	}
 
 	void EditorLayer::OnDetach()
@@ -225,9 +227,12 @@ namespace Sora {
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		if (m_SceneState == SceneState::Play)
+			StopScene();
+
+		m_EditorScene = CreateRef<Scene>();
+		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 		m_CurrentScenePath = std::filesystem::path();
 	}
 
@@ -262,7 +267,7 @@ namespace Sora {
 		std::string filepath = FileDialogs::SaveFile("Sora Scene (*.sora)\0*.sora\0");
 		if (!filepath.empty())
 		{
-			SceneSerializer serializer(m_ActiveScene);
+			SceneSerializer serializer(m_EditorScene);
 			serializer.Serialize(filepath);
 			m_CurrentScenePath = filepath;
 		}
@@ -276,7 +281,7 @@ namespace Sora {
 		}
 		else
 		{
-			SceneSerializer serializer(m_ActiveScene);
+			SceneSerializer serializer(m_EditorScene);
 			serializer.Serialize(m_CurrentScenePath);
 		}
 	}
