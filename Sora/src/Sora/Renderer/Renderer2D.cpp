@@ -387,6 +387,31 @@ namespace Sora {
 		return s_Data.LineWidth;
 	}
 
+	void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID /*= -1*/)
+	{
+		glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+
+		DrawLine(p0, p1, color, entityID);
+		DrawLine(p1, p2, color, entityID);
+		DrawLine(p2, p3, color, entityID);
+		DrawLine(p3, p0, color, entityID);
+	}
+
+	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID /*= -1*/)
+	{
+		glm::vec3 p[4];
+		for (size_t i = 0; i < 4; i++)
+			p[i] = transform * s_Data.QuadVertexPosition[i];
+
+		DrawLine(p[0], p[1], color, entityID);
+		DrawLine(p[1], p[2], color, entityID);
+		DrawLine(p[2], p[3], color, entityID);
+		DrawLine(p[3], p[0], color, entityID);
+	}
+
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation /*= 0.0f*/)
 	{
 		DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation);
