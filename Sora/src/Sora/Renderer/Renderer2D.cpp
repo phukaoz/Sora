@@ -71,16 +71,16 @@ namespace Sora {
 		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
-	static Renderer2DData sData;
+	static Renderer2DData s_Data;
 
 	void Renderer2D::Init()
 	{
 		SORA_PROFILE_FUNCTION();
 
 		// Quad
-		sData.QuadVertexArray = VertexArray::Create();
-		sData.QuadVertexBuffer = VertexBuffer::Create(sData.MaxVertices * sizeof(QuadVertex));
-		sData.QuadVertexBuffer->SetLayout({
+		s_Data.QuadVertexArray = VertexArray::Create();
+		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
+		s_Data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,	"aPosition"		},
 			{ ShaderDataType::Float4,	"aColor"		},
 			{ ShaderDataType::Float2,	"aTexCoord"		},
@@ -88,8 +88,8 @@ namespace Sora {
 			{ ShaderDataType::Float,	"aTilingFactor" },
 			{ ShaderDataType::Int,		"aEntityID"		}
 		});
-		sData.QuadVertexArray->AddVertexBuffer(sData.QuadVertexBuffer);
-		sData.QuadVertexBufferBase = new QuadVertex[sData.MaxVertices];
+		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
+		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
 
 		uint32_t* quadIndices = new uint32_t[Renderer2DData::MaxIndices];
 		uint32_t offset = 0;
@@ -106,13 +106,13 @@ namespace Sora {
 			offset += 4;
 		}
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, Renderer2DData::MaxIndices);
-		sData.QuadVertexArray->SetIndexBuffer(quadIB);
+		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
 		// Circle
-		sData.CircleVertexArray = VertexArray::Create();
-		sData.CircleVertexBuffer = VertexBuffer::Create(sData.MaxVertices * sizeof(CircleVertex));
-		sData.CircleVertexBuffer->SetLayout({
+		s_Data.CircleVertexArray = VertexArray::Create();
+		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(CircleVertex));
+		s_Data.CircleVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,	"aWorldPosition"},
 			{ ShaderDataType::Float3,	"aLocalPosition"},
 			{ ShaderDataType::Float4,	"aColor"		},
@@ -120,45 +120,46 @@ namespace Sora {
 			{ ShaderDataType::Float,	"aFade"			},
 			{ ShaderDataType::Int,		"aEntityID"		}
 			});
-		sData.CircleVertexArray->AddVertexBuffer(sData.CircleVertexBuffer);
-		sData.CircleVertexArray->SetIndexBuffer(quadIB);
-		sData.CircleVertexBufferBase = new CircleVertex[sData.MaxVertices];
+		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
+		s_Data.CircleVertexArray->SetIndexBuffer(quadIB);
+		s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 
-		sData.WhiteTexture = Texture2D::Create(1, 1);
+		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
-		sData.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
 		int32_t sampler[Renderer2DData::MaxTextureSlots];
 		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
 			sampler[i] = i;
 
-		sData.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
-		sData.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
+		s_Data.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
+		s_Data.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
 
 		// Set white texture at index 0.
-		sData.TextureSlots[0] = sData.WhiteTexture;
+		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
-		sData.QuadVertexPosition[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		sData.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-		sData.QuadVertexPosition[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-		sData.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPosition[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPosition[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
-		sData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 	}
 
 	void Renderer2D::Shutdown()
 	{
 		SORA_PROFILE_FUNCTION();
 
-		delete[] sData.QuadVertexBufferBase;
+		delete[] s_Data.QuadVertexBufferBase;
+		delete[] s_Data.CircleVertexBufferBase;
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
 		SORA_PROFILE_FUNCTION();
 
-		sData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
-		sData.CameraUniformBuffer->SetData(&sData.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		s_Data.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -167,8 +168,8 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		sData.QuadShader->Bind();
-		sData.QuadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -177,8 +178,8 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		sData.CameraBuffer.ViewProjection = camera.GetViewProjection();
-		sData.CameraUniformBuffer->SetData(&sData.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -192,39 +193,39 @@ namespace Sora {
 
 	void Renderer2D::Flush()
 	{
-		if (sData.QuadIndexCount)
+		if (s_Data.QuadIndexCount)
 		{
-			uint32_t dataSize = (uint32_t)((uint8_t*)sData.QuadVertexBufferPtr - (uint8_t*)sData.QuadVertexBufferBase);
-			sData.QuadVertexBuffer->SetData(sData.QuadVertexBufferBase, dataSize);
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
-			for (uint32_t i = 0; i < sData.TextureSlotIndex; i++)
-				sData.TextureSlots[i]->Bind(i);
+			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+				s_Data.TextureSlots[i]->Bind(i);
 
-			sData.QuadShader->Bind();
-			RenderCommand::DrawIndexed(sData.QuadVertexArray, sData.QuadIndexCount);
-			sData.Stats.DrawCallCount++;
+			s_Data.QuadShader->Bind();
+			RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			s_Data.Stats.DrawCallCount++;
 		}
 
-		if (sData.CircleIndexCount)
+		if (s_Data.CircleIndexCount)
 		{
-			uint32_t dataSize = (uint32_t)((uint8_t*)sData.CircleVertexBufferPtr - (uint8_t*)sData.CircleVertexBufferBase);
-			sData.CircleVertexBuffer->SetData(sData.CircleVertexBufferBase, dataSize);
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase);
+			s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
 
-			sData.CircleShader->Bind();
-			RenderCommand::DrawIndexed(sData.CircleVertexArray, sData.CircleIndexCount);
-			sData.Stats.DrawCallCount++;
+			s_Data.CircleShader->Bind();
+			RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+			s_Data.Stats.DrawCallCount++;
 		}
 	}
 
 	void Renderer2D::StartBatch()
 	{
-		sData.QuadIndexCount = 0;
-		sData.QuadVertexBufferPtr = sData.QuadVertexBufferBase;
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
-		sData.CircleIndexCount = 0;
-		sData.CircleVertexBufferPtr = sData.CircleVertexBufferBase;
+		s_Data.CircleIndexCount = 0;
+		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
 
-		sData.TextureSlotIndex = 1;
+		s_Data.TextureSlotIndex = 1;
 	}
 	
 	void Renderer2D::NextBatch()
@@ -246,15 +247,15 @@ namespace Sora {
 		constexpr size_t quadVertexCount = 4;
 		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
 
 		float textureIndex = -1.0f;
 		if (src.Texture)
 		{
-			for (uint32_t i = 1; i < sData.TextureSlotIndex; i++)
+			for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
 			{
-				if (*sData.TextureSlots[i].get() == *src.Texture.get())
+				if (*s_Data.TextureSlots[i].get() == *src.Texture.get())
 				{
 					textureIndex = (float)i;
 					break;
@@ -263,9 +264,9 @@ namespace Sora {
 
 			if (textureIndex == -1.0f)
 			{
-				textureIndex = (float)sData.TextureSlotIndex;
-				sData.TextureSlots[sData.TextureSlotIndex] = src.Texture;
-				sData.TextureSlotIndex++;
+				textureIndex = (float)s_Data.TextureSlotIndex;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = src.Texture;
+				s_Data.TextureSlotIndex++;
 			}
 		}
 		else
@@ -275,43 +276,46 @@ namespace Sora {
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
-			sData.QuadVertexBufferPtr->Color = src.Color;
-			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
-			sData.QuadVertexBufferPtr->TilingFactor = src.TilingFactor;
-			sData.QuadVertexBufferPtr->EntityID = entityID;
-			sData.QuadVertexBufferPtr++;
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
+			s_Data.QuadVertexBufferPtr->Color = src.Color;
+			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = src.TilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
+			s_Data.QuadVertexBufferPtr++;
 		}
 
-		sData.QuadIndexCount += 6;
+		s_Data.QuadIndexCount += 6;
 
-		sData.Stats.QuadCount++;
+		s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawCircle(const glm::mat4& transform, CircleRendererComponent& src, int entityID)
 	{
+		DrawCircle(transform, src.Color, src.Thickness, src.Fade, entityID);
+	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness /*= 1.0f*/, float fade /*= 0.005f*/, int entityID /*= -1*/)
+	{
 		SORA_PROFILE_FUNCTION();
 
-		constexpr size_t quadVertexCount = 4;
-
-		//if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
-		//	NextBatch();
+		if (s_Data.CircleIndexCount >= Renderer2DData::MaxIndices)
+			NextBatch();
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			sData.CircleVertexBufferPtr->WorldPosition = transform * sData.QuadVertexPosition[i];
-			sData.CircleVertexBufferPtr->LocalPosition = sData.QuadVertexPosition[i] * 2.0f;
-			sData.CircleVertexBufferPtr->Color = src.Color;
-			sData.CircleVertexBufferPtr->Thickness = src.Thickness;
-			sData.CircleVertexBufferPtr->Fade = src.Fade;
-			sData.CircleVertexBufferPtr->EntityID = entityID;
-			sData.CircleVertexBufferPtr++;
+			s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPosition[i];
+			s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPosition[i] * 2.0f;
+			s_Data.CircleVertexBufferPtr->Color = color;
+			s_Data.CircleVertexBufferPtr->Thickness = thickness;
+			s_Data.CircleVertexBufferPtr->Fade = fade;
+			s_Data.CircleVertexBufferPtr->EntityID = entityID;
+			s_Data.CircleVertexBufferPtr++;
 		}
 
-		sData.CircleIndexCount += 6;
+		s_Data.CircleIndexCount += 6;
 
-		sData.Stats.QuadCount++;
+		s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation /*= 0.0f*/)
@@ -360,13 +364,13 @@ namespace Sora {
 		const glm::vec2* textureCoords = subtexture->GetTexCoords();
 		const Ref<Texture2D> texture = subtexture->GetTexture();
 
-		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
 
 		float textureIndex = 0.0f;
-		for (uint32_t i = 1; i < sData.TextureSlotIndex; i++)
+		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
 		{
-			if (*sData.TextureSlots[i].get() == *texture.get())
+			if (*s_Data.TextureSlots[i].get() == *texture.get())
 			{
 				textureIndex = (float)i;
 				break;
@@ -375,9 +379,9 @@ namespace Sora {
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = (float)sData.TextureSlotIndex;
-			sData.TextureSlots[sData.TextureSlotIndex] = texture;
-			sData.TextureSlotIndex++;
+			textureIndex = (float)s_Data.TextureSlotIndex;
+			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			s_Data.TextureSlotIndex++;
 		}
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
@@ -386,18 +390,18 @@ namespace Sora {
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
-			sData.QuadVertexBufferPtr->Color = color;
-			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
-			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			sData.QuadVertexBufferPtr->EntityID = -1;
-			sData.QuadVertexBufferPtr++;
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
+			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = -1;
+			s_Data.QuadVertexBufferPtr++;
 		}
 
-		sData.QuadIndexCount += 6;
+		s_Data.QuadIndexCount += 6;
 
-		sData.Stats.QuadCount++;
+		s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entity_id)
@@ -409,23 +413,23 @@ namespace Sora {
 		const float textureIndex = 0.0f;
 		const float tilingFactor = 1.0f;
 
-		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			sData.QuadVertexBufferPtr->Position		= transform * sData.QuadVertexPosition[i];
-			sData.QuadVertexBufferPtr->Color		= color;
-			sData.QuadVertexBufferPtr->TexCoord		= textureCoords[i];
-			sData.QuadVertexBufferPtr->TexIndex		= textureIndex;
-			sData.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			sData.QuadVertexBufferPtr->EntityID		= entity_id;
-			sData.QuadVertexBufferPtr++;
+			s_Data.QuadVertexBufferPtr->Position		= transform * s_Data.QuadVertexPosition[i];
+			s_Data.QuadVertexBufferPtr->Color		= color;
+			s_Data.QuadVertexBufferPtr->TexCoord		= textureCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex		= textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID		= entity_id;
+			s_Data.QuadVertexBufferPtr++;
 		}
 
-		sData.QuadIndexCount += 6;
+		s_Data.QuadIndexCount += 6;
 
-		sData.Stats.QuadCount++;
+		s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tiling_factor, const glm::vec4& tint_color, int entity_id)
@@ -436,13 +440,13 @@ namespace Sora {
 		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		if (sData.QuadIndexCount >= Renderer2DData::MaxIndices)
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
 
 		float textureIndex = 0.0f;
-		for (uint32_t i = 1; i < sData.TextureSlotIndex; i++)
+		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
 		{
-			if (*sData.TextureSlots[i].get() == *texture.get())
+			if (*s_Data.TextureSlots[i].get() == *texture.get())
 			{
 				textureIndex = (float)i;
 				break;
@@ -451,35 +455,35 @@ namespace Sora {
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = (float)sData.TextureSlotIndex;
-			sData.TextureSlots[sData.TextureSlotIndex] = texture;
-			sData.TextureSlotIndex++;
+			textureIndex = (float)s_Data.TextureSlotIndex;
+			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			s_Data.TextureSlotIndex++;
 		}
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{
-			sData.QuadVertexBufferPtr->Position = transform * sData.QuadVertexPosition[i];
-			sData.QuadVertexBufferPtr->Color = tint_color;
-			sData.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			sData.QuadVertexBufferPtr->TexIndex = textureIndex;
-			sData.QuadVertexBufferPtr->TilingFactor = tiling_factor;
-			sData.QuadVertexBufferPtr->EntityID = entity_id;
-			sData.QuadVertexBufferPtr++;
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
+			s_Data.QuadVertexBufferPtr->Color = tint_color;
+			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TilingFactor = tiling_factor;
+			s_Data.QuadVertexBufferPtr->EntityID = entity_id;
+			s_Data.QuadVertexBufferPtr++;
 		}
 
-		sData.QuadIndexCount += 6;
+		s_Data.QuadIndexCount += 6;
 
-		sData.Stats.QuadCount++;
+		s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::ResetStats()
 	{
-		memset(&sData.Stats, 0, sizeof(Statistics));
+		memset(&s_Data.Stats, 0, sizeof(Statistics));
 	}
 
 	Renderer2D::Statistics Renderer2D::GetStats()
 	{
-		return sData.Stats;
+		return s_Data.Stats;
 	}
 
 }
