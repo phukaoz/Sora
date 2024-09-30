@@ -31,6 +31,13 @@ namespace Sora {
 		int EntityID;
 	};
 
+	struct LineVertex
+	{
+		glm::vec3 Position;
+		glm::vec4 Color;
+		int EntityID;
+	};
+
 	struct Renderer2DData
 	{
 		static const uint32_t MaxQuads = 20000;
@@ -42,17 +49,27 @@ namespace Sora {
 		Ref<VertexBuffer> QuadVertexBuffer;
 		Ref<Shader> QuadShader;
 
-		Ref<VertexArray> CircleVertexArray;
-		Ref<VertexBuffer> CircleVertexBuffer;
-		Ref<Shader> CircleShader;
-
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
 
+		Ref<VertexArray> CircleVertexArray;
+		Ref<VertexBuffer> CircleVertexBuffer;
+		Ref<Shader> CircleShader;
+
 		uint32_t CircleIndexCount = 0;
 		CircleVertex* CircleVertexBufferBase = nullptr;
 		CircleVertex* CircleVertexBufferPtr = nullptr;
+
+		Ref<VertexArray> LineVertexArray;
+		Ref<VertexBuffer> LineVertexBuffer;
+		Ref<Shader> LineShader;
+
+		uint32_t LineVertexCount = 0;
+		LineVertex* LineVertexBufferBase = nullptr;
+		LineVertex* LineVertexBufferPtr = nullptr;
+
+		float LineWidth = 2.0f;
 
 		Ref<Texture2D> WhiteTexture;
 
@@ -81,12 +98,12 @@ namespace Sora {
 		s_Data.QuadVertexArray = VertexArray::Create();
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 		s_Data.QuadVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3,	"aPosition"		},
-			{ ShaderDataType::Float4,	"aColor"		},
-			{ ShaderDataType::Float2,	"aTexCoord"		},
-			{ ShaderDataType::Float,	"aTexIndex"		},
-			{ ShaderDataType::Float,	"aTilingFactor" },
-			{ ShaderDataType::Int,		"aEntityID"		}
+			{ ShaderDataType::Float3,	"a_Position"	},
+			{ ShaderDataType::Float4,	"a_Color"		},
+			{ ShaderDataType::Float2,	"a_TexCoord"	},
+			{ ShaderDataType::Float,	"a_TexIndex"	},
+			{ ShaderDataType::Float,	"a_TilingFactor"},
+			{ ShaderDataType::Int,		"a_EntityID"	}
 		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
@@ -113,16 +130,28 @@ namespace Sora {
 		s_Data.CircleVertexArray = VertexArray::Create();
 		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(CircleVertex));
 		s_Data.CircleVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3,	"aWorldPosition"},
-			{ ShaderDataType::Float3,	"aLocalPosition"},
-			{ ShaderDataType::Float4,	"aColor"		},
-			{ ShaderDataType::Float,	"aThickness"	},
-			{ ShaderDataType::Float,	"aFade"			},
-			{ ShaderDataType::Int,		"aEntityID"		}
+			{ ShaderDataType::Float3,	"a_WorldPosition"},
+			{ ShaderDataType::Float3,	"a_LocalPosition"},
+			{ ShaderDataType::Float4,	"a_Color"		 },
+			{ ShaderDataType::Float,	"a_Thickness"	 },
+			{ ShaderDataType::Float,	"a_Fade"		 },
+			{ ShaderDataType::Int,		"a_EntityID"	 }
 			});
 		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
 		s_Data.CircleVertexArray->SetIndexBuffer(quadIB);
 		s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
+
+		// Line
+		s_Data.LineVertexArray = VertexArray::Create();
+		s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(LineVertex));
+		s_Data.LineVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3,	"a_Position"},
+			{ ShaderDataType::Float4,	"a_Color"	},
+			{ ShaderDataType::Int,		"a_EntityID"}
+			});
+		s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+		s_Data.LineVertexArray->SetIndexBuffer(quadIB);
+		s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
 
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -134,6 +163,7 @@ namespace Sora {
 
 		s_Data.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
 		s_Data.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
+		s_Data.LineShader = Shader::Create("assets/shaders/Renderer2D_Line.glsl");
 
 		// Set white texture at index 0.
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
@@ -169,7 +199,7 @@ namespace Sora {
 		SORA_PROFILE_FUNCTION();
 
 		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
+		s_Data.QuadShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -215,6 +245,17 @@ namespace Sora {
 			RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 			s_Data.Stats.DrawCallCount++;
 		}
+
+		if (s_Data.LineVertexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+			s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
+
+			s_Data.LineShader->Bind();
+			RenderCommand::SetLineWidth(s_Data.LineWidth);
+			RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+			s_Data.Stats.DrawCallCount++;
+		}
 	}
 
 	void Renderer2D::StartBatch()
@@ -224,6 +265,9 @@ namespace Sora {
 
 		s_Data.CircleIndexCount = 0;
 		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
+
+		s_Data.LineVertexCount = 0;
+		s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
 	}
@@ -316,6 +360,31 @@ namespace Sora {
 		s_Data.CircleIndexCount += 6;
 
 		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawLine(const glm::vec3& point1, const glm::vec3& point2, const glm::vec4& color, int entityID /*= -1*/)
+	{
+		s_Data.LineVertexBufferPtr->Position = point1;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr->EntityID = entityID;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexBufferPtr->Position = point2;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr->EntityID = entityID;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexCount += 2;
+	}
+
+	void Renderer2D::SetLineWidth(float width)
+	{
+		s_Data.LineWidth = width;
+	}
+
+	float Renderer2D::GetLineWidth()
+	{
+		return s_Data.LineWidth;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation /*= 0.0f*/)

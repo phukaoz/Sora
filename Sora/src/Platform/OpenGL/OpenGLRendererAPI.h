@@ -13,6 +13,9 @@ namespace Sora {
 		virtual void Clear() override;
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertex_array, std::optional<uint32_t> index_count) override;
+		virtual void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount) override;
+
+		virtual void SetLineWidth(float width) override;
 	};
 
 }

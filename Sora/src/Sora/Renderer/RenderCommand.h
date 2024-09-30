@@ -21,6 +21,7 @@ namespace Sora {
 		{
 			s_RendererAPI->SetClearColor(color);
 		}
+
 		inline static void Clear()
 		{
 			s_RendererAPI->Clear();
@@ -34,9 +35,19 @@ namespace Sora {
 		 * @param vertex_array A reference to the VertexArray containing vertex data and index buffer
 		 * @param count The number of indices to use for drawing. If not provided, it uses the entire index buffer
 		 */
-		inline static void DrawIndexed(const Ref<VertexArray>& vertex_array, std::optional<uint32_t> count = std::nullopt)
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, std::optional<uint32_t> indexCount = std::nullopt)
 		{
-			s_RendererAPI->DrawIndexed(vertex_array, count);
+			s_RendererAPI->DrawIndexed(vertexArray, indexCount);
+		}
+
+		inline static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+		{
+			s_RendererAPI->DrawLines(vertexArray, vertexCount);
+		}
+
+		inline static void SetLineWidth(float width)
+		{
+			s_RendererAPI->SetLineWidth(width);
 		}
 	private:
 		static RendererAPI* s_RendererAPI;

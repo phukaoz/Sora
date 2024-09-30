@@ -28,6 +28,10 @@ namespace Sora {
 		static void DrawCircle(const glm::mat4& transform, CircleRendererComponent& src, int entityID);
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f, int entityID = -1);
 
+		static void DrawLine(const glm::vec3& point1, const glm::vec3& point2, const glm::vec4& color, int entityID = -1);
+		static void SetLineWidth(float width);
+		static float GetLineWidth();
+
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float rotation = 0.0f, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
