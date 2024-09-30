@@ -24,6 +24,8 @@ namespace Sora {
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
+		void OnOverlayRender();
+
 		void NewScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
@@ -35,8 +37,8 @@ namespace Sora {
 		void UI_Viewport();
 		void UI_DockspaceSetup();
 
-		void PlayScene();
-		void StopScene();
+		void OnScenePlay();
+		void OnSceneStop();
 		
 		void DuplicateEntity();
 	private:

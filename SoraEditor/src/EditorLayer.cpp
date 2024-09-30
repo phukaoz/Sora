@@ -87,6 +87,8 @@ namespace Sora {
 			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 		}
 
+		OnOverlayRender();
+
 		m_Framebuffer->Unbind();
 	}
 
@@ -225,10 +227,72 @@ namespace Sora {
 		return false;
 	}
 
+	void EditorLayer::OnOverlayRender()
+	{
+		switch (m_SceneState)
+		{
+			case Sora::EditorLayer::SceneState::Edit:
+			{
+				Renderer2D::BeginScene(m_EditorCamera);
+
+				break;
+			}
+
+			case Sora::EditorLayer::SceneState::Play:
+			{
+				Entity entity = m_ActiveScene->GetPrimaryCameraEntity();
+				auto& camera = entity.GetComponent<CameraComponent>();
+				auto& transform = entity.GetComponent<TransformComponent>();
+
+				Renderer2D::BeginScene(camera.Camera, transform.GetTransform());
+
+				break;
+			}
+
+			default:
+			{
+				return;
+			}
+		}
+
+		{
+			auto view = m_ActiveScene->GetEnititiesWith<TransformComponent, CircleCollider2DComponent>();
+			for (auto entity : view)
+			{
+				auto [transformComponent, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+				glm::vec3 translation = transformComponent.Translation + glm::vec3(cc2d.Offset, 0.001f);
+				glm::vec3 scale = transformComponent.Scale * glm::vec3(cc2d.Radius * 2.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation) 
+					* glm::scale(glm::mat4(1.0f), scale);
+
+				Renderer2D::DrawCircle(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.05f);
+			}
+		}
+
+		{
+			auto view = m_ActiveScene->GetEnititiesWith<TransformComponent, BoxCollider2DComponent>();
+			for (auto entity : view)
+			{
+				auto [transformComponent, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+
+				glm::vec3 translation = transformComponent.Translation + glm::vec3(bc2d.Offset, 0.001f);
+				glm::vec3 scale = transformComponent.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+					* glm::rotate(glm::mat4(1.0f), transformComponent.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+					* glm::scale(glm::mat4(1.0f), scale);
+
+				Renderer2D::DrawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+			}
+		}
+
+		Renderer2D::EndScene();
+	}
+
 	void EditorLayer::NewScene()
 	{
 		if (m_SceneState == SceneState::Play)
-			StopScene();
+			OnSceneStop();
 
 		m_EditorScene = CreateRef<Scene>();
 		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -246,7 +310,7 @@ namespace Sora {
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
 		if (m_SceneState == SceneState::Play)
-			StopScene();
+			OnSceneStop();
 
 		Ref<Scene> newScene = CreateRef<Scene>(); 
 		SceneSerializer serializer(newScene);
@@ -315,9 +379,9 @@ namespace Sora {
 			if (ImGui::ImageButton("play/stop", (ImTextureID)(uint64_t)icon->GetRendererID(), {size, size}))
 			{
 				if (m_SceneState == SceneState::Edit)
-					PlayScene();
+					OnScenePlay();
 				else if (m_SceneState == SceneState::Play)
-					StopScene();
+					OnSceneStop();
 			}
 
 			ImGui::End();
@@ -485,7 +549,7 @@ namespace Sora {
 		firstLoop = false;
 	}
 
-	void EditorLayer::PlayScene()
+	void EditorLayer::OnScenePlay()
 	{
 		m_SceneState = SceneState::Play;
 		m_RuntimeScene = Scene::Copy(m_EditorScene);
@@ -494,7 +558,7 @@ namespace Sora {
 		m_ActiveScene = m_RuntimeScene;
 	}
 
-	void EditorLayer::StopScene()
+	void EditorLayer::OnSceneStop()
 	{
 		m_SceneState = SceneState::Edit;
 		m_RuntimeScene->OnRuntimeStop();
