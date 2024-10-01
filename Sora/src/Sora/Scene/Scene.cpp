@@ -49,7 +49,7 @@ namespace Sora {
 
 	Scene::Scene()
 	{
-
+		m_EditorCamera = EditorCamera(30.0f, 16.0f/9.0f, 0.1f, 1000.0f);
 	}
 
 	Scene::~Scene()
@@ -282,6 +282,8 @@ namespace Sora {
 	{
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
+
+		m_EditorCamera.SetViewportSize(width, height);
 
 		auto viewCamera = m_Registry.view<CameraComponent>();
 		for (auto entity : viewCamera)

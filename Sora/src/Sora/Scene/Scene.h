@@ -32,6 +32,8 @@ namespace Sora {
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		Entity GetPrimaryCameraEntity();
+		
+		EditorCamera& GetEditorCamera() { return m_EditorCamera; }
 
 		template<typename... Components>
 		auto GetEnititiesWith()
@@ -45,6 +47,8 @@ namespace Sora {
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 		b2WorldId m_WorldID = {};
 		entt::registry m_Registry;
+
+		EditorCamera m_EditorCamera;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

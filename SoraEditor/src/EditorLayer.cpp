@@ -33,8 +33,6 @@ namespace Sora {
 
 		m_EditorScene = CreateRef<Scene>();
 
-		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
-
 		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
 		m_ActiveScene = m_EditorScene;
@@ -51,7 +49,7 @@ namespace Sora {
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+			m_ActiveScene->GetEditorCamera().SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
@@ -64,8 +62,8 @@ namespace Sora {
 		switch (m_SceneState)
 		{
 		case SceneState::Edit:
-			m_EditorCamera.OnUpdate(ts);
-			m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+			m_ActiveScene->GetEditorCamera().OnUpdate(ts);
+			m_ActiveScene->OnUpdateEditor(ts, m_ActiveScene->GetEditorCamera());
 			break;
 		case SceneState::Play:
 			m_ActiveScene->OnUpdateRuntime(ts);
@@ -173,7 +171,7 @@ namespace Sora {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		m_EditorCamera.OnEvent(e);
+		m_ActiveScene->GetEditorCamera().OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(SORA_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
@@ -240,7 +238,7 @@ namespace Sora {
 		{
 			case EditorLayer::SceneState::Edit:
 			{
-				Renderer2D::BeginScene(m_EditorCamera);
+				Renderer2D::BeginScene(m_ActiveScene->GetEditorCamera());
 
 				break;
 			}
@@ -461,8 +459,8 @@ namespace Sora {
 				switch (m_SceneState)
 				{
 				case SceneState::Edit:
-					cameraProjection	= m_EditorCamera.GetProjection();
-					cameraView			= m_EditorCamera.GetViewMatrix();
+					cameraProjection	= m_ActiveScene->GetEditorCamera().GetProjection();
+					cameraView			= m_ActiveScene->GetEditorCamera().GetViewMatrix();
 					break;
 				case SceneState::Play :
 					auto cameraEntity	= m_ActiveScene->GetPrimaryCameraEntity();
