@@ -1,32 +1,14 @@
 Scene: Example3D
 Entities:
-  - Entity: 929373907453269359
+  - Entity: 4494675529676146937
     TagComponent:
-      Tag: Left
+      Tag: Right
     TransformComponent:
-      Translation: [0, 0, 0.5]
-      Rotation: [0, 0, 0]
+      Translation: [0.5, 0, 0]
+      Rotation: [0, -1.57079637, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [0.818532467, 0, 1, 1]
-  - Entity: 3791784256286523173
-    TagComponent:
-      Tag: Floor
-    TransformComponent:
-      Translation: [0, -0.999999881, 1.49011612e-07]
-      Rotation: [1.57079637, -0, 0]
-      Scale: [7, 6.99949169, 6.99949837]
-    SpriteRendererComponent:
-      Color: [0, 0.799227834, 0.752940595, 1]
-  - Entity: 8669254377636388509
-    TagComponent:
-      Tag: Bottom
-    TransformComponent:
-      Translation: [0, -0.5, 0]
-      Rotation: [1.57079637, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [0.934362888, 0, 1, 1]
+      Color: [0.819725215, 0, 0.899613917, 1]
   - Entity: 4567913824085873885
     TagComponent:
       Tag: Camera
@@ -45,12 +27,40 @@ Entities:
         PerspectiveFar: 1000
       Primary: true
       FixedAspectRatio: false
-  - Entity: 4494675529676146937
+  - Entity: 8669254377636388509
     TagComponent:
-      Tag: Right
+      Tag: Bottom
     TransformComponent:
-      Translation: [0.5, 0, 0]
-      Rotation: [0, -1.57079637, 0]
+      Translation: [0, -0.5, 0]
+      Rotation: [1.57079637, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [0.819725215, 0, 0.899613917, 1]
+      Color: [0.934362888, 0, 1, 1]
+  - Entity: 3791784256286523173
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Translation: [0, -0.999999881, 1.49011612e-07]
+      Rotation: [1.57079637, -0, 0]
+      Scale: [7, 6.99949169, 6.99949837]
+    SpriteRendererComponent:
+      Color: [0, 0.799227834, 0.752940595, 1]
+  - Entity: 929373907453269359
+    TagComponent:
+      Tag: Left
+    TransformComponent:
+      Translation: [0, 0, 0.5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.818532467, 0, 1, 1]
+Camera:
+  FOV: 30
+  AspectRatio: 2.13043475
+  NearClip: 0.100000001
+  FarClip: 1000
+  Position: [-10.8651571, 10.2396145, -9.90501022]
+  FocalPoint: [0.165481299, -0.792493105, -2.6464386]
+  Distance: 17.2066612
+  Pitch: 0.696000159
+  Yaw: 2.1528008

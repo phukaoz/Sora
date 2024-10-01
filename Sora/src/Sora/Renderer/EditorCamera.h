@@ -18,8 +18,7 @@ namespace Sora {
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
-		inline float GetDistance() const {}
-		inline float SetDistance() const {}
+		
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
@@ -31,10 +30,23 @@ namespace Sora {
 				glm::vec3	GetFowardDirection()	const;
 
 		const	glm::vec3&	GetPosition()			const { return m_Position; }
+		const	glm::vec3&	GetFocalPoint()			const { return m_FocalPoint; }
 				glm::quat	GetOrientation()		const;
 
+		inline	float		GetDistance()			const { return m_Distance; }
 				float		GetPitch()				const { return m_Pitch; }
 				float		GetYaw()				const { return m_Yaw; }
+				float		GetFOV()				const { return m_FOV; }
+				float		GetAspectRatio()		const { return m_AspectRatio; }
+				float		GetNearClip()			const { return m_NearClip; }
+				float		GetFarClip()			const { return m_FarClip; }
+
+				void		SetPosition(const glm::vec3& position)		{ m_Position = position; }
+				void		SetFocalPoint(const glm::vec3& focalPoint)	{ m_FocalPoint = focalPoint; }
+
+				void		SetDistance(float distance)					{ m_Distance = distance; }
+				void		SetPitch(float pitch)						{ m_Pitch = pitch; }
+				void		SetYaw(float yaw)							{ m_Yaw = yaw; }
 	private:
 		void UpdateProjection();
 		void UpdateView();

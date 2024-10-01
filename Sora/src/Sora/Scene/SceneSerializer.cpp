@@ -288,19 +288,43 @@ namespace Sora {
 		YAML::Emitter out;
 
 		out << YAML::BeginMap;
+
 		out << YAML::Key << "Scene" << YAML::Value << filepath.stem().string();
 
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
-		m_Scene->m_Registry.view<entt::entity>().each([&](auto entity_id)
+		{
+			m_Scene->m_Registry.view<entt::entity>().each([&](auto entity_id)
+				{
+					Entity entity = { entity_id, m_Scene.get() };
+					if (!entity)
+						return;
+
+					SerializeEntity(out, entity);
+				});
+
+			out << YAML::EndSeq;
+		}
+		
+		// Editor Camera
+		out << YAML::Key << "Camera" << YAML::Value;
+		{
+			out << YAML::BeginMap;
 			{
-				Entity entity = { entity_id, m_Scene.get() };
-				if (!entity)
-					return;
+				auto& editorCamera = m_Scene->GetEditorCamera();
+				out << YAML::Key << "FOV"			<< YAML::Value << editorCamera.GetFOV();
+				out << YAML::Key << "AspectRatio"	<< YAML::Value << editorCamera.GetAspectRatio();
+				out << YAML::Key << "NearClip"		<< YAML::Value << editorCamera.GetNearClip();
+				out << YAML::Key << "FarClip"		<< YAML::Value << editorCamera.GetFarClip();
+				out << YAML::Key << "Position"		<< YAML::Value << editorCamera.GetPosition();
+				out << YAML::Key << "FocalPoint"	<< YAML::Value << editorCamera.GetFocalPoint();
+				out << YAML::Key << "Distance"		<< YAML::Value << editorCamera.GetDistance();
+				out << YAML::Key << "Pitch"			<< YAML::Value << editorCamera.GetPitch();
+				out << YAML::Key << "Yaw"			<< YAML::Value << editorCamera.GetYaw();
 
-				SerializeEntity(out, entity);
-			});
+				out << YAML::EndMap;
+			}
+		}
 
-		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
 		std::ofstream fout(filepath);
@@ -345,9 +369,9 @@ namespace Sora {
 				if (transformComponent)
 				{
 					auto& componet			= deserializedEntity.GetComponent<TransformComponent>();
-					componet.Translation	= transformComponent["Translation"].as<glm::vec3>();
-					componet.Rotation		= transformComponent["Rotation"].as<glm::vec3>();
-					componet.Scale			= transformComponent["Scale"].as<glm::vec3>();
+					componet.Translation	= transformComponent["Translation"]	.as<glm::vec3>();
+					componet.Rotation		= transformComponent["Rotation"]	.as<glm::vec3>();
+					componet.Scale			= transformComponent["Scale"]		.as<glm::vec3>();
 				}
 
 				auto cameraComponent = entity["CameraComponent"];
@@ -358,16 +382,16 @@ namespace Sora {
 					auto cameraProps = cameraComponent["Camera"];
 					component.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
 				
-					component.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+					component.Camera.SetOrthographicSize(cameraProps["OrthographicSize"]	.as<float>());
 					component.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
-					component.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+					component.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"]	.as<float>());
 
 					component.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
-					component.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
-					component.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+					component.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"]	.as<float>());
+					component.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"]	.as<float>());
 
-					component.Primary			= cameraComponent["Primary"].as<bool>();
-					component.FixedAspectRatio	= cameraComponent["FixedAspectRatio"].as<bool>();
+					component.Primary			= cameraComponent["Primary"]			.as<bool>();
+					component.FixedAspectRatio	= cameraComponent["FixedAspectRatio"]	.as<bool>();
 				}
 
 				auto spriteRendererComponent = entity["SpriteRendererComponent"];
@@ -385,9 +409,9 @@ namespace Sora {
 				{
 					auto& component		= deserializedEntity.AddComponent<CircleRendererComponent>();
 
-					component.Color		= circleRendererComponent["Color"].as<glm::vec4>();
-					component.Thickness = circleRendererComponent["Thickness"].as<float>();
-					component.Fade		= circleRendererComponent["Fade"].as<float>();
+					component.Color		= circleRendererComponent["Color"]		.as<glm::vec4>();
+					component.Thickness = circleRendererComponent["Thickness"]	.as<float>();
+					component.Fade		= circleRendererComponent["Fade"]		.as<float>();
 				}
 
 				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
@@ -402,24 +426,46 @@ namespace Sora {
 				if (boxCollider2DComponent)
 				{
 					auto& component			= deserializedEntity.AddComponent<BoxCollider2DComponent>();
-					component.Offset		= boxCollider2DComponent["Offset"].as<glm::vec2>();
-					component.Size			= boxCollider2DComponent["Size"].as<glm::vec2>();
-					component.Density		= boxCollider2DComponent["Density"].as<float>();
-					component.Friction		= boxCollider2DComponent["Friction"].as<float>();
-					component.Restitution	= boxCollider2DComponent["Restitution"].as<float>();
+					component.Offset		= boxCollider2DComponent["Offset"]		.as<glm::vec2>();
+					component.Size			= boxCollider2DComponent["Size"]		.as<glm::vec2>();
+					component.Density		= boxCollider2DComponent["Density"]		.as<float>();
+					component.Friction		= boxCollider2DComponent["Friction"]	.as<float>();
+					component.Restitution	= boxCollider2DComponent["Restitution"]	.as<float>();
 				}
 
 				auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
 				if (circleCollider2DComponent)
 				{
 					auto& component			= deserializedEntity.AddComponent<CircleCollider2DComponent>();
-					component.Offset		= circleCollider2DComponent["Offset"].as<glm::vec2>();
-					component.Radius		= circleCollider2DComponent["Radius"].as<float>();
-					component.Density		= circleCollider2DComponent["Density"].as<float>();
-					component.Friction		= circleCollider2DComponent["Friction"].as<float>();
-					component.Restitution	= circleCollider2DComponent["Restitution"].as<float>();
+					component.Offset		= circleCollider2DComponent["Offset"]		.as<glm::vec2>();
+					component.Radius		= circleCollider2DComponent["Radius"]		.as<float>();
+					component.Density		= circleCollider2DComponent["Density"]		.as<float>();
+					component.Friction		= circleCollider2DComponent["Friction"]		.as<float>();
+					component.Restitution	= circleCollider2DComponent["Restitution"]	.as<float>();
 				}
 			}
+		}
+
+		auto editorCamera = data["Camera"];
+		if (editorCamera)
+		{
+			float fov			 = editorCamera["FOV"]			.as<float>();
+			float aspectRatio	 = editorCamera["AspectRatio"]	.as<float>();
+			float nearClip		 = editorCamera["NearClip"]		.as<float>();
+			float farClip		 = editorCamera["FarClip"]		.as<float>();
+			m_Scene->GetEditorCamera() = EditorCamera(fov, aspectRatio, nearClip, farClip);
+			
+			float distance		 = editorCamera["Distance"]		.as<float>();
+			float pitch			 = editorCamera["Pitch"]		.as<float>();
+			float yaw			 = editorCamera["Yaw"]			.as<float>();
+			glm::vec3 position	 = editorCamera["Position"]		.as<glm::vec3>();
+			glm::vec3 focalPoint = editorCamera["FocalPoint"]	.as<glm::vec3>();
+
+			m_Scene->GetEditorCamera().SetDistance(distance);
+			m_Scene->GetEditorCamera().SetPitch(pitch);
+			m_Scene->GetEditorCamera().SetYaw(yaw);
+			m_Scene->GetEditorCamera().SetPosition(position);
+			m_Scene->GetEditorCamera().SetFocalPoint(focalPoint);
 		}
 
 		return true;

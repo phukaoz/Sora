@@ -147,3 +147,13 @@ Entities:
       Density: 1
       Friction: 0.5
       Restitution: 0
+Camera:
+  FOV: 30
+  AspectRatio: 2.13043475
+  NearClip: 0.100000001
+  FarClip: 1000
+  Position: [-7.59659243, 7.63748264, 34.7203178]
+  FocalPoint: [-7.59659243, 7.63748264, 0]
+  Distance: 34.7203178
+  Pitch: 0
+  Yaw: 0
