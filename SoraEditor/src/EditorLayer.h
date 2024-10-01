@@ -57,6 +57,8 @@ namespace Sora {
 
 		int m_GizmoType = 0;
 
+		bool m_ShowPhysicsColliders = false;
+
 		enum class SceneState
 		{
 			Edit = 0, Play = 1,

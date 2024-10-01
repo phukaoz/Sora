@@ -175,9 +175,9 @@ namespace Sora {
 
 				b2Circle circle;
 				circle.center = {cc2d.Offset.x, cc2d.Offset.y};
-				circle.radius = cc2d.Radius;
+				circle.radius = transform.Scale.x * cc2d.Radius;
 				b2ShapeId shapeID = b2CreateCircleShape(bodyID, &shapeDef, &circle);
-
+				// TODO: find the better way to store shape id.
 				memcpy(&cc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
 			}
 		}
@@ -252,23 +252,13 @@ namespace Sora {
 
 		OnUpdatePhysics(ts);
 
-		Camera* mainCamera = nullptr;
-		glm::mat4 cameraTransform;
-		auto viewTransformCamera = m_Registry.view<TransformComponent, CameraComponent>();
-		for (auto entity : viewTransformCamera)
-		{
-			auto [transform, camera] = viewTransformCamera.get<TransformComponent, CameraComponent>(entity);
-			if (camera.Primary)
-			{
-				mainCamera = &camera.Camera;
-				cameraTransform = transform.GetTransform();
-				break;
-			}
-		}
+		Entity mainCamera = GetPrimaryCameraEntity();
 
 		if (mainCamera)
 		{
-			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
+			auto& mainCameraCamera = mainCamera.GetComponent<CameraComponent>().Camera;
+			auto mainCameraTransform = mainCamera.GetComponent<TransformComponent>().GetTransform();
+			Renderer2D::BeginScene(mainCameraCamera, mainCameraTransform);
 
 			auto groupTransformSprite = m_Registry.group<TransformComponent, SpriteRendererComponent>();
 			for (auto entity : groupTransformSprite)

@@ -12,8 +12,8 @@
 
 namespace Sora {
 
-	EditorCamera::EditorCamera(float fov, float aspect_ratio, float near_clip, float far_clip)
-		: m_FOV(fov), m_AspectRatio(aspect_ratio), m_NearClip(near_clip), m_FarClip(far_clip), Camera(glm::perspective(glm::radians(fov), aspect_ratio, near_clip, far_clip))
+	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
+		: m_FOV(fov), m_AspectRatio(aspectRatio), m_NearClip(nearClip), m_FarClip(farClip), Camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
 	{
 		UpdateView();
 	}

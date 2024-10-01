@@ -152,6 +152,13 @@ namespace Sora {
 					ImGui::EndMenu();
 				}
 
+				if (ImGui::BeginMenu("Tools"))
+				{
+					if (ImGui::MenuItem("Show/Hide Physics Colliders")) m_ShowPhysicsColliders ^= 1; // toggle
+
+					ImGui::EndMenu();
+				}
+
 				ImGui::EndMenuBar();
 			}
 
@@ -231,16 +238,19 @@ namespace Sora {
 	{
 		switch (m_SceneState)
 		{
-			case Sora::EditorLayer::SceneState::Edit:
+			case EditorLayer::SceneState::Edit:
 			{
 				Renderer2D::BeginScene(m_EditorCamera);
 
 				break;
 			}
 
-			case Sora::EditorLayer::SceneState::Play:
+			case EditorLayer::SceneState::Play:
 			{
 				Entity entity = m_ActiveScene->GetPrimaryCameraEntity();
+				if (!entity)
+					return;
+
 				auto& camera = entity.GetComponent<CameraComponent>();
 				auto& transform = entity.GetComponent<TransformComponent>();
 
@@ -255,6 +265,7 @@ namespace Sora {
 			}
 		}
 
+		if (m_ShowPhysicsColliders)
 		{
 			auto view = m_ActiveScene->GetEnititiesWith<TransformComponent, CircleCollider2DComponent>();
 			for (auto entity : view)
@@ -270,6 +281,7 @@ namespace Sora {
 			}
 		}
 
+		if (m_ShowPhysicsColliders)
 		{
 			auto view = m_ActiveScene->GetEnititiesWith<TransformComponent, BoxCollider2DComponent>();
 			for (auto entity : view)
