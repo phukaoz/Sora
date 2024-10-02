@@ -127,7 +127,7 @@ namespace Sora {
 	void Scene::OnRuntimeStart()
 	{
 		b2WorldDef worldDef = b2DefaultWorldDef();
-		worldDef.gravity = { 0.0f, -10.0f };
+		worldDef.gravity = { 0.0f, -9.8f };
 		m_WorldID = b2CreateWorld(&worldDef);
 
 		auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();

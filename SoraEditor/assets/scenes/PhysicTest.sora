@@ -2,7 +2,7 @@ Scene: PhysicTest
 Entities:
   - Entity: 15447234215558605459
     TagComponent:
-      Tag: Floor F
+      Tag: Floor D
     TransformComponent:
       Translation: [2.75613403, -14.2728863, 0]
       Rotation: [0, -0, 0]
@@ -149,11 +149,10 @@ Entities:
       Restitution: 0
 Camera:
   FOV: 30
-  AspectRatio: 2.13043475
+  AspectRatio: 1.92471361
   NearClip: 0.100000001
   FarClip: 1000
-  Position: [-7.59659243, 7.63748264, 34.7203178]
-  FocalPoint: [-7.59659243, 7.63748264, 0]
-  Distance: 34.7203178
+  FocalPoint: [4.35899687, -3.80146408, 0]
+  Distance: 46.9019699
   Pitch: 0
   Yaw: 0

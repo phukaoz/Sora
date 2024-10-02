@@ -41,7 +41,6 @@ namespace Sora {
 				float		GetNearClip()			const { return m_NearClip; }
 				float		GetFarClip()			const { return m_FarClip; }
 
-				void		SetPosition(const glm::vec3& position)		{ m_Position = position; }
 				void		SetFocalPoint(const glm::vec3& focalPoint)	{ m_FocalPoint = focalPoint; }
 
 				void		SetDistance(float distance)					{ m_Distance = distance; }
