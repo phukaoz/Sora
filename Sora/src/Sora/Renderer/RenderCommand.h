@@ -49,6 +49,11 @@ namespace Sora {
 		{
 			s_RendererAPI->SetLineWidth(width);
 		}
+
+		inline static void SetDepthWrite(bool enabled)
+		{
+			s_RendererAPI->SetDepthWrite(enabled);
+		}
 	private:
 		static RendererAPI* s_RendererAPI;
 	};

@@ -25,10 +25,13 @@ namespace Sora {
 		void OnRuntimeStart();
 		void OnRuntimeStop();
 
-		void OnUpdatePhysics(Timestep ts);
+		void OnSimulationStart();
+		void OnSimulationStop();
 
 		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
+		void OnUpdateSimulation(Timestep ts, EditorCamera& camera);
 		void OnUpdateRuntime(Timestep ts);
+
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		Entity GetPrimaryCameraEntity();
@@ -41,14 +44,22 @@ namespace Sora {
 			return m_Registry.view<Components...>();
 		}
 	private:
-		template<typename T>
-		void OnComponentAdded(Entity entity, T& component);
+		void OnPhysic2DStart();
+		void OnPhysic2DStop();
+
+        void OnUpdatePhysics(Timestep ts);
+		void OnRenderScene(EditorCamera& camera);
+
+        template<typename T>
+        void OnComponentAdded(Entity entity, T& component);
 	private:
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 		b2WorldId m_WorldID = {};
 		entt::registry m_Registry;
 
 		EditorCamera m_EditorCamera;
+
+		bool m_Saved = true;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

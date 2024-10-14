@@ -51,4 +51,9 @@ namespace Sora {
 		glLineWidth(width);
 	}
 
+    void OpenGLRendererAPI::SetDepthWrite(bool enabled)
+    {
+		glDepthMask(enabled);
+    }
+
 }

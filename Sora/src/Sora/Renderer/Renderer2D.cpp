@@ -570,11 +570,16 @@ namespace Sora {
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::ResetStats()
+    void Renderer2D::SetDepthWrite(bool enabled)
+    {
+		RenderCommand::SetDepthWrite(enabled);
+    }
+
+    void Renderer2D::ResetStats()
 	{
 		memset(&s_Data.Stats, 0, sizeof(Statistics));
 	}
-
+	 
 	Renderer2D::Statistics Renderer2D::GetStats()
 	{
 		return s_Data.Stats;

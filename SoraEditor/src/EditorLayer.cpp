@@ -24,6 +24,7 @@ namespace Sora {
 	{
 		m_IconPlay = Texture2D::Create("resources/icons/Toolbar/PlayButton.png");
 		m_IconStop = Texture2D::Create("resources/icons/Toolbar/StopButton.png");
+		m_IconSimulate = Texture2D::Create("resources/icons/Toolbar/SimulateButton.png");
 
 		FramebufferSpecification fbSpec;
 		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
@@ -63,10 +64,14 @@ namespace Sora {
 		{
 		case SceneState::Edit:
 			m_ActiveScene->GetEditorCamera().OnUpdate(ts);
-			m_ActiveScene->OnUpdateEditor(ts, m_ActiveScene->GetEditorCamera());
+			m_ActiveScene->OnUpdateEditor(ts, m_EditorScene->GetEditorCamera());
 			break;
 		case SceneState::Play:
 			m_ActiveScene->OnUpdateRuntime(ts);
+			break;
+        case SceneState::Simulate:
+            m_ActiveScene->GetEditorCamera().OnUpdate(ts);
+			m_ActiveScene->OnUpdateSimulation(ts, m_ActiveScene->GetEditorCamera());
 			break;
 		}
 
@@ -236,31 +241,32 @@ namespace Sora {
 	{
 		switch (m_SceneState)
 		{
-			case EditorLayer::SceneState::Edit:
-			{
-				Renderer2D::BeginScene(m_ActiveScene->GetEditorCamera());
+		case EditorLayer::SceneState::Simulate: [[falltrough]];
+		case EditorLayer::SceneState::Edit:
+		{
+			Renderer2D::BeginScene(m_ActiveScene->GetEditorCamera());
 
-				break;
-			}
+			break;
+		}
 
-			case EditorLayer::SceneState::Play:
-			{
-				Entity entity = m_ActiveScene->GetPrimaryCameraEntity();
-				if (!entity)
-					return;
+        case EditorLayer::SceneState::Play:
+        {
+            Entity entity = m_ActiveScene->GetPrimaryCameraEntity();
+            if (!entity)
+                return;
 
-				auto& camera = entity.GetComponent<CameraComponent>();
-				auto& transform = entity.GetComponent<TransformComponent>();
+            auto& camera = entity.GetComponent<CameraComponent>();
+            auto& transform = entity.GetComponent<TransformComponent>();
 
-				Renderer2D::BeginScene(camera.Camera, transform.GetTransform());
+            Renderer2D::BeginScene(camera.Camera, transform.GetTransform());
 
-				break;
-			}
+            break;
+        }
 
-			default:
-			{
-				return;
-			}
+        default:
+        {
+            return;
+        }
 		}
 
 		if (m_ShowPhysicsColliders)
@@ -294,6 +300,12 @@ namespace Sora {
 
 				Renderer2D::DrawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 			}
+		}
+
+		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
+		{
+			const TransformComponent& transform = selectedEntity.GetComponent<TransformComponent>();
+			Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
 		}
 
 		Renderer2D::EndScene();
@@ -362,7 +374,7 @@ namespace Sora {
 
 	void EditorLayer::UI_Toolbar()
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 2.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0.0f, 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		auto& colors = ImGui::GetStyle().Colors;
@@ -383,16 +395,36 @@ namespace Sora {
 
 		if (ImGui::Begin("##Toolbar", nullptr, windowFlags))
 		{
-			Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
 			float size = ImGui::GetWindowHeight() - 4.0f;
 			ImGui::SameLine((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-			if (ImGui::ImageButton("play/stop", (ImTextureID)(uint64_t)icon->GetRendererID(), {size, size}))
-			{
-				if (m_SceneState == SceneState::Edit)
-					OnScenePlay();
-				else if (m_SceneState == SceneState::Play)
-					OnSceneStop();
+
+			ImGui::BeginDisabled(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
+			if (ImGui::ImageButton("play", (ImTextureID)(uint64_t)m_IconPlay->GetRendererID(), { size, size }))
+            {
+                m_SceneHierarchyPanel.SetSelectedEntity({});
+				OnScenePlay();
 			}
+			ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            ImGui::BeginDisabled(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
+            if (ImGui::ImageButton("simulate", (ImTextureID)(uint64_t)m_IconSimulate->GetRendererID(), { size, size }))
+            {
+                m_SceneHierarchyPanel.SetSelectedEntity({});
+                OnSceneSimulate();
+            }
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            ImGui::BeginDisabled(m_SceneState == SceneState::Edit);
+            if (ImGui::ImageButton("stop", (ImTextureID)(uint64_t)m_IconStop->GetRendererID(), { size, size }))
+            {
+                m_SceneHierarchyPanel.SetSelectedEntity({});
+                OnSceneStop();
+            }
+            ImGui::EndDisabled();
 
 			ImGui::End();
 			ImGui::PopStyleVar(2);
@@ -458,6 +490,7 @@ namespace Sora {
 				glm::mat4 cameraProjection = glm::mat4(1.0f);
 				switch (m_SceneState)
 				{
+				case SceneState::Simulate: [[fallthrough]];
 				case SceneState::Edit:
 					cameraProjection	= m_ActiveScene->GetEditorCamera().GetProjection();
 					cameraView			= m_ActiveScene->GetEditorCamera().GetViewMatrix();
@@ -568,11 +601,33 @@ namespace Sora {
 		m_ActiveScene = m_RuntimeScene;
 	}
 
-	void EditorLayer::OnSceneStop()
+    void EditorLayer::OnSceneSimulate()
+    {
+        m_SceneState = SceneState::Simulate;
+        m_SimulateScene = Scene::Copy(m_EditorScene);
+		m_SimulateScene->OnSimulationStart();
+
+        m_ActiveScene = m_SimulateScene;
+    }
+
+    void EditorLayer::OnSceneStop()
 	{
-		m_SceneState = SceneState::Edit;
-		m_RuntimeScene->OnRuntimeStop();
-		m_RuntimeScene = nullptr;
+		SORA_CORE_ASSERT(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate, "Failed to stop the scene! Invalid scene state.");
+		
+		switch (m_SceneState)
+		{
+        case SceneState::Play:
+            m_RuntimeScene->OnRuntimeStop();
+            m_RuntimeScene = nullptr;
+            break;
+        case SceneState::Simulate:
+			m_EditorScene->GetEditorCamera() = m_SimulateScene->GetEditorCamera();
+			m_SimulateScene->OnSimulationStop();
+			m_SimulateScene = nullptr;
+            break;
+		}
+
+        m_SceneState = SceneState::Edit;
 
 		m_ActiveScene = m_EditorScene;
 	}

@@ -35,6 +35,22 @@ namespace Sora {
 				MouseZoom(delta.y);
 		}
 
+		// Camera mode
+		if (Input::IsKeyPressed(KeyCode::F5))
+		{
+			switch (m_Mode)
+			{
+            case Mode::Perspective:
+                m_Mode = Mode::Orthographic;
+				break;
+			case Mode::Orthographic:
+				m_Mode = Mode::Perspective;
+				break;
+			default:
+				break;
+			}
+		}
+
 		UpdateView();
 	}
 
@@ -63,8 +79,13 @@ namespace Sora {
 	{
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
+	/*
+    EditorCamera& EditorCamera::operator=(const EditorCamera& other)
+    {
 
-	void EditorCamera::UpdateProjection()
+    }
+	*/
+    void EditorCamera::UpdateProjection()
 	{
 		m_AspectRatio = m_ViewportWidth / m_ViewportHeight;
 		m_Projection = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
@@ -72,7 +93,9 @@ namespace Sora {
 
 	void EditorCamera::UpdateView()
 	{
-		//mYaw = mPitch = 0.0f;
+		if(m_Mode == Mode::Orthographic)
+			m_Yaw = m_Pitch = 0.0f;
+		
 		m_Position = CalculatePosition();
 
 		glm::quat orientation = GetOrientation();
@@ -84,7 +107,7 @@ namespace Sora {
 	{
 		if (Input::IsKeyPressed(KeyCode::LeftAlt))
 		{
-			float delta = e.GetYOffset() * 0.1f;
+			float delta = e.GetYOffset() * 0.2f;
 			MouseZoom(delta);
 			UpdateView();
 		}
@@ -94,9 +117,9 @@ namespace Sora {
 
 	void EditorCamera::MousePan(const glm::vec2& delta)
 	{
-		auto [xspeed, yspeed] = PanSpeed();
-		m_FocalPoint += -GetRightDirection() * delta.x * xspeed * m_Distance;
-		m_FocalPoint += GetUpDirection() * delta.y * yspeed * m_Distance;
+		auto [xSpeed, ySpeed] = PanSpeed();
+		m_FocalPoint += -GetRightDirection() * delta.x * xSpeed * m_Distance;
+		m_FocalPoint += GetUpDirection() * delta.y * ySpeed * m_Distance;
 	}
 
 	void EditorCamera::MouseRotate(const glm::vec2& delta)
@@ -124,12 +147,12 @@ namespace Sora {
 	std::pair<float, float> EditorCamera::PanSpeed() const
 	{
 		float x = std::min(m_ViewportWidth / 1000.0f, 2.4f);
-		float xfactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
+		float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
 
 		float y = std::min(m_ViewportHeight / 1000.0f, 2.4f);
-		float yfactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
+		float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
-		return std::make_pair(xfactor, yfactor);
+		return std::make_pair(xFactor, yFactor);
 	}
 
 	float EditorCamera::RotationSpeed() const

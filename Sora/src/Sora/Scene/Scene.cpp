@@ -65,6 +65,7 @@ namespace Sora {
 
 		newScene->m_ViewportWidth = other->m_ViewportWidth;
 		newScene->m_ViewportHeight = other->m_ViewportHeight;
+		newScene->OnViewportResize(other->m_ViewportWidth, other->m_ViewportHeight);
 		
 		std::unordered_map<UUID, entt::entity> enttMap;	
 		auto& srcRegistry = other->m_Registry;
@@ -88,6 +89,15 @@ namespace Sora {
 		Utils::CopyComponent<CircleCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
 
 		//newScene->mWorldID = other->mWorldID;
+		
+// 		auto& camera = newScene->GetEditorCamera();
+// 		camera.SetDistance(other->GetEditorCamera().GetDistance());
+// 		camera.SetFocalPoint(other->GetEditorCamera().GetFocalPoint());
+// 		camera.SetPitch(other->GetEditorCamera().GetPitch());
+// 		camera.SetYaw(other->GetEditorCamera().GetYaw());
+		
+		newScene->GetEditorCamera() = other->GetEditorCamera();
+		
 		return newScene;
 	}
 
@@ -126,116 +136,39 @@ namespace Sora {
 
 	void Scene::OnRuntimeStart()
 	{
-		b2WorldDef worldDef = b2DefaultWorldDef();
-		worldDef.gravity = { 0.0f, -9.8f };
-		m_WorldID = b2CreateWorld(&worldDef);
-
-		auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
-		for (auto e : viewRigidbody2D)
-		{
-			Entity entity = { e, this };
-			auto& transform = entity.GetComponent<TransformComponent>();
-			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
-
-			b2BodyDef bodyDef = b2DefaultBodyDef();
-			bodyDef.type = Utils::TypeConvert(rb2d.Type);
-			bodyDef.position.x = transform.Translation.x;
-			bodyDef.position.y = transform.Translation.y;
-			bodyDef.rotation = b2MakeRot(transform.Rotation.z);
-			bodyDef.fixedRotation = rb2d.FixedRotation;
-			
-			b2BodyId bodyID = b2CreateBody(m_WorldID, &bodyDef);
-			// TODO: find the better way to store body id.
-			memcpy(&rb2d.RuntimeBody, &bodyID, sizeof(b2BodyId));
-		
-			if (entity.HasComponent<BoxCollider2DComponent>())
-			{
-				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-
-				b2ShapeDef shapeDef = b2DefaultShapeDef();
-				
-				shapeDef.density = bc2d.Density;
-				shapeDef.friction = bc2d.Friction;
-				shapeDef.restitution = bc2d.Restitution;
-
-				b2Polygon polygon = b2MakeOffsetBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y, b2Vec2{bc2d.Offset.x, bc2d.Offset.y}, b2MakeRot(0.0f));
-				b2ShapeId shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
-				// TODO: find the better way to store shape id.
-				memcpy(&bc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
-			}
-
-			else if (entity.HasComponent<CircleCollider2DComponent>())
-			{
-				auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
-
-				b2ShapeDef shapeDef = b2DefaultShapeDef();
-				shapeDef.density = cc2d.Density;
-				shapeDef.friction = cc2d.Friction;	
-				shapeDef.restitution = cc2d.Restitution;
-
-				b2Circle circle;
-				circle.center = {cc2d.Offset.x, cc2d.Offset.y};
-				circle.radius = transform.Scale.x * cc2d.Radius;
-				b2ShapeId shapeID = b2CreateCircleShape(bodyID, &shapeDef, &circle);
-				// TODO: find the better way to store shape id.
-				memcpy(&cc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
-			}
-		}
+		OnPhysic2DStart();
 	}
 
 	void Scene::OnRuntimeStop()
 	{
-		b2DestroyWorld(m_WorldID);
+		OnPhysic2DStop();
 	}
 
-	void Scene::OnUpdatePhysics(Timestep ts)
-	{
-		const int32_t subStepCount = 4;
-		b2World_Step(m_WorldID, ts, subStepCount);
+    void Scene::OnSimulationStart()
+    {
+		OnPhysic2DStart();
+    }
 
-		auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
-		for (auto e : viewRigidbody2D)
-		{
-			Entity entity = { e, this };
-			auto& transform = entity.GetComponent<TransformComponent>();
-			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
-
-			// TODO: find the better way to get body.
-			b2BodyId bodyID;
-			memcpy(&bodyID, &rb2d.RuntimeBody, sizeof(b2BodyId));
-
-			b2Vec2 position = b2Body_GetPosition(bodyID);
-			transform.Translation.x = position.x;
-			transform.Translation.y = position.y;
-
-			b2Rot rotation = b2Body_GetRotation(bodyID);
-			transform.Rotation.z = b2Rot_GetAngle(rotation);
-		}
-	}
+    void Scene::OnSimulationStop()
+    {
+		OnPhysic2DStop();
+    }
 
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
-		Renderer2D::BeginScene(camera);
-
-		auto groupTransformSprite = m_Registry.group<TransformComponent, SpriteRendererComponent>();
-		for (auto entity : groupTransformSprite)
-		{
-			auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-		}
-
-		auto viewTransformCircle = m_Registry.view<TransformComponent, CircleRendererComponent>();
-		for (auto entity : viewTransformCircle)
-		{
-			auto [transform, circle] = viewTransformCircle.get<TransformComponent, CircleRendererComponent>(entity);
-			Renderer2D::DrawCircle(transform.GetTransform(), circle, (int)entity);
-		}
-
-		Renderer2D::EndScene();
+		OnRenderScene(camera);
 	}
 
-	void Scene::OnUpdateRuntime(Timestep ts)
+    void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
+    {
+		OnUpdatePhysics(ts);
+
+		OnRenderScene(camera);
+    }
+
+    void Scene::OnUpdateRuntime(Timestep ts)
 	{
+		// Scripts
 		auto viewNativeScript = m_Registry.view<NativeScriptComponent>();
 		for (auto entity : viewNativeScript)
 		{
@@ -250,10 +183,11 @@ namespace Sora {
 			script.Instance->OnUpdate(ts);
 		}
 
+		// Physics
 		OnUpdatePhysics(ts);
 
+		// Render
 		Entity mainCamera = GetPrimaryCameraEntity();
-
 		if (mainCamera)
 		{
 			auto& mainCameraCamera = mainCamera.GetComponent<CameraComponent>().Camera;
@@ -307,13 +241,123 @@ namespace Sora {
 		return {};
 	}
 
-	template<typename T>
-	void Scene::OnComponentAdded(Entity entity, T& component)
-	{
-		static_assert(false);
-	}
+    void Scene::OnPhysic2DStart()
+    {
+        b2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = { 0.0f, -9.8f };
+        m_WorldID = b2CreateWorld(&worldDef);
 
-	template<>
+        auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
+        for (auto e : viewRigidbody2D)
+        {
+            Entity entity = { e, this };
+            auto& transform = entity.GetComponent<TransformComponent>();
+            auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = Utils::TypeConvert(rb2d.Type);
+            bodyDef.position.x = transform.Translation.x;
+            bodyDef.position.y = transform.Translation.y;
+            bodyDef.rotation = b2MakeRot(transform.Rotation.z);
+            bodyDef.fixedRotation = rb2d.FixedRotation;
+
+            b2BodyId bodyID = b2CreateBody(m_WorldID, &bodyDef);
+            // TODO: find the better way to store body id.
+            memcpy(&rb2d.RuntimeBody, &bodyID, sizeof(b2BodyId));
+
+            if (entity.HasComponent<BoxCollider2DComponent>())
+            {
+                auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+                b2ShapeDef shapeDef = b2DefaultShapeDef();
+
+                shapeDef.density = bc2d.Density;
+                shapeDef.friction = bc2d.Friction;
+                shapeDef.restitution = bc2d.Restitution;
+
+                b2Polygon polygon = b2MakeOffsetBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y, b2Vec2{ bc2d.Offset.x, bc2d.Offset.y }, b2MakeRot(0.0f));
+                b2ShapeId shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
+                // TODO: find the better way to store shape id.
+                memcpy(&bc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
+            }
+
+            else if (entity.HasComponent<CircleCollider2DComponent>())
+            {
+                auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+                b2ShapeDef shapeDef = b2DefaultShapeDef();
+                shapeDef.density = cc2d.Density;
+                shapeDef.friction = cc2d.Friction;
+                shapeDef.restitution = cc2d.Restitution;
+
+                b2Circle circle;
+                circle.center = { cc2d.Offset.x, cc2d.Offset.y };
+                circle.radius = transform.Scale.x * cc2d.Radius;
+                b2ShapeId shapeID = b2CreateCircleShape(bodyID, &shapeDef, &circle);
+                // TODO: find the better way to store shape id.
+                memcpy(&cc2d.RuntimeFixture, &shapeID, sizeof(b2ShapeId));
+            }
+        }
+    }
+
+    void Scene::OnPhysic2DStop()
+    {
+        b2DestroyWorld(m_WorldID);
+    }
+
+    void Scene::OnUpdatePhysics(Timestep ts)
+    {
+        const int32_t subStepCount = 4;
+        b2World_Step(m_WorldID, ts, subStepCount);
+
+        auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
+        for (auto e : viewRigidbody2D)
+        {
+            Entity entity = { e, this };
+            auto& transform = entity.GetComponent<TransformComponent>();
+            auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+            // TODO: find the better way to get body.
+            b2BodyId bodyID;
+            memcpy(&bodyID, &rb2d.RuntimeBody, sizeof(b2BodyId));
+
+            b2Vec2 position = b2Body_GetPosition(bodyID);
+            transform.Translation.x = position.x;
+            transform.Translation.y = position.y;
+
+            b2Rot rotation = b2Body_GetRotation(bodyID);
+            transform.Rotation.z = b2Rot_GetAngle(rotation);
+        }
+    }
+
+    void Scene::OnRenderScene(EditorCamera& camera)
+    {
+        Renderer2D::BeginScene(camera);
+
+        auto groupTransformSprite = m_Registry.group<TransformComponent, SpriteRendererComponent>();
+        for (auto entity : groupTransformSprite)
+        {
+            auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteRendererComponent>(entity);
+            Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+        }
+
+        auto viewTransformCircle = m_Registry.view<TransformComponent, CircleRendererComponent>();
+        for (auto entity : viewTransformCircle)
+        {
+            auto [transform, circle] = viewTransformCircle.get<TransformComponent, CircleRendererComponent>(entity);
+            Renderer2D::DrawCircle(transform.GetTransform(), circle, (int)entity);
+        }
+
+        Renderer2D::EndScene();
+    }
+
+    template<typename T>
+    void Scene::OnComponentAdded(Entity entity, T& component)
+    {
+        static_assert(false);
+    }
+
+    template<>
 	void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
 	{
 	}

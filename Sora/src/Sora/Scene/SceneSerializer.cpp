@@ -422,7 +422,6 @@ namespace Sora {
                 if (circleRendererComponent)
                 {
                     auto& component	    = deserializedEntity.AddComponent<CircleRendererComponent>();
-
                     component.Color     = GetValue<glm::vec4>(circleRendererComponent, "Color");
                     component.Thickness = GetValue<float>    (circleRendererComponent, "Thickness");
                     component.Fade      = GetValue<float>    (circleRendererComponent, "Fade");
@@ -478,7 +477,6 @@ namespace Sora {
             m_Scene->GetEditorCamera().SetPitch(pitch);
             m_Scene->GetEditorCamera().SetYaw(yaw);
             m_Scene->GetEditorCamera().SetFocalPoint(focalPoint);
-
         }
 
         return true;
