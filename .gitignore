@@ -1,12 +1,16 @@
-# Directories
-.vs/
-.idea/
-bin/
+**/bin/
 bin-int/
+Intermediates/
 
-# Files
-*.user
-Sandbox/imgui.ini
-/Sora/vendor/VulkanSDK
-/SoraEditor/assets/cache
-*.sora
+*.log
+
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+**.csproj.user
+
+Sora/vendor/VulkanSDK
+SoraEditor/assets/cache

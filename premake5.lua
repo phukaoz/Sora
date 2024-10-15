@@ -35,6 +35,7 @@ group ""
 
 group "Core"
 	include "Sora"
+	include "Sora-ScriptCore"
 group ""
 
 group "Tools"

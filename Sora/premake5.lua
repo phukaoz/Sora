@@ -42,7 +42,8 @@ project "Sora"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.VulkanSDK}",
-		"%{IncludeDir.box2d}"
+		"%{IncludeDir.box2d}",
+		"%{IncludeDir.mono}",
 	}
 
 	links
@@ -53,10 +54,8 @@ project "Sora"
 		"yaml-cpp",
 		"opengl32.lib",
 		"box2d",
-		"d3d11.lib",
-		"dxgi.lib",
-		"d3dcompiler.lib",
-		"dxguid.lib"
+		
+		"%{Library.mono}",
 	}
 	
 	filter "files:vendor/ImGuizmo/**.cpp"
@@ -67,6 +66,14 @@ project "Sora"
 
 		defines
 		{
+		}
+
+		links
+		{
+			"%{Library.WinSock}",
+			"%{Library.WinMultiMedia}",
+			"%{Library.WinVersion}",
+			"%{Library.BCrypt}",
 		}
 
 	filter "configurations:Debug"
