@@ -68,6 +68,14 @@ project "Sora"
 		{
 		}
 
+		links
+		{
+			"%{Library.WinSock}",
+			"%{Library.WinMultiMedia}",
+			"%{Library.WinVersion}",
+			"%{Library.BCrypt}",
+		}
+
 	filter "configurations:Debug"
 		defines "SORA_DEBUG"
 		runtime "Debug"

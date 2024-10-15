@@ -10,6 +10,7 @@ Intermediates/
 **.vcxproj.filters
 **.vcxproj.user
 **.csproj
+**.csproj.user
 
 Sora/vendor/VulkanSDK
 SoraEditor/assets/cache

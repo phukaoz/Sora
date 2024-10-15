@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Sora/Renderer/Renderer.h"
+#include "Sora/Scripting/ScriptEngine.h"
 
 #include "Input.h"
 
@@ -26,6 +27,7 @@ namespace Sora {
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();
+		ScriptEngine::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);

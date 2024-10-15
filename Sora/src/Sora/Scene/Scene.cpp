@@ -245,7 +245,7 @@ namespace Sora {
     {
         b2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.gravity = { 0.0f, -9.8f };
-        m_WorldID = b2CreateWorld(&worldDef);
+        m_WorldId = b2CreateWorld(&worldDef);
 
         auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
         for (auto e : viewRigidbody2D)
@@ -261,7 +261,7 @@ namespace Sora {
             bodyDef.rotation = b2MakeRot(transform.Rotation.z);
             bodyDef.fixedRotation = rb2d.FixedRotation;
 
-            b2BodyId bodyID = b2CreateBody(m_WorldID, &bodyDef);
+            b2BodyId bodyID = b2CreateBody(m_WorldId, &bodyDef);
             // TODO: find the better way to store body id.
             memcpy(&rb2d.RuntimeBody, &bodyID, sizeof(b2BodyId));
 
@@ -302,13 +302,13 @@ namespace Sora {
 
     void Scene::OnPhysic2DStop()
     {
-        b2DestroyWorld(m_WorldID);
+        b2DestroyWorld(m_WorldId);
     }
 
     void Scene::OnUpdatePhysics(Timestep ts)
     {
         const int32_t subStepCount = 4;
-        b2World_Step(m_WorldID, ts, subStepCount);
+        b2World_Step(m_WorldId, ts, subStepCount);
 
         auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
         for (auto e : viewRigidbody2D)
