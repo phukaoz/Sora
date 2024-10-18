@@ -6,7 +6,7 @@
 
 namespace Sora {
 
-	Sora::Ref<Sora::VertexBuffer> VertexBuffer::Create(uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
 	{
 		switch (Renderer::GetAPI())
 		{

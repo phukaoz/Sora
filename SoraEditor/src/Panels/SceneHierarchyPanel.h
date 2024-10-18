@@ -19,6 +19,9 @@ namespace Sora {
 	private:
 		void DrawEntityNode(Entity entity);
 		void DrawComponents(Entity entity);
+		
+		template<typename T>
+		void DisplayAddComponentEntry(const std::string& entryName);
 	private:
 		Ref<Scene> m_Context;
 

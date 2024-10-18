@@ -7,6 +7,7 @@
 #include "Sora/Scene/Component.h"
 #include "Sora/Scene/ScriptableEntity.h"
 #include "Sora/Renderer/Renderer2D.h"
+#include "Sora/Scripting/ScriptEngine.h"
 
 namespace Sora {
 
@@ -67,7 +68,7 @@ namespace Sora {
 		newScene->m_ViewportHeight = other->m_ViewportHeight;
 		newScene->OnViewportResize(other->m_ViewportWidth, other->m_ViewportHeight);
 		
-		std::unordered_map<UUID, entt::entity> enttMap;	
+		std::unordered_map<UUID, entt::entity> enttMap;
 		auto& srcRegistry = other->m_Registry;
 		auto& dstRegistry = newScene->m_Registry;
 		auto view = srcRegistry.view<IDComponent>();
@@ -83,6 +84,7 @@ namespace Sora {
 		Utils::CopyComponent<SpriteRendererComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<CircleRendererComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent<ScriptComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
 		Utils::CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
@@ -109,12 +111,15 @@ namespace Sora {
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Untitled Entity" : name;
 
+		m_EntityMap[uuid.value_or(UUID())] = entity;
+
 		return entity;
 	}
 
 	void Scene::DestroyEntity(Entity entity)
 	{
 		m_Registry.destroy(entity);
+		m_EntityMap.erase(entity.GetUUID());
 	}
 
 	Entity Scene::DuplicateEntity(Entity entity)
@@ -126,6 +131,7 @@ namespace Sora {
 		Utils::CopyComponentIfExist<SpriteRendererComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<CircleRendererComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<CameraComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist<ScriptComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<NativeScriptComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<Rigidbody2DComponent>(newEntity, entity);
 		Utils::CopyComponentIfExist<BoxCollider2DComponent>(newEntity, entity);
@@ -137,11 +143,27 @@ namespace Sora {
 	void Scene::OnRuntimeStart()
 	{
 		OnPhysic2DStart();
+
+		ScriptEngine::OnRuntimeStart(this);
+
+		auto view = GetEnititiesWith<ScriptComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+
+			const auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+			if (ScriptEngine::EntityClassExists(scriptComponent.ClassName))
+			{
+				ScriptEngine::OnCreateEntity(entity);
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
 		OnPhysic2DStop();
+	
+		ScriptEngine::OnRuntimeStop();
 	}
 
     void Scene::OnSimulationStart()
@@ -168,19 +190,37 @@ namespace Sora {
 
     void Scene::OnUpdateRuntime(Timestep ts)
 	{
-		// Scripts
-		auto viewNativeScript = m_Registry.view<NativeScriptComponent>();
-		for (auto entity : viewNativeScript)
-		{
-			auto& script = viewNativeScript.get<NativeScriptComponent>(entity);
-			if (!script.Instance)
-			{
-				script.Instance = script.InstantiateScript();
-				if(script.Instance) script.Instance->m_Entity = Entity(entity, this);
-				script.Instance->OnCreate();
-			}
+		// Native Scripts
+        auto viewNativeScript = GetEnititiesWith<NativeScriptComponent>();
+        for (auto e : viewNativeScript)
+        {
+            Entity entity = { e, this };
 
-			script.Instance->OnUpdate(ts);
+            auto& nativeScriptComponent = entity.GetComponent<NativeScriptComponent>();
+            if (!nativeScriptComponent.Instance)
+            {
+                nativeScriptComponent.Instance = nativeScriptComponent.InstantiateScript();
+                if (nativeScriptComponent.Instance)
+                {
+                    nativeScriptComponent.Instance->m_Entity = Entity(entity, this);
+                }
+                nativeScriptComponent.Instance->OnCreate();
+            }
+
+            nativeScriptComponent.Instance->OnUpdate(ts);
+        }
+
+		// Scripts
+		auto viewScript = GetEnititiesWith<ScriptComponent>();
+		for (auto e : viewScript)
+		{
+			Entity entity = { e, this };
+
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+			if (ScriptEngine::EntityClassExists(scriptComponent.ClassName))
+			{
+				ScriptEngine::OnUpdateEntity(entity, ts);
+			}
 		}
 
 		// Physics
@@ -194,14 +234,14 @@ namespace Sora {
 			auto mainCameraTransform = mainCamera.GetComponent<TransformComponent>().GetTransform();
 			Renderer2D::BeginScene(mainCameraCamera, mainCameraTransform);
 
-			auto groupTransformSprite = m_Registry.group<TransformComponent, SpriteRendererComponent>();
-			for (auto entity : groupTransformSprite)
+			auto viewTransformSprite = GetEnititiesWith<TransformComponent, SpriteRendererComponent>();
+			for (auto entity : viewTransformSprite)
 			{
-				auto [transform, sprite] = groupTransformSprite.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto [transform, sprite] = viewTransformSprite.get<TransformComponent, SpriteRendererComponent>(entity);
 				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 
-			auto viewTransformCircle = m_Registry.view<TransformComponent, CircleRendererComponent>();
+			auto viewTransformCircle = GetEnititiesWith<TransformComponent, CircleRendererComponent>();
 			for (auto entity : viewTransformCircle)
 			{
 				auto [transform, circle] = viewTransformCircle.get<TransformComponent, CircleRendererComponent>(entity);
@@ -219,7 +259,7 @@ namespace Sora {
 
 		m_EditorCamera.SetViewportSize(width, height);
 
-		auto viewCamera = m_Registry.view<CameraComponent>();
+		auto viewCamera = GetEnititiesWith<CameraComponent>();
 		for (auto entity : viewCamera)
 		{
 			auto& camera_component = viewCamera.get<CameraComponent>(entity);
@@ -228,18 +268,28 @@ namespace Sora {
 		}
 	}
 
-	Entity Scene::GetPrimaryCameraEntity()
-	{
-		auto viewCamera = m_Registry.view<CameraComponent>();
-		for (auto entity : viewCamera)
+    Entity Scene::GetPrimaryCameraEntity()
+    {
+        auto viewCamera = GetEnititiesWith<CameraComponent>();
+        for (auto entity : viewCamera)
+        {
+            const auto& cameraComponent = viewCamera.get<CameraComponent>(entity);
+            if (cameraComponent.Primary)
+                return Entity(entity, this);
+        }
+
+        return {};
+    }
+
+    Entity Scene::GetEntityByUUID(UUID uuid)
+    {
+		if (m_EntityMap.find(uuid) != m_EntityMap.end())
 		{
-			const auto& cameraComponent = viewCamera.get<CameraComponent>(entity);
-			if (cameraComponent.Primary)
-				return Entity(entity, this);
+			return { m_EntityMap.at(uuid), this };
 		}
 
 		return {};
-	}
+    }
 
     void Scene::OnPhysic2DStart()
     {
@@ -247,7 +297,7 @@ namespace Sora {
         worldDef.gravity = { 0.0f, -9.8f };
         m_WorldID = b2CreateWorld(&worldDef);
 
-        auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
+        auto viewRigidbody2D = GetEnititiesWith<Rigidbody2DComponent>();
         for (auto e : viewRigidbody2D)
         {
             Entity entity = { e, this };
@@ -310,7 +360,7 @@ namespace Sora {
         const int32_t subStepCount = 4;
         b2World_Step(m_WorldID, ts, subStepCount);
 
-        auto viewRigidbody2D = m_Registry.view<Rigidbody2DComponent>();
+        auto viewRigidbody2D = GetEnititiesWith<Rigidbody2DComponent>();
         for (auto e : viewRigidbody2D)
         {
             Entity entity = { e, this };
@@ -341,7 +391,7 @@ namespace Sora {
             Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
         }
 
-        auto viewTransformCircle = m_Registry.view<TransformComponent, CircleRendererComponent>();
+        auto viewTransformCircle = GetEnititiesWith<TransformComponent, CircleRendererComponent>();
         for (auto entity : viewTransformCircle)
         {
             auto [transform, circle] = viewTransformCircle.get<TransformComponent, CircleRendererComponent>(entity);
@@ -388,6 +438,11 @@ namespace Sora {
 		if(m_ViewportWidth > 0 && m_ViewportHeight > 0)
 			component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 	}
+
+    template<>
+    void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
+    {
+    }
 
 	template<>
 	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
