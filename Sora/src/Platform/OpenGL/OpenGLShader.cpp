@@ -61,9 +61,9 @@ namespace Sora {
 
 		static void CreateCacheDirectoryIfNeeded()
 		{
-			std::string cache_directory = GetCacheDirectory();
-			if (!std::filesystem::exists(cache_directory))
-				std::filesystem::create_directories(cache_directory);
+			std::string cacheDirectory = GetCacheDirectory();
+			if (!std::filesystem::exists(cacheDirectory))
+				std::filesystem::create_directories(cacheDirectory);
 		}
 
 		static const char* GLShaderStageCachedOpenGLFileExtension(uint32_t stage)
@@ -92,7 +92,7 @@ namespace Sora {
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
-		: mFilepath(filepath)
+		: m_Filepath(filepath)
 	{
 		SORA_PROFILE_FUNCTION();
 
@@ -109,21 +109,21 @@ namespace Sora {
 			SORA_CORE_WARN("Shader creation took {0} ms", timer.ElapsedMillis());
 		}
 
-		auto last_slash = filepath.find_last_of("/\\");
-		last_slash = last_slash == std::string::npos ? 0 : last_slash + 1;
-		auto last_dot = filepath.rfind('.');
-		auto count = last_dot == std::string::npos ? filepath.size() - last_slash : last_dot - last_slash;
-		mName = filepath.substr(last_slash, count);
+		auto lastSlash = filepath.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filepath.rfind('.');
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+		mName = filepath.substr(lastSlash, count);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertex_src, const std::string& fragment_src)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: mName(name)
 	{
 		SORA_PROFILE_FUNCTION();
 
 		std::unordered_map<GLenum, std::string> sources;
-		sources[GL_VERTEX_SHADER] = vertex_src;
-		sources[GL_FRAGMENT_SHADER] = fragment_src;
+		sources[GL_VERTEX_SHADER] = vertexSrc;
+		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 		
 		CompileOrGetVulkanBinaries(sources);
 		CompileOrGetOpenGLBinaries();
@@ -134,7 +134,7 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glDeleteProgram(mRendererID);
+		glDeleteProgram(m_RendererID);
 	}
 
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
@@ -165,26 +165,26 @@ namespace Sora {
 
 		std::unordered_map<GLenum, std::string> shader_sources;
 
-		const char* type_token = "#type";
-		size_t type_token_length = strlen(type_token);
-		size_t pos = source.find(type_token, 0);
+		const char* typeToken = "#type";
+		size_t typeTokenLength = strlen(typeToken);
+		size_t pos = source.find(typeToken, 0);
 		while (pos != std::string::npos)
 		{
 			size_t eol = source.find_first_of("\r\n", pos);
 			SORA_CORE_ASSERT(eol != std::string::npos, "Syntax error");
-			size_t begin = pos + type_token_length + 1;
+			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
 			SORA_CORE_ASSERT(Utils::ShaderTypeFromString(type), "Invalid shader type specified '{0}'", type);
 
-			size_t next_line_pos = source.find_first_of("\r\n", eol);
-			pos = source.find(type_token, next_line_pos);
-			shader_sources[Utils::ShaderTypeFromString(type)] = source.substr(next_line_pos, pos - (next_line_pos == std::string::npos ? source.size() - 1 : next_line_pos));
+			size_t nextLinePos = source.find_first_of("\r\n", eol);
+			pos = source.find(typeToken, nextLinePos);
+			shader_sources[Utils::ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
 		return shader_sources;
 	}
 
-	void OpenGLShader::CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shader_sources)
+	void OpenGLShader::CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();
 		shaderc::Compiler compiler;
@@ -194,39 +194,39 @@ namespace Sora {
 		if (optimize)
 			options.SetOptimizationLevel(shaderc_optimization_level_performance);
 
-		std::filesystem::path cache_directory = Utils::GetCacheDirectory();
+		std::filesystem::path cacheDirectory = Utils::GetCacheDirectory();
 
-		auto& shader_data = mVulkanSPIRV;
-		shader_data.clear();
-		for (auto&& [stage, source] : shader_sources)
+		auto& shaderData = m_VulkanSPIRV;
+		shaderData.clear();
+		for (auto&& [stage, source] : shaderSources)
 		{
-			std::filesystem::path shader_file_path = mFilepath;
-			std::filesystem::path cache_path = cache_directory / (shader_file_path.filename().string() +
+			std::filesystem::path shaderFilePath = m_Filepath;
+			std::filesystem::path cachePath = cacheDirectory / (shaderFilePath.filename().string() +
 				Utils::GLShaderStageCachedVulkanFileExtension(stage));
 
-			std::ifstream in(cache_path, std::ios::in | std::ios::binary);
+			std::ifstream in(cachePath, std::ios::in | std::ios::binary);
 			if (in.is_open())
 			{
 				in.seekg(0, std::ios::end);
 				auto size = in.tellg();
 				in.seekg(0, std::ios::beg);
 
-				auto& data = shader_data[stage];
+				auto& data = shaderData[stage];
 				data.resize(size / sizeof(uint32_t));
 				in.read((char*)data.data(), size);
 			}
 			else
 			{
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, Utils::GLShaderStageToShaderC(stage),
-					mFilepath.c_str(), options);
+					m_Filepath.c_str(), options);
 				SORA_CORE_ASSERT(module.GetCompilationStatus() == shaderc_compilation_status_success, module.GetErrorMessage());
 				
-				shader_data[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
+				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
 
-				std::ofstream out(cache_path, std::ios::out | std::ios::binary);
+				std::ofstream out(cachePath, std::ios::out | std::ios::binary);
 				if (out.is_open())
 				{
-					auto& data = shader_data[stage];
+					auto& data = shaderData[stage];
 					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
 					out.flush();
 					out.close();
@@ -234,13 +234,13 @@ namespace Sora {
 			}
 		}
 
-		for (auto&& [stage, data] : shader_data)
+		for (auto&& [stage, data] : shaderData)
 			Reflect(stage, data);
 	}
 
 	void OpenGLShader::CompileOrGetOpenGLBinaries()
 	{
-		auto& shader_data = mOpenGLSPIRV;
+		auto& shaderData = m_OpenGLSPIRV;
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
@@ -248,43 +248,43 @@ namespace Sora {
 		if (optimize)
 			options.SetOptimizationLevel(shaderc_optimization_level_performance);
 
-		std::filesystem::path cache_directory = Utils::GetCacheDirectory();
+		std::filesystem::path cacheDirectory = Utils::GetCacheDirectory();
 		
-		shader_data.clear();
-		mOpenGLSourceCode.clear();
-		for (auto&& [stage, spirv] : mVulkanSPIRV)
+		shaderData.clear();
+		m_OpenGLSourceCode.clear();
+		for (auto&& [stage, spirv] : m_VulkanSPIRV)
 		{
-			std::filesystem::path shader_file_path = mFilepath;
-			std::filesystem::path cache_path = cache_directory / (shader_file_path.filename().string() +
+			std::filesystem::path shaderFilePath = m_Filepath;
+			std::filesystem::path cachePath = cacheDirectory / (shaderFilePath.filename().string() +
 				Utils::GLShaderStageCachedOpenGLFileExtension(stage));
 
-			std::ifstream in(cache_path, std::ios::in | std::ios::binary);
+			std::ifstream in(cachePath, std::ios::in | std::ios::binary);
 			if (in.is_open())
 			{
 				in.seekg(0, std::ios::end);
 				auto size = in.tellg();
 				in.seekg(0, std::ios::beg);
 
-				auto& data = shader_data[stage];
+				auto& data = shaderData[stage];
 				data.resize(size / sizeof(uint32_t));
 				in.read((char*)data.data(), size);
 			}
 			else
 			{
-				spirv_cross::CompilerGLSL glsl_compiler(spirv);
-				mOpenGLSourceCode[stage] = glsl_compiler.compile();
-				auto& source = mOpenGLSourceCode[stage];
+				spirv_cross::CompilerGLSL glslCompiler(spirv);
+				m_OpenGLSourceCode[stage] = glslCompiler.compile();
+				auto& source = m_OpenGLSourceCode[stage];
 
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, Utils::GLShaderStageToShaderC(stage),
-					mFilepath.c_str(), options);
+					m_Filepath.c_str(), options);
 				SORA_CORE_ASSERT(module.GetCompilationStatus() == shaderc_compilation_status_success, module.GetErrorMessage());
 
-				shader_data[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
+				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
 
-				std::ofstream out(cache_path, std::ios::out | std::ios::binary);
+				std::ofstream out(cachePath, std::ios::out | std::ios::binary);
 				if (out.is_open())
 				{
-					auto& data = shader_data[stage];
+					auto& data = shaderData[stage];
 					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
 					out.flush();
 					out.close();
@@ -296,10 +296,10 @@ namespace Sora {
 	void OpenGLShader::CreateProgram()
 	{
 		GLuint program = glCreateProgram();
-		std::vector<GLuint> shader_ids;
-		for (auto&& [stage, spirv] : mOpenGLSPIRV)
+		std::vector<GLuint> shaderIDs;
+		for (auto&& [stage, spirv] : m_OpenGLSPIRV)
 		{
-			GLuint id = shader_ids.emplace_back(glCreateShader(stage));
+			GLuint id = shaderIDs.emplace_back(glCreateShader(stage));
 			glShaderBinary(1, &id, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), static_cast<int>(spirv.size() * sizeof(uint32_t)));
 			glSpecializeShader(id, "main", 0, nullptr, nullptr);
 			glAttachShader(program, id);
@@ -307,53 +307,54 @@ namespace Sora {
 
 		glLinkProgram(program);
 
-		GLint is_linked;
-		glGetProgramiv(program, GL_LINK_STATUS, &is_linked);
-		if (is_linked == GL_FALSE)
+		GLint isLinked;
+		glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+		if (isLinked == GL_FALSE)
 		{
-			GLint max_length = 0;
-			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &max_length);
+			GLint maxLength = 0;
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
-			std::vector<GLchar> info_log(max_length);
-			glGetProgramInfoLog(program, max_length, &max_length, info_log.data());
-			SORA_CORE_ERROR("Shader linking failed ({0}):\n{1}", mFilepath, info_log.data());
+			std::vector<GLchar> infoLog(maxLength);
+			glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
+			SORA_CORE_ERROR("Shader linking failed ({0})", m_Filepath);
+			SORA_CORE_ERROR("{0}", infoLog.data());
 
 			glDeleteProgram(program);
 
-			for (auto id : shader_ids)
+			for (auto id : shaderIDs)
 				glDeleteShader(id);
 		}
 
-		for (auto id : shader_ids)
+		for (auto id : shaderIDs)
 		{
 			glDetachShader(program, id);
 			glDeleteShader(id);
 		}
 
-		mRendererID = program;
+		m_RendererID = program;
 	}
 
-	void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t>& shader_data)
+	void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t>& shaderData)
 	{
-		spirv_cross::Compiler compiler(shader_data);
+		spirv_cross::Compiler compiler(shaderData);
 		spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 
-		SORA_CORE_TRACE("OpenGLShader::Reflect - {0} {1}", Utils::GLShaderStageToString(stage), mFilepath);
+		SORA_CORE_TRACE("OpenGLShader::Reflect - {0} {1}", Utils::GLShaderStageToString(stage), m_Filepath);
 		SORA_CORE_TRACE("    {0} uniform buffers", resources.uniform_buffers.size());
 		SORA_CORE_TRACE("    {0} resources", resources.sampled_images.size());
 
 		SORA_CORE_TRACE("Uniform buffers:");
 		for (const auto& resource : resources.uniform_buffers)
 		{
-			const auto& buffer_type = compiler.get_type(resource.base_type_id);
-			size_t buffer_size = compiler.get_declared_struct_size(buffer_type);
+			const auto& bufferType = compiler.get_type(resource.base_type_id);
+			size_t bufferSize = compiler.get_declared_struct_size(bufferType);
 			uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-			size_t member_count = buffer_type.member_types.size();
+			size_t memberCount = bufferType.member_types.size();
 
 			SORA_CORE_TRACE("    {0}", resource.name);
-			SORA_CORE_TRACE("    Size = {0}", buffer_size);
+			SORA_CORE_TRACE("    Size = {0}", bufferSize);
 			SORA_CORE_TRACE("    Binding = {0}", binding);
-			SORA_CORE_TRACE("    Members = {0}", member_count);
+			SORA_CORE_TRACE("    Members = {0}", memberCount);
 		}
 	}
 
@@ -361,7 +362,7 @@ namespace Sora {
 	{
 		SORA_PROFILE_FUNCTION();
 
-		glUseProgram(mRendererID);
+		glUseProgram(m_RendererID);
 	}
 
 	void OpenGLShader::Unbind() const
@@ -415,49 +416,49 @@ namespace Sora {
 
 	void OpenGLShader::UploadUniformInt(const std::string& name, int value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1i(location, value);
 	}
 
 	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1iv(location, count, values);
 	}
 
 	void OpenGLShader::UploadUniformFloat(const std::string& name, float value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1f(location, value);
 	}
 
 	void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform2f(location, value.x, value.y);
 	}
 
 	void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
 	void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
 	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
 	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& value) const
 	{
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
