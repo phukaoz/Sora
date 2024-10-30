@@ -1,5 +1,18 @@
 Scene: Test
 Entities:
+  - Entity: 1928557794322953177
+    TagComponent:
+      Tag: Circle
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CircleRendererComponent:
+      Color: [1, 1, 1, 1]
+      Thickness: 1
+      Fade: 0.00499999989
+    ScriptComponent:
+      Class: Sandbox.Player
   - Entity: 11113345024591008719
     TagComponent:
       Tag: Camera
@@ -18,14 +31,12 @@ Entities:
         PerspectiveFar: 1000
       Primary: true
       FixedAspectRatio: false
-  - Entity: 1928557794322953177
-    TagComponent:
-      Tag: Circle
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    CircleRendererComponent:
-      Color: [1, 1, 1, 1]
-      Thickness: 1
-      Fade: 0.00499999989
+Camera:
+  FOV: 30
+  AspectRatio: 2.13043475
+  NearClip: 0.100000001
+  FarClip: 1000
+  FocalPoint: [0, 0, 0]
+  Distance: 10
+  Pitch: 0
+  Yaw: 0

@@ -34,9 +34,10 @@ namespace Sora {
 
 		void OnViewportResize(uint32_t width, uint32_t height);
 
+        EditorCamera& GetEditorCamera() { return m_EditorCamera; }
+
 		Entity GetPrimaryCameraEntity();
-		
-		EditorCamera& GetEditorCamera() { return m_EditorCamera; }
+		Entity GetEntityByUUID(UUID id);
 
 		template<typename... Components>
 		auto GetEnititiesWith()
@@ -60,6 +61,8 @@ namespace Sora {
 		EditorCamera m_EditorCamera;
 
 		bool m_Saved = true;
+
+		std::unordered_map<UUID, entt::entity> m_EntityMap;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

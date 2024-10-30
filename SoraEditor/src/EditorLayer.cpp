@@ -43,7 +43,7 @@ namespace Sora {
 	{
 	}
 
-	void EditorLayer::OnUpdate(Sora::Timestep ts)
+	void EditorLayer::OnUpdate(Timestep ts)
 	{
 		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
@@ -150,7 +150,7 @@ namespace Sora {
 					if (ImGui::MenuItem("Open...", "Ctrl+O"))			OpenScene();
 					if (ImGui::MenuItem("Save", "Ctrl+S"))				SaveScene();
 					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))	SaveSceneAs();
-					if (ImGui::MenuItem("Exit"))						Sora::Application::Get().Close();
+					if (ImGui::MenuItem("Exit"))								Application::Get().Close();
 
 					ImGui::EndMenu();
 				}

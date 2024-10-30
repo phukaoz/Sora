@@ -232,6 +232,19 @@ namespace Sora {
             }
         }
 
+        if (entity.HasComponent<ScriptComponent>())
+        {
+            auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+
+            out << YAML::Key << "ScriptComponent";
+            out << YAML::BeginMap;
+            {
+                out << YAML::Key << "Class" << YAML::Value << scriptComponent.ClassName;
+
+                out << YAML::EndMap;
+            }
+        }
+
         if (entity.HasComponent<Rigidbody2DComponent>())
         {
             out << YAML::Key << "Rigidbody2DComponent";
@@ -406,6 +419,14 @@ namespace Sora {
 
                     component.Primary          = GetValue<bool>(cameraComponent, "Primary");
                     component.FixedAspectRatio = GetValue<bool>(cameraComponent, "FixedAspectRatio");
+                }
+
+                auto scriptComponent = entity["ScriptComponent"];
+                if (scriptComponent)
+                {
+                    auto& component = deserializedEntity.AddComponent<ScriptComponent>();
+
+                    component.ClassName = GetValue<std::string>(scriptComponent, "Class");
                 }
 
                 auto spriteRendererComponent = entity["SpriteRendererComponent"];
