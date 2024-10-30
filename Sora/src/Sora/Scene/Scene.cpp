@@ -26,26 +26,44 @@ namespace Sora {
 			return b2_staticBody;
 		}
 
-		template<typename Component>
+		template<typename... Component>
 		static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
 		{
-			auto view = src.view<Component>();
-			for (auto e : view)
-			{
-				UUID uuid = src.get<IDComponent>(e).ID;
-				entt::entity dstHandle = enttMap.at(uuid);
+			([&]() 
+				{
+                    auto view = src.view<Component>();
+                    for (auto e : view)
+                    {
+                        UUID uuid = src.get<IDComponent>(e).ID;
+                        entt::entity dstHandle = enttMap.at(uuid);
 
-				auto& srcComponent = src.get<Component>(e);
-				dst.emplace_or_replace<Component>(dstHandle, srcComponent);
-			}
+                        auto& srcComponent = src.get<Component>(e);
+                        dst.emplace_or_replace<Component>(dstHandle, srcComponent);
+                    }
+				}(), ...);
 		}
 
-		template<typename Component>
+		template<typename...Component>
+        static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+        {
+			CopyComponent<Component...>(dst, src, enttMap);
+        }
+
+		template<typename... Component>
 		static void CopyComponentIfExist(Entity dst, Entity src)
 		{
-			if (src.HasComponent<Component>())
-				dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+			([&]()
+				{
+                    if (src.HasComponent<Component>())
+                        dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+				}(), ...);
 		}
+
+        template<typename... Component>
+        static void CopyComponentIfExist(ComponentGroup<Component...>, Entity dst, Entity src)
+        {
+            CopyComponentIfExist<Component...>(dst, src);
+        }
 	}
 
 	Scene::Scene()
@@ -80,15 +98,7 @@ namespace Sora {
 			enttMap[uuid] = entity;
 		}
 
-		Utils::CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<SpriteRendererComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<CircleRendererComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<ScriptComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
-		Utils::CopyComponent<CircleCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+		Utils::CopyComponent(AllComponents{}, dstRegistry, srcRegistry, enttMap);
 
 		//newScene->mWorldID = other->mWorldID;
 		
@@ -127,15 +137,7 @@ namespace Sora {
 		std::string name = entity.GetName();
 		Entity newEntity = CreateEntity(name);
 
-		Utils::CopyComponentIfExist<TransformComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<SpriteRendererComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<CircleRendererComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<CameraComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<ScriptComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<NativeScriptComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<Rigidbody2DComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<BoxCollider2DComponent>(newEntity, entity);
-		Utils::CopyComponentIfExist<CircleCollider2DComponent>(newEntity, entity);
+		Utils::CopyComponentIfExist(AllComponents{}, newEntity, entity);
 
 		return newEntity;
 	}
@@ -310,7 +312,7 @@ namespace Sora {
             bodyDef.position.y = transform.Translation.y;
             bodyDef.rotation = b2MakeRot(transform.Rotation.z);
             bodyDef.fixedRotation = rb2d.FixedRotation;
-
+			
             b2BodyId bodyID = b2CreateBody(m_WorldID, &bodyDef);
             // TODO: find the better way to store body id.
             memcpy(&rb2d.RuntimeBody, &bodyID, sizeof(b2BodyId));

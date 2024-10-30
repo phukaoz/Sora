@@ -10,15 +10,22 @@ namespace Sandbox
 {
     public class Player : Entity
     {
+        private TransformComponent m_Transform;
+        private Rigidbody2DComponent m_Rigidbody;
+
         void OnCreate()
         {
             Console.WriteLine($"Player.OnCreate - {ID}");
+
+            m_Transform = GetComponent<TransformComponent>();
+            m_Rigidbody = GetComponent<Rigidbody2DComponent>();
+
+            bool hasTransform = HasComponent<TransformComponent>();
+            Console.WriteLine($"{hasTransform}");
         }
 
         void OnUpdate(float ts)
         {
-            //Console.WriteLine($"Player.OnUpdate: {ts}");
-
             float speed = 1.0f;
             Vector3 velocity = Vector3.Zero;
 
@@ -42,9 +49,13 @@ namespace Sandbox
 
             velocity *= speed;
 
-            Vector3 translation = Translation;
+            m_Rigidbody.ApplyLinearImpulse(velocity.XY, true);
+
+            /*
+            Vector3 translation = m_Transform.Translation;
             translation += velocity * ts;
-            Translation = translation;
+            m_Transform.Translation = translation;
+            */
         }
     }
 }

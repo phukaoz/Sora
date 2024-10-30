@@ -18,7 +18,7 @@ namespace Sora {
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			SORA_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
+			SORA_CORE_ASSERT(!HasComponent<T>(), "The entity already has this component!");
 			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 			m_Scene->OnComponentAdded<T>(*this, component);
 			return component;
@@ -35,7 +35,7 @@ namespace Sora {
 		template<typename T>
 		T& GetComponent()
 		{
-			SORA_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
+			SORA_CORE_ASSERT(HasComponent<T>(), "The entity has no this component!");
 
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
@@ -49,7 +49,7 @@ namespace Sora {
 		template<typename T>
 		void RemoveComponent()
 		{
-			SORA_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
+			SORA_CORE_ASSERT(HasComponent<T>(), "The entity has no this component!");
 
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}

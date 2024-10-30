@@ -87,7 +87,6 @@ namespace Sora {
     {
         MonoDomain* RootDomain = nullptr;
         MonoDomain* AppDomain = nullptr;
-        char AppDomainName[20] = "Sora-ScriptRuntime";
 
         MonoAssembly* CoreAssembly = nullptr;
         MonoImage* CoreAssemblyImage = nullptr;
@@ -112,6 +111,7 @@ namespace Sora {
         LoadAssembly("resources/scripts/Sora-ScriptCore.dll");
         LoadAssemblyClasses(s_Data->CoreAssembly);
 
+        ScriptGlue::RegisterComponents();
         ScriptGlue::RegisterFunctions();
 
         s_Data->EntityClass = ScriptClass("Sora", "Entity");
@@ -125,7 +125,7 @@ namespace Sora {
     
     void ScriptEngine::LoadAssembly(const std::filesystem::path& filepath)
     {
-        s_Data->AppDomain = mono_domain_create_appdomain(s_Data->AppDomainName, nullptr);
+        s_Data->AppDomain = mono_domain_create_appdomain(const_cast<char*>("Sora-ScriptRuntime"), nullptr);
         mono_domain_set(s_Data->AppDomain, true);
 
         s_Data->CoreAssembly = Utils::LoadMonoAssembly(filepath);
@@ -246,6 +246,11 @@ namespace Sora {
         }
     }
 
+    MonoImage* ScriptEngine::GetCoreAssemblyImage()
+    {
+        return s_Data->CoreAssemblyImage;
+    }
+
 #pragma endregion
 
 #pragma region ScriptClass
@@ -290,13 +295,17 @@ namespace Sora {
 
     void ScriptInstance::InvokeOnCreate()
     {
-        m_ScriptClass->InvokeMethod(m_Instance, m_OnCreateMethod);
+        if(m_OnCreateMethod)
+            m_ScriptClass->InvokeMethod(m_Instance, m_OnCreateMethod);
     }
 
     void ScriptInstance::InvokeOnUpdate(float ts)
     {
-        void* param = &ts;
-        m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
+        if (m_OnUpdateMethod)
+        {
+            void* param = &ts;
+            m_ScriptClass->InvokeMethod(m_Instance, m_OnUpdateMethod, &param);
+        }
     }
 
 #pragma endregion

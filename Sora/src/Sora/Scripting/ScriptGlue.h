@@ -6,6 +6,7 @@ namespace Sora {
     {
     public:
         static void RegisterFunctions();
+        static void RegisterComponents();
     };
 
 }
